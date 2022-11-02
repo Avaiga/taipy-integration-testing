@@ -3,18 +3,16 @@
 name: Python tests
 
 on:
-  push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   backend:
     timeout-minutes: 20
     strategy:
       matrix:
-        python-versions: ['3.10']
-        os: [ubuntu-18.04]
+        python-versions: ['3.8', '3.9', '3.10']
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -25,5 +23,5 @@ jobs:
 
       - name: Tests
         run: |
-          pip install git+https://git@github.com/Avaiga/taipy.git@develop statsmodels pytest
+          pip install git+https://git@github.com/Avaiga/taipy.git@develop statsmodels Flask-Testing pytest
           pytest tests
