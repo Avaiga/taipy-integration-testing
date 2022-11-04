@@ -1,0 +1,13 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+taipy = {git = "https://git@github.com/avaiga/taipy.git@develop"}
+
+[requires]
+python_version = "3"
+
+[pipenv]
+allow_prereleases = true
