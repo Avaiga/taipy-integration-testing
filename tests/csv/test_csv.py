@@ -1,0 +1,136 @@
+import os
+import pandas as pd
+import modin.pandas as modin_pd
+import numpy as np
+
+import taipy.core as tp
+from taipy.config import Config
+
+from tests.csv.shared import *
+
+
+def test_report():
+    row_count = 1000
+    
+    pandas_data = pd.read_csv(CSV_INPUT_PATH)
+    numpy_data = pandas_data.to_numpy()
+    modin_data = modin_pd.read_csv(CSV_INPUT_PATH)
+    custom_data = [Row(int(v.id), int(v.age), float(v.rating)) for i, v in pd.read_csv(CSV_INPUT_PATH).iterrows()]
+    
+    Config.configure_global_app(clean_entities_enabled=True)
+    tp.clean_all_entities()
+
+    # 📊 Without exposed type (pandas is the default exposed type)
+
+    scenario_1 = tp.create_scenario(scenario_cfg)
+    input_data_node_1 = scenario_1.input_dataset_1
+    output_data_node_1 = scenario_1.output_dataset_1
+    pipeline_1 = scenario_1.p1
+
+    read_data_1 = input_data_node_1.read()
+    assert len(read_data_1) == row_count
+    assert pandas_data.equals(read_data_1)
+    
+    assert output_data_node_1.read() is None
+    output_data_node_1.write(read_data_1)
+    assert pandas_data.equals(output_data_node_1.read())
+    
+    output_data_node_1.write(None)
+    assert output_data_node_1.read().empty
+    pipeline_1.submit()
+    assert pandas_data.equals(output_data_node_1.read())
+    
+    output_data_node_1.write(None)
+    assert output_data_node_1.read().empty
+    scenario_1.submit()
+    assert pandas_data.equals(output_data_node_1.read())
+    
+    os.remove(CSV_OUTPUT_PATH)
+
+    # 📊 With custom class as exposed type
+    
+    def compare_custom_date(read_data, custom_data):
+        return [row_1.id == row_2.id and row_1.age == row_2.age and row_1.rating == row_2.rating for row_1, row_2 in zip(read_data, custom_data)]
+    
+    scenario_2 = tp.create_scenario(scenario_cfg_2)
+    input_data_node_2 = scenario_2.input_dataset_2
+    output_data_node_2 = scenario_2.output_dataset_2
+    pipeline_2 = scenario_2.p2
+    
+    read_data_2 = input_data_node_2.read()
+    assert len(read_data_2) == row_count
+    assert all(compare_custom_date(read_data_2, custom_data))
+    
+    output_data_node_2.write(read_data_2)
+    assert len(read_data_2) == row_count
+    assert all(compare_custom_date(output_data_node_2.read(), custom_data))
+    
+    output_data_node_2.write(None)
+    assert isinstance(output_data_node_2.read(), list)
+    assert len(output_data_node_2.read()) == 0
+    pipeline_2.submit()
+    assert all(compare_custom_date(output_data_node_2.read(), custom_data))
+    
+    output_data_node_2.write(None)
+    assert isinstance(output_data_node_2.read(), list)
+    assert len(output_data_node_2.read()) == 0
+    scenario_2.submit()
+    assert all(compare_custom_date(output_data_node_2.read(), custom_data))
+
+    os.remove(CSV_OUTPUT_PATH)
+
+    # 📊 With numpy as exposed type
+    scenario_3 = tp.create_scenario(scenario_cfg_3)
+    input_data_node_3 = scenario_3.input_dataset_3
+    output_data_node_3 = scenario_3.output_dataset_3
+    pipeline_3 = scenario_3.p3
+    
+    read_data_3 = input_data_node_3.read()
+    assert len(read_data_3) == row_count
+    assert np.array_equal(read_data_3, numpy_data)
+    
+    assert output_data_node_3.read() is None
+    output_data_node_3.write(read_data_3)
+    assert np.array_equal(output_data_node_3.read(), numpy_data)
+
+    
+    output_data_node_3.write(None)
+    assert isinstance(output_data_node_3.read(), np.ndarray)
+    assert output_data_node_3.read().size == 0
+    pipeline_3.submit()
+    assert np.array_equal(output_data_node_3.read(), numpy_data)
+    
+    output_data_node_3.write(None)
+    assert isinstance(output_data_node_3.read(), np.ndarray)
+    assert output_data_node_3.read().size == 0
+    scenario_3.submit()
+    assert np.array_equal(output_data_node_3.read(), numpy_data)
+    
+    os.remove(CSV_OUTPUT_PATH)
+    
+    # 📊 With modin as exposed type
+    scenario_4 = tp.create_scenario(scenario_cfg_4)
+    input_data_node_4 = scenario_4.input_dataset_4
+    output_data_node_4 = scenario_4.output_dataset_4
+    pipeline_4 = scenario_4.p4
+
+    read_data_4 = input_data_node_4.read()
+    assert len(read_data_4) == row_count
+    assert modin_data.equals(read_data_4)
+    
+    assert output_data_node_4.read() is None
+    output_data_node_4.write(read_data_4)
+    assert modin_data.equals(output_data_node_4.read())
+    
+    output_data_node_4.write(None)
+    assert output_data_node_4.read().empty
+    pipeline_4.submit()
+    assert modin_data.equals(output_data_node_4.read())
+    
+    output_data_node_4.write(None)
+    assert output_data_node_4.read().empty
+    scenario_4.submit()
+    assert modin_data.equals(output_data_node_4.read())
+    
+    os.remove(CSV_OUTPUT_PATH)
+
