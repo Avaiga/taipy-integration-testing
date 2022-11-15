@@ -1,70 +1,74 @@
-from pathlib import Path
-import sys
+import json
+import os
+
 import taipy.core as tp
 from taipy.config import Config
 
 from shared import *
 
 
-@timer
-def read_data_node(data_node):
-    return data_node.read()
-
-
-@timer
-def write_data_node(data_node, input_data):
-    data = algorithm(input_data)
-    data_node.write(data)
-
-
-row_counts = [10**3, 10**4, 10**5, 10**6]  # 1K to 1M rows
-
-# Uncomment to test 10M rows - which may take a while to run
-# row_counts.append(10**7)
-
-
-def report(row_count: int):
+def test_json():
+    with open(JSON_DICT_INPUT_PATH, "r") as f:
+        json_dict_data = json.load(f)
+    with open(JSON_OBJECT_INPUT_PATH, "r") as f:
+        json_object_data = json.load(f, cls=RowDecoder)
+        
     Config.configure_global_app(clean_entities_enabled=True)
     tp.clean_all_entities()
-    Path("./input").mkdir(parents=True, exist_ok=True)
-    Path("./output").mkdir(parents=True, exist_ok=True)
 
-    print(f"🚀 {row_count:,} rows")
-    dicts = get_list_of_dicts(row_count)
-    objects = get_list_of_objects(row_count)
+    # 📝 Without encoder / decoder
 
-    print()
-    print("📝 Without encoder / decoder")
+    scenario_1 = tp.create_scenario(scenario_cfg_1)
+    input_data_node_1 = scenario_1.input_dataset_1
+    output_data_node_1 = scenario_1.output_dataset_1
+    pipeline_1 = scenario_1.p1
+    
+    read_data_1 = input_data_node_1.read()
+    assert len(read_data_1) == ROW_COUNT
+    assert json_dict_data == read_data_1
+    
+    assert output_data_node_1.read() is None
+    output_data_node_1.write(read_data_1)
+    assert json_dict_data == output_data_node_1.read()
+    
+    output_data_node_1.write(None)
+    assert output_data_node_1.read() is None
+    pipeline_1.submit()
+    assert json_dict_data == output_data_node_1.read()
+    
+    output_data_node_1.write(None)
+    assert output_data_node_1.read() is None
+    scenario_1.submit()
+    assert json_dict_data == output_data_node_1.read()
+    
+    os.remove(JSON_DICT_OUTPUT_PATH)
 
-    scenario = tp.create_scenario(scenario_cfg)
+    # 📝 With encoder / decoder
 
-    input_data_node = scenario.input_dataset
-    input_data_node.path = f"./input/input_dicts_{row_count}.json"
-
-    write_data_node(input_data_node, dicts)
-    read_data_node(input_data_node)
-
-    print()
-    print("📝 With encoder / decoder")
+    def compare_custom_date(read_data, object_data):
+        return [isinstance(row_1, Row) and row_1.id == row_2.id and row_1.age == row_2.age and row_1.rating == row_2.rating for row_1, row_2 in zip(read_data, object_data)]
 
     scenario_2 = tp.create_scenario(scenario_cfg_2)
-
     input_data_node_2 = scenario_2.input_dataset_2
-    input_data_node_2.path = f"./input/input_objects_{row_count}.json"
-
-    write_data_node(input_data_node_2, objects)
-    read_data_node(input_data_node_2)
-
-    print()
-
-
-if __name__ == "__main__":
-
-    open("report.txt", "w").close()
-
-    with open("report.txt", "a", encoding="utf-8") as f:
-        # Uncomment to log into report.txt
-        sys.stdout = f
-
-        for row_size in row_counts:
-            report(row_size)
+    output_data_node_2 = scenario_2.output_dataset_2
+    pipeline_2 = scenario_2.p2
+    
+    read_data_2 = input_data_node_2.read()
+    assert len(read_data_2) == ROW_COUNT
+    assert all(compare_custom_date(read_data_2, json_object_data))
+    
+    assert output_data_node_2.read() is None
+    output_data_node_2.write(read_data_2)
+    assert all(compare_custom_date(output_data_node_2.read(), json_object_data))
+    
+    output_data_node_2.write(None)
+    assert output_data_node_2.read() is None
+    pipeline_2.submit()
+    assert all(compare_custom_date(output_data_node_2.read(), json_object_data))
+    
+    output_data_node_2.write(None)
+    assert output_data_node_2.read() is None
+    scenario_2.submit()
+    assert all(compare_custom_date(output_data_node_2.read(), json_object_data))
+    
+    os.remove(JSON_OBJECT_OUTPUT_PATH)
