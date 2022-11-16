@@ -8,7 +8,6 @@ PICKLE_LIST_INPUT_PATH = "tests/pickle/input_object_1000.p"
 PICKLE_LIST_OUTPUT_PATH = "tests/pickle/output_object_1000.p"
 ROW_COUNT = 1000
 
-
 input_dataset_cfg_1 = Config.configure_pickle_data_node(id="input_dataset_1", path=PICKLE_DICT_INPUT_PATH)
 output_dataset_cfg_1 = Config.configure_pickle_data_node(
     id="output_dataset_1", path=PICKLE_DICT_OUTPUT_PATH)
