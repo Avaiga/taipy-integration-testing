@@ -1,6 +1,6 @@
 from taipy.config.common.frequency import Frequency
 from taipy.config.config import Config
-from .algorithms import algorithm
+from tests.pickle.shared.algorithms import algorithm
 
 PICKLE_DICT_INPUT_PATH = "tests/pickle/input_dict_1000.p"
 PICKLE_DICT_OUTPUT_PATH = "tests/pickle/output_dict_1000.p"

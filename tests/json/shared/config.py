@@ -1,7 +1,7 @@
 from taipy.config.common.frequency import Frequency
 from taipy.config.config import Config
-from .algorithms import algorithm
-from .utils import RowDecoder, RowEncoder
+from tests.json.shared.algorithms import algorithm
+from tests.json.shared.utils import RowDecoder, RowEncoder
 
 JSON_DICT_INPUT_PATH = "tests/json/input_dict_1000.json"
 JSON_DICT_OUTPUT_PATH = "tests/json/output_dict_1000.json"

@@ -4,10 +4,17 @@ import pickle
 import taipy.core as tp
 from taipy.config import Config
 
-from shared import *
-
-
 def test_pickle():
+    from tests.pickle.shared import (
+        scenario_cfg_1,
+        scenario_cfg_2,
+        PICKLE_DICT_INPUT_PATH,
+        PICKLE_DICT_OUTPUT_PATH,
+        PICKLE_LIST_INPUT_PATH,
+        PICKLE_LIST_OUTPUT_PATH,
+        ROW_COUNT,
+    )
+
     with open(PICKLE_DICT_INPUT_PATH, "rb") as f:
         dict_data = pickle.load(f)
     with open(PICKLE_LIST_INPUT_PATH, "rb") as f:

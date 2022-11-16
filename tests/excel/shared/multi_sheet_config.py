@@ -4,7 +4,7 @@ import dataclasses
 from taipy.config.common.frequency import Frequency
 from taipy.config.config import Config
 
-from .algorithms import algorithm
+from tests.excel.shared.algorithms import algorithm
 
 EXCEL_INPUT_PATH = "tests/excel/input_1000_multi_sheets.xlsx"
 EXCEL_OUTPUT_PATH = "tests/excel/output_1000.xlsx"

@@ -6,16 +6,23 @@ import numpy as np
 import taipy.core as tp
 from taipy.config import Config
 
-from tests.excel.shared.single_sheet_config import *
-
 
 def test_excel():
-    SHEET_NAME = "Sheet1"
-    
-    pandas_data = pd.read_excel(EXCEL_INPUT_PATH)
+    from tests.excel.shared.single_sheet_config import (
+        scenario_cfg,
+        scenario_cfg_2,
+        scenario_cfg_3,
+        scenario_cfg_4,
+        EXCEL_SINGLE_SHEET_INPUT_PATH,
+        EXCEL_SINGLE_SHEET_OUTPUT_PATH,
+        ROW_COUNT,
+        Row
+    )
+
+    pandas_data = pd.read_excel(EXCEL_SINGLE_SHEET_INPUT_PATH)
     numpy_data = pandas_data.to_numpy()
-    modin_data = modin_pd.read_excel(EXCEL_INPUT_PATH)
-    custom_data = [Row(int(v.id), int(v.age), float(v.rating)) for i, v in pd.read_excel(EXCEL_INPUT_PATH).iterrows()]
+    modin_data = modin_pd.read_excel(EXCEL_SINGLE_SHEET_INPUT_PATH)
+    custom_data = [Row(int(v.id), int(v.age), float(v.rating)) for i, v in pd.read_excel(EXCEL_SINGLE_SHEET_INPUT_PATH).iterrows()]
     
     Config.configure_global_app(clean_entities_enabled=True)
     tp.clean_all_entities()
@@ -26,9 +33,6 @@ def test_excel():
     input_data_node_1 = scenario_1.input_dataset_1
     output_data_node_1 = scenario_1.output_dataset_1
     pipeline_1 = scenario_1.p1
-    
-    input_data_node_1.properties["sheet_name"] = SHEET_NAME
-    output_data_node_1.properties["sheet_name"] = SHEET_NAME
     
     read_data_1 = input_data_node_1.read()
     assert len(read_data_1) == ROW_COUNT
@@ -48,7 +52,7 @@ def test_excel():
     scenario_1.submit()
     assert pandas_data.equals(output_data_node_1.read())
     
-    os.remove(EXCEL_OUTPUT_PATH)
+    os.remove(EXCEL_SINGLE_SHEET_OUTPUT_PATH)
 
     # 📊 With custom class as exposed type
     
@@ -59,9 +63,6 @@ def test_excel():
     input_data_node_2 = scenario_2.input_dataset_2
     output_data_node_2 = scenario_2.output_dataset_2
     pipeline_2 = scenario_2.p2
-    
-    input_data_node_2.properties["sheet_name"] = SHEET_NAME
-    output_data_node_2.properties["sheet_name"] = SHEET_NAME
     
     read_data_2 = input_data_node_2.read()
     assert len(read_data_2) == ROW_COUNT
@@ -83,16 +84,13 @@ def test_excel():
     scenario_2.submit()
     assert all(compare_custom_date(output_data_node_2.read(), custom_data))
 
-    os.remove(EXCEL_OUTPUT_PATH)
+    os.remove(EXCEL_SINGLE_SHEET_OUTPUT_PATH)
 
     # 📊 With numpy as exposed type
     scenario_3 = tp.create_scenario(scenario_cfg_3)
     input_data_node_3 = scenario_3.input_dataset_3
     output_data_node_3 = scenario_3.output_dataset_3
     pipeline_3 = scenario_3.p3
-    
-    input_data_node_3.properties["sheet_name"] = SHEET_NAME
-    output_data_node_3.properties["sheet_name"] = SHEET_NAME
     
     read_data_3 = input_data_node_3.read()
     assert len(read_data_3) == ROW_COUNT
@@ -114,17 +112,14 @@ def test_excel():
     scenario_3.submit()
     assert np.array_equal(output_data_node_3.read(), numpy_data)
     
-    os.remove(EXCEL_OUTPUT_PATH)
+    os.remove(EXCEL_SINGLE_SHEET_OUTPUT_PATH)
     
     # 📊 With modin as exposed type
     scenario_4 = tp.create_scenario(scenario_cfg_4)
     input_data_node_4 = scenario_4.input_dataset_4
     output_data_node_4 = scenario_4.output_dataset_4
     pipeline_4 = scenario_4.p4
-
-    input_data_node_4.properties["sheet_name"] = SHEET_NAME
-    output_data_node_4.properties["sheet_name"] = SHEET_NAME
-
+    
     read_data_4 = input_data_node_4.read()
     assert len(read_data_4) == ROW_COUNT
     assert modin_data.equals(read_data_4)
@@ -143,4 +138,4 @@ def test_excel():
     scenario_4.submit()
     assert modin_data.equals(output_data_node_4.read())
     
-    os.remove(EXCEL_OUTPUT_PATH)
+    os.remove(EXCEL_SINGLE_SHEET_OUTPUT_PATH)

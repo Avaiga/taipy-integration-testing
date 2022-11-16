@@ -4,7 +4,7 @@ import dataclasses
 from taipy.config.common.frequency import Frequency
 from taipy.config.config import Config
 
-from .algorithms import algorithm
+from tests.csv.shared.algorithms import algorithm
 
 CSV_INPUT_PATH = "tests/csv/input_1000.csv"
 CSV_OUTPUT_PATH = "tests/csv/output_1000.csv"

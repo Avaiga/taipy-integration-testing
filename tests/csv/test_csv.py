@@ -6,17 +6,26 @@ import numpy as np
 import taipy.core as tp
 from taipy.config import Config
 
-from tests.csv.shared import *
-
-
 def test_csv():
+    from tests.csv.shared.config import (
+        scenario_cfg,
+        scenario_cfg_2,
+        scenario_cfg_3,
+        scenario_cfg_4,
+        CSV_INPUT_PATH,
+        CSV_OUTPUT_PATH,
+        ROW_COUNT,
+        Row
+    )
+    
+    Config.configure_global_app(clean_entities_enabled=True)
+    tp.clean_all_entities()
+
     pandas_data = pd.read_csv(CSV_INPUT_PATH)
     numpy_data = pandas_data.to_numpy()
     modin_data = modin_pd.read_csv(CSV_INPUT_PATH)
     custom_data = [Row(int(v.id), int(v.age), float(v.rating)) for i, v in pd.read_csv(CSV_INPUT_PATH).iterrows()]
     
-    Config.configure_global_app(clean_entities_enabled=True)
-    tp.clean_all_entities()
 
     # 📊 Without exposed type (pandas is the default exposed type)
 

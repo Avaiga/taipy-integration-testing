@@ -4,17 +4,26 @@ import os
 import taipy.core as tp
 from taipy.config import Config
 
-from shared import *
-
-
 def test_json():
+    
+    from tests.json.shared.config import (
+    scenario_cfg_1, 
+    scenario_cfg_2, 
+    JSON_DICT_INPUT_PATH, 
+    JSON_DICT_OUTPUT_PATH, 
+    JSON_OBJECT_INPUT_PATH, 
+    JSON_OBJECT_OUTPUT_PATH,
+    ROW_COUNT
+)
+    from tests.json.shared.utils import RowDecoder, Row
+    
+    Config.configure_global_app(clean_entities_enabled=True)
+    tp.clean_all_entities()
+    
     with open(JSON_DICT_INPUT_PATH, "r") as f:
         json_dict_data = json.load(f)
     with open(JSON_OBJECT_INPUT_PATH, "r") as f:
         json_object_data = json.load(f, cls=RowDecoder)
-        
-    Config.configure_global_app(clean_entities_enabled=True)
-    tp.clean_all_entities()
 
     # 📝 Without encoder / decoder
 
@@ -26,7 +35,7 @@ def test_json():
     read_data_1 = input_data_node_1.read()
     assert len(read_data_1) == ROW_COUNT
     assert json_dict_data == read_data_1
-    
+
     assert output_data_node_1.read() is None
     output_data_node_1.write(read_data_1)
     assert json_dict_data == output_data_node_1.read()

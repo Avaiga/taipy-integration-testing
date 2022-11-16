@@ -7,10 +7,18 @@ import pytest
 import taipy.core as tp
 from taipy.config import Config
 
-from tests.excel.shared.multi_sheet_config import *
-
-
 def test_excel_multi_sheet():
+    from tests.excel.shared.multi_sheet_config import (
+        scenario_cfg,
+        scenario_cfg_2,
+        scenario_cfg_3,
+        scenario_cfg_4,
+        EXCEL_INPUT_PATH,
+        EXCEL_OUTPUT_PATH,
+        SHEET_NAMES,
+        ROW_COUNT,
+        Row
+    )
     
     pandas_data = pd.read_excel(EXCEL_INPUT_PATH, sheet_name=SHEET_NAMES)
     numpy_data = {sheet_name: pandas_data[sheet_name].to_numpy() for sheet_name in SHEET_NAMES}
@@ -100,24 +108,25 @@ def test_excel_multi_sheet():
     assert len(read_data_3) == len(SHEET_NAMES)
     assert [np.array_equal(read_data_3[sheet_name], numpy_data[sheet_name]) for sheet_name in SHEET_NAMES]
     
-    assert output_data_node_3.read() is None
-    # output_data_node_3.write(read_data_3)
-    # assert len(output_data_node_3.read()) == len(SHEET_NAMES)
-    # assert [np.array_equal(read_data_3[sheet_name], output_data_node_3.read()[sheet_name]) for sheet_name in SHEET_NAMES]
 
-    # output_data_node_3.write(None)
-    # assert isinstance(output_data_node_3.read(), np.ndarray)
-    # assert output_data_node_3.read().size == 0
-    # pipeline_3.submit()
-    # assert np.array_equal(output_data_node_3.read(), numpy_data)
+    assert output_data_node_3.read() is None
+    output_data_node_3.write(read_data_3)
+    assert len(output_data_node_3.read()) == len(SHEET_NAMES)
+    assert [np.array_equal(read_data_3[sheet_name], output_data_node_3.read()[sheet_name]) for sheet_name in SHEET_NAMES]
+
+    output_data_node_3.write(None)
+    with pytest.raises(ValueError):
+        assert output_data_node_1.read()
+    pipeline_3.submit()
+    assert [np.array_equal(read_data_3[sheet_name], output_data_node_3.read()[sheet_name]) for sheet_name in SHEET_NAMES]
     
-    # output_data_node_3.write(None)
-    # assert isinstance(output_data_node_3.read(), np.ndarray)
-    # assert output_data_node_3.read().size == 0
-    # scenario_3.submit()
-    # assert np.array_equal(output_data_node_3.read(), numpy_data)
+    output_data_node_3.write(None)
+    with pytest.raises(ValueError):
+        assert output_data_node_1.read()
+    scenario_3.submit()
+    assert [np.array_equal(read_data_3[sheet_name], output_data_node_3.read()[sheet_name]) for sheet_name in SHEET_NAMES]
     
-    # os.remove(EXCEL_OUTPUT_PATH)
+    os.remove(EXCEL_OUTPUT_PATH)
     
     # # 📊 With modin as exposed type
     scenario_4 = tp.create_scenario(scenario_cfg_4)
