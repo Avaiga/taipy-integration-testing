@@ -28,8 +28,8 @@ def test_json():
     # 📝 Without encoder / decoder
 
     scenario_1 = tp.create_scenario(scenario_cfg_1)
-    input_data_node_1 = scenario_1.input_dataset_1
-    output_data_node_1 = scenario_1.output_dataset_1
+    input_data_node_1 = scenario_1.input_json_dataset_1
+    output_data_node_1 = scenario_1.output_json_dataset_1
     pipeline_1 = scenario_1.p1
     
     read_data_1 = input_data_node_1.read()
@@ -58,8 +58,8 @@ def test_json():
         return [isinstance(row_1, Row) and row_1.id == row_2.id and row_1.age == row_2.age and row_1.rating == row_2.rating for row_1, row_2 in zip(read_data, object_data)]
 
     scenario_2 = tp.create_scenario(scenario_cfg_2)
-    input_data_node_2 = scenario_2.input_dataset_2
-    output_data_node_2 = scenario_2.output_dataset_2
+    input_data_node_2 = scenario_2.input_json_dataset_2
+    output_data_node_2 = scenario_2.output_json_dataset_2
     pipeline_2 = scenario_2.p2
     
     read_data_2 = input_data_node_2.read()

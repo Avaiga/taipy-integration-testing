@@ -30,8 +30,8 @@ def test_csv():
     # 📊 Without exposed type (pandas is the default exposed type)
 
     scenario_1 = tp.create_scenario(scenario_cfg)
-    input_data_node_1 = scenario_1.input_dataset_1
-    output_data_node_1 = scenario_1.output_dataset_1
+    input_data_node_1 = scenario_1.input_csv_dataset_1
+    output_data_node_1 = scenario_1.output_csv_dataset_1
     pipeline_1 = scenario_1.p1
 
     read_data_1 = input_data_node_1.read()
@@ -60,8 +60,8 @@ def test_csv():
         return [row_1.id == row_2.id and row_1.age == row_2.age and row_1.rating == row_2.rating for row_1, row_2 in zip(read_data, custom_data)]
     
     scenario_2 = tp.create_scenario(scenario_cfg_2)
-    input_data_node_2 = scenario_2.input_dataset_2
-    output_data_node_2 = scenario_2.output_dataset_2
+    input_data_node_2 = scenario_2.input_csv_dataset_2
+    output_data_node_2 = scenario_2.output_csv_dataset_2
     pipeline_2 = scenario_2.p2
     
     read_data_2 = input_data_node_2.read()
@@ -88,8 +88,8 @@ def test_csv():
 
     # 📊 With numpy as exposed type
     scenario_3 = tp.create_scenario(scenario_cfg_3)
-    input_data_node_3 = scenario_3.input_dataset_3
-    output_data_node_3 = scenario_3.output_dataset_3
+    input_data_node_3 = scenario_3.input_csv_dataset_3
+    output_data_node_3 = scenario_3.output_csv_dataset_3
     pipeline_3 = scenario_3.p3
     
     read_data_3 = input_data_node_3.read()
@@ -117,8 +117,8 @@ def test_csv():
     
     # 📊 With modin as exposed type
     scenario_4 = tp.create_scenario(scenario_cfg_4)
-    input_data_node_4 = scenario_4.input_dataset_4
-    output_data_node_4 = scenario_4.output_dataset_4
+    input_data_node_4 = scenario_4.input_csv_dataset_4
+    output_data_node_4 = scenario_4.output_csv_dataset_4
     pipeline_4 = scenario_4.p4
 
     read_data_4 = input_data_node_4.read()
