@@ -3,7 +3,7 @@ from typing import Optional
 from flask_testing import TestCase
 from taipy.rest import Rest
 
-from shared.config import *
+from shared_test_cases.arima.config import *
 
 
 class BaseTestCase(TestCase):
