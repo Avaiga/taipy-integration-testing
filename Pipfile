@@ -5,11 +5,11 @@ name = "pypi"
 
 [packages]
 taipy = {git = "https://git@github.com/avaiga/taipy.git@develop"}
-statsmodels = "==0.13.2"
-flask-testing = "*"
+statsmodels = ">=0.13"
 
 [dev-packages]
-pytest-flask = "*"
+pytest = "*"
+flask_testing = "*"
 
 [requires]
 python_version = "3"
