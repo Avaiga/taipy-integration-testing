@@ -7,8 +7,9 @@ import pytest
 import taipy.core as tp
 from taipy.config import Config
 
+
 def test_excel_multi_sheet():
-    from tests.excel.shared.multi_sheet_config import (
+    from tests.shared_test_cases.multi_excel_sheets import (
         scenario_cfg,
         scenario_cfg_2,
         scenario_cfg_3,

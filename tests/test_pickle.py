@@ -4,8 +4,9 @@ import pickle
 import taipy.core as tp
 from taipy.config import Config
 
-def test_pickle():
-    from tests.pickle.shared import (
+
+def test_pickle_files():
+    from tests.shared_test_cases.pickle_files import (
         scenario_cfg_1,
         scenario_cfg_2,
         PICKLE_DICT_INPUT_PATH,
@@ -17,7 +18,9 @@ def test_pickle():
 
     Config.configure_global_app(clean_entities_enabled=True)
     tp.clean_all_entities()
-    
+
+    # generate 2 pickles files
+
     with open(PICKLE_DICT_INPUT_PATH, "rb") as f:
         dict_data = pickle.load(f)
     with open(PICKLE_LIST_INPUT_PATH, "rb") as f:
