@@ -9,6 +9,8 @@ JSON_OBJECT_INPUT_PATH = "tests/json/input_object_1000.json"
 JSON_OBJECT_OUTPUT_PATH = "tests/json/output_object_1000.json"
 ROW_COUNT = 1000
 
+Config.unblock_update()
+
 input_dataset_cfg_1 = Config.configure_json_data_node(id="input_json_dataset_1", path=JSON_DICT_INPUT_PATH)
 output_dataset_cfg_1 = Config.configure_json_data_node(
     id="output_json_dataset_1", path=JSON_DICT_OUTPUT_PATH)

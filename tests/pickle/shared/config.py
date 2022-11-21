@@ -16,6 +16,7 @@ class Row:
     age: int
     rating: float
 
+Config.unblock_update()
 
 input_dataset_cfg_1 = Config.configure_pickle_data_node(id="input_pickle_dataset_1", path=PICKLE_DICT_INPUT_PATH)
 output_dataset_cfg_1 = Config.configure_pickle_data_node(

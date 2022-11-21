@@ -22,6 +22,7 @@ class Row:
             if not isinstance(value, field.type):
                 setattr(self, field.name, field.type(value))
 
+Config.unblock_update()
 
 input_dataset_cfg = Config.configure_csv_data_node(id="input_csv_dataset_1", path=CSV_INPUT_PATH, has_header=True)
 output_dataset_cfg = Config.configure_csv_data_node(id="output_csv_dataset_1", path=CSV_OUTPUT_PATH, has_header=True)

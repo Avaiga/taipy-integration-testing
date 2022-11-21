@@ -23,6 +23,7 @@ class Row:
             if not isinstance(value, field.type):
                 setattr(self, field.name, field.type(value))
 
+Config.unblock_update()
 
 input_dataset_cfg_1 = Config.configure_excel_data_node(id="input_excel_multi_sheet_dataset_1", path=EXCEL_INPUT_PATH, has_header=True, sheet_name=SHEET_NAMES)
 output_dataset_cfg_1 = Config.configure_excel_data_node(id="output_excel_multi_sheet_dataset_1", path=EXCEL_OUTPUT_PATH, has_header=True, sheet_name=SHEET_NAMES)
