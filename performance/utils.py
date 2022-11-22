@@ -2,7 +2,7 @@ import functools
 import time
 from dataclasses import dataclass
 from datetime import datetime
-
+import json
 import pandas as pd
 
 
@@ -32,3 +32,19 @@ def timer(properties_as_str):
         return __execute_wrapper
 
     return __wrapper
+
+class RowEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Row):
+            return {"id": obj.id, "age": obj.age, "rating": obj.rating, "__type__": "Row"}
+        return json.JSONEncoder.default(self, obj)
+
+
+class RowDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        json.JSONDecoder.__init__(
+            self, object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, d):
+        if "__type__" in d and d["__type__"] == "Row":
+            return Row(d["id"], d["age"], d["rating"])
