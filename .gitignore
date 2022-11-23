@@ -140,3 +140,4 @@ res.xlsx
 
 # generated result folders
 outputs/
+sample_benchmark_results/

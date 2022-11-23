@@ -1,5 +1,3 @@
-import os
-import shutil
 import sys
 from pathlib import Path
 import random
@@ -7,14 +5,15 @@ import pandas as pd
 
 import taipy as tp
 from taipy import Config
-from taipy.core.config import ScenarioConfig
 
-from utils import Row, algorithm, timer
+from utils import Row, algorithm
+from perf_benchmark import PerfBenchmark
 
+class ExcelPerfBenchmark(PerfBenchmark):
+    
+    BENCHMARK_REPORT_FILE_NAME = "excel_data_node_benchmark_report.csv"
 
-class ExcelPerfBenchmark:
-
-    def __init__(self, report_path: str):
+    def __init__(self, report_path: str = None):
         self.row_counts = [10 ** 3, 10 ** 4] #, 10 ** 5, 10 ** 6, 10 ** 7]
         self.sheet_counts = [1, 5]
         
@@ -29,18 +28,7 @@ class ExcelPerfBenchmark:
             {"exposed_type": "numpy", "sheet_names": sheet_names},
             {"exposed_type": "modin", "sheet_names": sheet_names},
         ]
-
-        self.report_path = report_path
-        folder_path = Path(__file__).parent.resolve()
-        self.input_folder_path = os.path.join(folder_path, "inputs")
-        self.output_folder_path = os.path.join(folder_path, "outputs")
-
-        Path(str(self.input_folder_path)).mkdir(parents=True, exist_ok=True)
-        Path(str(self.output_folder_path)).mkdir(parents=True, exist_ok=True)
-
-    def __del__(self):
-        shutil.rmtree(self.input_folder_path)
-        shutil.rmtree(self.output_folder_path)
+        super().__init__(report_path=report_path, folder_path=Path(__file__).parent.resolve())
 
     def run(self):
         with open(self.report_path, "a", encoding="utf-8") as f:
@@ -65,9 +53,6 @@ class ExcelPerfBenchmark:
                         }
                     rows.append(row)
                 pd.DataFrame(rows).to_excel(writer, sheet_name=sheet_name, index=False)
-
-    def _generate_prop_sets(self):
-        return self.prop_dicts
 
     def _run_test(self, row_count: int, sheet_count: int, properties):
         def to_str(properties):
@@ -94,6 +79,7 @@ class ExcelPerfBenchmark:
         Config.unblock_update()
         Config.configure_global_app(clean_entities_enabled=True)
         tp.clean_all_entities()
+
         input_datanode_cfg = Config.configure_excel_data_node(id=prefix + "_input_datanode",
                                                             path=f"{self.input_folder_path}/input_{row_count}_{sheet_count}_sheets.xlsx", **kwargs)
         output_datanode_cfg = Config.configure_excel_data_node(id=prefix + "_output_datanode",
@@ -103,30 +89,3 @@ class ExcelPerfBenchmark:
         pipeline_cfg = Config.configure_pipeline(id=prefix + "_pipeline", task_configs=[task_cfg])
         scenario_cfg = Config.configure_scenario(id=prefix + "_scenario", pipeline_configs=[pipeline_cfg])
         return scenario_cfg
-
-    @staticmethod
-    def _generate_entities(prefix: str, scenario_cfg: ScenarioConfig):
-        scenario = tp.create_scenario(scenario_cfg)
-        input_data_node = scenario.data_nodes[prefix + "_input_datanode"]
-        output_data_node = scenario.data_nodes[prefix + "_output_datanode"]
-        pipeline = scenario.pipelines[prefix + "_pipeline"]
-        return input_data_node, output_data_node, pipeline, scenario
-
-    @staticmethod
-    def _generate_methods(properties_as_str):
-        @timer(properties_as_str)
-        def read_data_node(data_node):
-            return data_node.read()
-
-        @timer(properties_as_str)
-        def write_data_node(data_node, data):
-            data_node.write(data)
-
-        @timer(properties_as_str)
-        def submit_pipeline(pipeline):
-            pipeline.submit()
-
-        @timer(properties_as_str)
-        def submit_scenario(scenario):
-            scenario.submit()
-        return read_data_node, write_data_node, submit_pipeline, submit_scenario
