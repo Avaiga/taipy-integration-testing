@@ -137,3 +137,7 @@ test.db
 # taipy
 .data
 res.xlsx
+
+# generated result folders
+outputs/
+sample_benchmark_results/
