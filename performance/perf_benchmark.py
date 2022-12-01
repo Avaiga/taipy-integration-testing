@@ -5,6 +5,7 @@ from pathlib import Path
 from utils import timer
 
 import taipy as tp
+from taipy.core.data import Operator, JoinOperator
 from taipy.core.config import ScenarioConfig
 
 
@@ -12,9 +13,10 @@ class PerfBenchmark:
     
     BENCHMARK_REPORT_FILE_NAME = None
     BENCHMARK_FOLDER_NAME = "benchmark_results"
-    
-    def __init__(self, report_path: str = None, folder_path: str = None):
-        self.row_counts = [10 ** 3, 10 ** 4] #, 10 ** 5, 10 ** 6, 10 ** 7]
+    DEFAULT_ROW_COUNTS = [10 ** 3, 10 ** 4, 10 ** 5, 10 ** 6, 10 ** 7]
+
+    def __init__(self, row_counts: list[int] = None, report_path: str = None, folder_path: str = None):
+        self.row_counts = row_counts if row_counts else self.DEFAULT_ROW_COUNTS
         
         self.folder_path = folder_path if folder_path else Path(__file__).parent.resolve()
         self.input_folder_path = os.path.join(self.folder_path, "inputs")
@@ -55,6 +57,14 @@ class PerfBenchmark:
             return data_node.read()
 
         @timer(properties_as_str)
+        def filter_data_node(data_node):
+            return data_node.filter([("age", 50, Operator.GREATER_OR_EQUAL)])
+        
+        @timer(properties_as_str)
+        def join_filter_data_node(data_node):
+            return data_node.filter([("age", 10, Operator.GREATER_OR_EQUAL), ("age", 40, Operator.LESS_OR_EQUAL)], JoinOperator.AND)
+        
+        @timer(properties_as_str)
         def write_data_node(data_node, data):
             data_node.write(data)
 
@@ -65,4 +75,5 @@ class PerfBenchmark:
         @timer(properties_as_str)
         def submit_scenario(scenario):
             scenario.submit()
-        return read_data_node, write_data_node, submit_pipeline, submit_scenario
+
+        return read_data_node, filter_data_node, join_filter_data_node, write_data_node, submit_pipeline, submit_scenario

@@ -1,6 +1,6 @@
 import functools
 import time
-from dataclasses import dataclass
+import dataclasses
 from datetime import datetime
 import json
 import pandas as pd
@@ -10,12 +10,22 @@ def algorithm(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@dataclass
+@dataclasses.dataclass(eq=True, unsafe_hash=True)
 class Row:
     id: int
     age: int
     rating: float
 
+    def __post_init__(self):
+        for field in dataclasses.fields(self):
+            value = getattr(self, field.name)
+            if not isinstance(value, field.type):
+                try:
+                    setattr(self, field.name, field.type(value))
+                except ValueError:
+                    raise ValueError(f'Expected {field.name} to be {field.type}, '
+                                    f'got {repr(value)}')
+ 
 
 def timer(properties_as_str):
     def __wrapper(f):
