@@ -51,5 +51,3 @@ class RestTest(BaseTestCase):
         all_jobs = self._get("jobs")
         for jb in all_jobs.json:
             assert jb["status"] == 'Status.COMPLETED'
-        
-        

@@ -141,4 +141,3 @@ def test_csv():
     assert modin_data.equals(output_data_node_4.read())
     
     os.remove(CSV_OUTPUT_PATH)
-
