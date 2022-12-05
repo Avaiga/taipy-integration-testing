@@ -12,15 +12,16 @@ class CSVPerfBenchmark(PerfBenchmark):
     
     BENCHMARK_REPORT_FILE_NAME = "csv_data_node_benchmark_report.csv"
     
-    def __init__(self, report_path: str = None):
-        self.row_counts = [10 ** 3, 10 ** 4] #, 10 ** 5, 10 ** 6, 10 ** 7]
+    def __init__(self, row_counts: list[int] = None, report_path: str = None):
+        super().__init__(row_counts=row_counts, report_path=report_path, folder_path=Path(__file__).parent.resolve())
+
         self.prop_dicts = [
             {"exposed_type": "pandas"},
             {"exposed_type": Row},
             {"exposed_type": "numpy"},
             {"exposed_type": "modin"},
         ]
-        super().__init__(report_path=report_path, folder_path=Path(__file__).parent.resolve())
+
 
     def run(self):
         with open(self.report_path, "a", encoding="utf-8") as f:
@@ -49,9 +50,13 @@ class CSVPerfBenchmark(PerfBenchmark):
 
         scenario_cfg = self._generate_configs(prefix, row_count, **properties)
         input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)
-        read_data_node, write_data_node, submit_pipeline, submit_scenario = self._generate_methods(properties_as_str)
+        read_data_node, filter_data_node, join_filter_data_node, write_data_node, submit_pipeline, submit_scenario = self._generate_methods(properties_as_str)
 
         data = read_data_node(input_data_node)
+        if input_data_node.properties["exposed_type"] != "numpy":   # Not yet implemented for numpy
+            filter_data_node(input_data_node)
+        if input_data_node.properties["exposed_type"] not in ["numpy", "modin"]:
+            join_filter_data_node(input_data_node)
         write_data_node(output_data_node, data)
         submit_pipeline(pipeline)
         submit_scenario(scenario)

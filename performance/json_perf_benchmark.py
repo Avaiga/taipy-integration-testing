@@ -13,13 +13,14 @@ class JsonPerfBenchmark(PerfBenchmark):
 
     BENCHMARK_REPORT_FILE_NAME = "json_data_node_benchmark_report.csv"
 
-    def __init__(self, report_path: str = None):
+    def __init__(self, row_counts: list[int] = None, report_path: str = None):
+        super().__init__(row_counts=row_counts, report_path=report_path, folder_path=Path(__file__).parent.resolve())
         self.type_formats = ['list_dict', 'list_object']
         self.prop_dicts = [
             {},
             {"encoder": RowEncoder, "decoder": RowDecoder},
         ]
-        super().__init__(report_path=report_path, folder_path=Path(__file__).parent.resolve())
+
 
     def run(self):
         with open(self.report_path, "a", encoding="utf-8") as f:
@@ -71,7 +72,8 @@ class JsonPerfBenchmark(PerfBenchmark):
         
         scenario_cfg = self._generate_configs(prefix, row_count, type_format, **properties)
         input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)
-        read_data_node, write_data_node, submit_pipeline, submit_scenario = self._generate_methods(properties_as_str)
+        read_data_node, _, _, write_data_node, submit_pipeline, submit_scenario = self._generate_methods(properties_as_str)
+
         data = read_data_node(input_data_node)
         write_data_node(output_data_node, data)
         submit_pipeline(pipeline)
