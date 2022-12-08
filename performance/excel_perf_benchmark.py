@@ -7,9 +7,9 @@ import taipy as tp
 from taipy import Config
 
 from utils import Row, algorithm
-from perf_benchmark import PerfBenchmark
+from data_perf_benchmark import DataPerfBenchmark
 
-class ExcelPerfBenchmark(PerfBenchmark):
+class ExcelPerfBenchmark(DataPerfBenchmark):
     
     BENCHMARK_REPORT_FILE_NAME = "excel_data_node_benchmark_report.csv"
 
@@ -38,6 +38,7 @@ class ExcelPerfBenchmark(PerfBenchmark):
                     self._generate_input_file(row_count, sheet_count)
                     for properties in self._generate_prop_sets():
                         self._run_test(row_count, sheet_count, properties)
+
 
     def _generate_input_file(self, n_rows: int, n_sheets: int):
         if n_sheets < 1:

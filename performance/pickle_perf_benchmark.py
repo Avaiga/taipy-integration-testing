@@ -7,10 +7,10 @@ import taipy as tp
 from taipy import Config
 
 from utils import Row, algorithm
-from perf_benchmark import PerfBenchmark
+from data_perf_benchmark import DataPerfBenchmark
 
 
-class PicklePerfBenchmark(PerfBenchmark):
+class PicklePerfBenchmark(DataPerfBenchmark):
 
     BENCHMARK_REPORT_FILE_NAME = "pickle_data_node_benchmark_report.csv"
     

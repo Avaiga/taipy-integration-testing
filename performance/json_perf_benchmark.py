@@ -7,9 +7,9 @@ import taipy as tp
 from taipy import Config
 
 from utils import Row, RowEncoder, RowDecoder, algorithm
-from perf_benchmark import PerfBenchmark
+from data_perf_benchmark import DataPerfBenchmark
 
-class JsonPerfBenchmark(PerfBenchmark):
+class JsonPerfBenchmark(DataPerfBenchmark):
 
     BENCHMARK_REPORT_FILE_NAME = "json_data_node_benchmark_report.csv"
 
