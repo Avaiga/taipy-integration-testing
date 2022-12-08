@@ -26,6 +26,7 @@ class DataPerfBenchmark(PerfBenchmarkAbstract):
         
 
     def __del__(self):
+        super().__del__()
         shutil.rmtree(self.input_folder_path)
         shutil.rmtree(self.output_folder_path)
     

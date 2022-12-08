@@ -21,13 +21,11 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
 
         self.entity_counts = entity_counts if entity_counts else self.DEFAULT_ENTITY_COUNTS.copy()
 
-        
     def run(self):
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             for test_parameters in self._generate_test_parameter_list():
                 self._run_test(test_parameters)
-
 
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
@@ -37,7 +35,6 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
                 for data_node_scope in self.DATA_NODE_SCOPES:
                     test_parameter_list.append((entity_count, multi_entity_type, data_node_scope))
         return test_parameter_list
-
 
     def _run_test(self, test_parameters: dict):
         entity_count, multi_entity_type, data_node_scope = test_parameters[0], test_parameters[1], test_parameters[2]
@@ -49,7 +46,6 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
             create_scenario_multiple_times(entity_count, scenario_cfg)
         else:
             create_scenario(scenario_cfg)
-
 
     @staticmethod
     def _generate_methods(properties_as_str):

@@ -63,7 +63,6 @@ class CSVPerfBenchmark(DataPerfBenchmark):
 
     def _generate_configs(self, prefix: str, row_count: int, **kwargs):
         Config.unblock_update()
-        Config.configure_global_app(clean_entities_enabled=True)
         tp.clean_all_entities()
 
         input_datanode_cfg = Config.configure_csv_data_node(id=prefix + "_input_datanode",
