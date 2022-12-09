@@ -9,10 +9,12 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+from datetime import datetime
+
 from taipy.config import Frequency, Scope
 from taipy.config.config import Config
 
-from .algorithms import *
+from .algorithms import predict, train
 
 CSV_INPUT_PATH = "tests/shared_test_cases/arima/daily-min-temperatures.csv"
 XLSX_OUTPUT_PATH = "tests/shared_test_cases/arima/res.xlsx"

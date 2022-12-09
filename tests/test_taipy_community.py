@@ -10,7 +10,7 @@
 # specific language governing permissions and limitations under the License.
 
 import taipy as tp
-from shared_test_cases.arima.config import *
+from shared_test_cases.arima.config import arima_scenario_config
 
 
 def test_submit_scenario_submit_success():

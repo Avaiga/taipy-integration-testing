@@ -88,7 +88,7 @@ def test_excel_multi_sheet():
     scenario_2 = tp.create_scenario(scenario_cfg_2)
     input_data_node_2 = scenario_2.input_excel_multi_sheet_dataset_2
     output_data_node_2 = scenario_2.output_excel_multi_sheet_dataset_2
-    pipeline_2 = scenario_2.p2
+    # pipeline_2 = scenario_2.p2
 
     read_data_2 = input_data_node_2.read()
     assert len(read_data_2) == len(SHEET_NAMES)
