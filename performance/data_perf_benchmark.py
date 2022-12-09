@@ -12,7 +12,7 @@
 import os
 import shutil
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
 import taipy as tp
 from perf_benchmark_abstract import PerfBenchmarkAbstract

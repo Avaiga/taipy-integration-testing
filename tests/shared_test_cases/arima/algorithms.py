@@ -12,7 +12,7 @@
 import random
 import time
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA

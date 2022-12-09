@@ -12,7 +12,7 @@
 import json
 import random
 import sys
-from typing import List, Dict
+from typing import Dict, List
 
 import taipy as tp
 from data_perf_benchmark import DataPerfBenchmark
