@@ -25,6 +25,6 @@ def train(historical_daily_temperature: pd.DataFrame):
     return ARIMA(endog=historical_daily_temperature["Temp"].to_numpy(), order=(1, 1, 0)).fit()
 
 
-def predict(model, dates: list[datetime]) -> dict[str, list[float]]:
+def predict(model, dates: list[datetime]):
     res = [t + random.uniform(0, 3) for t in model.forecast(len(dates))]
     return {"result": res}

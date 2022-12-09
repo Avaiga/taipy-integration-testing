@@ -12,7 +12,6 @@
 from typing import Optional
 
 from flask_testing import TestCase
-from shared_test_cases.arima.config import *
 from taipy.rest import Rest
 
 
