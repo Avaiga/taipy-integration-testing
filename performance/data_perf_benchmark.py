@@ -12,6 +12,7 @@
 import os
 import shutil
 from pathlib import Path
+from typing import List, Dict
 
 import taipy as tp
 from perf_benchmark_abstract import PerfBenchmarkAbstract
@@ -23,9 +24,9 @@ from utils import timer
 class DataPerfBenchmark(PerfBenchmarkAbstract):
 
     DEFAULT_ROW_COUNTS = [10**3, 10**4, 10**5, 10**6, 10**7]
-    prop_dicts: list[dict] = [{}]
+    prop_dicts: List[Dict] = [{}]
 
-    def __init__(self, row_counts: list[int] = None, report_path: str = None):
+    def __init__(self, row_counts: List[int] = None, report_path: str = None):
         self.row_counts = row_counts if row_counts else self.DEFAULT_ROW_COUNTS.copy()
 
         super().__init__(report_path=report_path)

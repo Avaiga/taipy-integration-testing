@@ -11,7 +11,7 @@
 
 import random
 import sys
-from pathlib import Path
+from typing import List, Dict
 
 import taipy as tp
 from data_perf_benchmark import DataPerfBenchmark
@@ -23,10 +23,10 @@ class CSVPerfBenchmark(DataPerfBenchmark):
 
     BENCHMARK_REPORT_FILE_NAME = "csv_data_node_benchmark_report.csv"
 
-    def __init__(self, row_counts: list[int] = None, report_path: str = None):
+    def __init__(self, row_counts: List[int] = None, report_path: str = None):
         super().__init__(row_counts=row_counts, report_path=report_path)
 
-        self.prop_dicts = [
+        self.prop_dicts: List[Dict] = [
             {"exposed_type": "pandas"},
             {"exposed_type": Row},
             {"exposed_type": "numpy"},

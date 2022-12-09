@@ -12,6 +12,7 @@
 import random
 import time
 from datetime import datetime
+from typing import List, Dict
 
 import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA
@@ -25,6 +26,6 @@ def train(historical_daily_temperature: pd.DataFrame):
     return ARIMA(endog=historical_daily_temperature["Temp"].to_numpy(), order=(1, 1, 0)).fit()
 
 
-def predict(model, dates: list[datetime]):
+def predict(model, dates: List[datetime]) -> Dict[str, List]:
     res = [t + random.uniform(0, 3) for t in model.forecast(len(dates))]
     return {"result": res}

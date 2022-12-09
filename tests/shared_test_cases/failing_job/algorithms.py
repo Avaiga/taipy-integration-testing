@@ -12,7 +12,7 @@
 import random
 import time
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 
 import pandas as pd
 
@@ -23,6 +23,6 @@ def failing_job(historical_daily_temperature: pd.DataFrame):
     raise Exception
 
 
-def predict(model, dates: List[datetime]) -> dict[str, list[float]]:
+def predict(model, dates: List[datetime]) -> Dict[str, List[float]]:
     res = [t + random.uniform(0, 3) for t in model.forecast(len(dates))]
     return {"result": res}

@@ -11,7 +11,7 @@
 
 import random
 import sys
-from pathlib import Path
+from typing import List
 
 import pandas as pd
 import taipy as tp
@@ -24,7 +24,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
 
     BENCHMARK_REPORT_FILE_NAME = "excel_data_node_benchmark_report.csv"
 
-    def __init__(self, row_counts: list[int] = None, report_path: str = None):
+    def __init__(self, row_counts: List[int] = None, report_path: str = None):
         super().__init__(row_counts=row_counts, report_path=report_path)
 
         self.sheet_counts = [1, 5]

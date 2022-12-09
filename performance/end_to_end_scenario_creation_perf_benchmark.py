@@ -11,7 +11,7 @@
 
 import datetime as dt
 import sys
-from pathlib import Path
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -482,7 +482,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_REPORT_FILE_NAME = "endtoend_scenario_benchmark_report.csv"
     DEFAULT_SCENARIO_COUNTS = [10**2, 10**3]
 
-    def __init__(self, scenario_counts: list[int] = None, report_path: str = None):
+    def __init__(self, scenario_counts: List[int] = None, report_path: str = None):
         super().__init__(report_path=report_path)
 
         self.scenario_counts = scenario_counts if scenario_counts else self.DEFAULT_SCENARIO_COUNTS.copy()
