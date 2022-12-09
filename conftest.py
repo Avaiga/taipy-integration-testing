@@ -1,6 +1,18 @@
-import pytest
+# Copyright 2022 Avaiga Private Limited
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+# an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
+
 import os
 import shutil
+
+import pytest
 
 
 @pytest.fixture(autouse=True)
@@ -35,12 +47,12 @@ def init_config():
 
 
 def init_managers():
-    from taipy.core.scenario._scenario_manager import _ScenarioManager
-    from taipy.core.pipeline._pipeline_manager import _PipelineManager
-    from taipy.core.data._data_manager import _DataManager
-    from taipy.core.task._task_manager import _TaskManager
-    from taipy.core.job._job_manager import _JobManager
     from taipy.core.cycle._cycle_manager import _CycleManager
+    from taipy.core.data._data_manager import _DataManager
+    from taipy.core.job._job_manager import _JobManager
+    from taipy.core.pipeline._pipeline_manager import _PipelineManager
+    from taipy.core.scenario._scenario_manager import _ScenarioManager
+    from taipy.core.task._task_manager import _TaskManager
 
     _ScenarioManager._delete_all()
     _PipelineManager._delete_all()
@@ -51,8 +63,9 @@ def init_managers():
 
 
 def init_scheduler():
-    from taipy.core._scheduler._scheduler_factory import _SchedulerFactory
     from queue import Queue
+
+    from taipy.core._scheduler._scheduler_factory import _SchedulerFactory
 
     if _SchedulerFactory._scheduler is None:
         _SchedulerFactory._build_scheduler()

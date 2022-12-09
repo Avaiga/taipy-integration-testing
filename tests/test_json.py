@@ -1,3 +1,14 @@
+# Copyright 2022 Avaiga Private Limited
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+# an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
+
 import json
 import os
 
@@ -7,14 +18,16 @@ from taipy.config import Config
 
 def test_json():
     from tests.shared_test_cases.json_files import (
-        scenario_cfg_1,
-        scenario_cfg_2,
         JSON_DICT_INPUT_PATH,
         JSON_DICT_OUTPUT_PATH,
         JSON_OBJECT_INPUT_PATH,
         JSON_OBJECT_OUTPUT_PATH,
-        ROW_COUNT)
-    from tests.shared_test_cases.json_files import RowDecoder, Row
+        ROW_COUNT,
+        Row,
+        RowDecoder,
+        scenario_cfg_1,
+        scenario_cfg_2,
+    )
 
     Config.configure_global_app(clean_entities_enabled=True)
     tp.clean_all_entities()
@@ -56,7 +69,8 @@ def test_json():
     def compare_custom_date(read_data, object_data):
         return [
             isinstance(row_1, Row) and row_1.id == row_2.id and row_1.age == row_2.age and row_1.rating == row_2.rating
-            for row_1, row_2 in zip(read_data, object_data)]
+            for row_1, row_2 in zip(read_data, object_data)
+        ]
 
     scenario_2 = tp.create_scenario(scenario_cfg_2)
     input_data_node_2 = scenario_2.input_json_dataset_2

@@ -1,23 +1,34 @@
-from pathlib import Path
+# Copyright 2022 Avaiga Private Limited
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+# an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
+
 import sys
+from pathlib import Path
 
 import taipy as tp
+from perf_benchmark_abstract import PerfBenchmarkAbstract
 from taipy import Config
 from taipy.config.common.scope import Scope
 from taipy.config.scenario.scenario_config import ScenarioConfig
-
 from utils import algorithm, timer
-from perf_benchmark_abstract import PerfBenchmarkAbstract
+
 
 class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
-    
+
     BENCHMARK_REPORT_FILE_NAME = "scenario_benchmark_report.csv"
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
     MULTI_ENTITY_TYPES = ["datanode", "task", "pipeline", "scenario"]
     DATA_NODE_SCOPES = [Scope.PIPELINE, Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
-    
+
     def __init__(self, entity_counts: list[int] = None, report_path: str = None):
-        super().__init__(report_path=report_path, folder_path=Path(__file__).parent.resolve())
+        super().__init__(report_path=report_path)
 
         self.entity_counts = entity_counts if entity_counts else self.DEFAULT_ENTITY_COUNTS.copy()
 
@@ -29,7 +40,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
 
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
-        
+
         for entity_count in self.entity_counts:
             for multi_entity_type in self.MULTI_ENTITY_TYPES:
                 for data_node_scope in self.DATA_NODE_SCOPES:
@@ -49,46 +60,49 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
 
     @staticmethod
     def _generate_methods(properties_as_str):
-        
         @timer(properties_as_str)
         def create_scenario(scenario_config: ScenarioConfig):
             return tp.create_scenario(scenario_config)
-        
+
         @timer(properties_as_str)
         def create_scenario_multiple_times(entity_count: int, scenario_config: ScenarioConfig):
             scenarios = []
             for _ in range(entity_count):
                 scenarios.append(tp.create_scenario(scenario_config))
             return scenarios
-        
+
         return create_scenario, create_scenario_multiple_times
-        
-    def _generate_configs(self, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE):
+
+    def _generate_configs(
+        self, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE
+    ):
         Config.unblock_update()
         Config.configure_global_app(clean_entities_enabled=True)
         tp.clean_all_entities()
-        
+
         nb_dn = entity_count if multi_entity_type == "datanode" else 1
         nb_task = entity_count if multi_entity_type == "task" else 1
         nb_pipeline = entity_count if multi_entity_type == "pipeline" else 1
-        
+
         input_datanode_cfgs = []
         task_cfgs = []
         pipeline_cfgs = []
-        
+
         for i in range(nb_dn):
             input_datanode_cfgs.append(Config.configure_data_node(id=f"input_datanode_{i}", scope=data_node_scope))
-        
+
         output_datanode_cfg = [Config.configure_data_node(id="output_datanode", scope=data_node_scope)]
-        
+
         for i in range(nb_task):
-            task_cfgs.append(Config.configure_task(id=f"task_{i}", input=input_datanode_cfgs, function=algorithm,
-                                                   output=output_datanode_cfg))
-        
+            task_cfgs.append(
+                Config.configure_task(
+                    id=f"task_{i}", input=input_datanode_cfgs, function=algorithm, output=output_datanode_cfg
+                )
+            )
+
         for i in range(nb_pipeline):
             pipeline_cfgs.append(Config.configure_pipeline(id=f"pipeline_{i}", task_configs=task_cfgs))
 
         scenario_cfg = Config.configure_scenario(id="scenario", pipeline_configs=pipeline_cfgs)
-        
-        return scenario_cfg
 
+        return scenario_cfg

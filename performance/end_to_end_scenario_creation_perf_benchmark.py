@@ -1,20 +1,28 @@
-from pathlib import Path
-import sys
+# Copyright 2022 Avaiga Private Limited
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+# an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
+
 import datetime as dt
+import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-
 import taipy as tp
+from perf_benchmark_abstract import PerfBenchmarkAbstract
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from taipy import Config
 from taipy.config.common.frequency import Frequency
-from taipy.core.config.scenario_config import ScenarioConfig
 from taipy.config.common.scope import Scope
-
-from perf_benchmark_abstract import PerfBenchmarkAbstract
+from taipy.core.config.scenario_config import ScenarioConfig
 from utils import timer
-
 
 group_info = {
     "Toto": {
@@ -92,13 +100,16 @@ group_info = {
 
 groups = list(group_info.keys())
 
-signed_column = ["groupe Baseline", 
-                 "groupe Min Baseline", 
-                 "groupe Max Baseline", 
-                 "groupe ML", 
-                 "groupe Min ML", 
-                 "groupe Max ML", 
-                 "Historique"]
+signed_column = [
+    "groupe Baseline",
+    "groupe Min Baseline",
+    "groupe Max Baseline",
+    "groupe ML",
+    "groupe Min ML",
+    "groupe Max ML",
+    "Historique",
+]
+
 
 def predict(parameters):
     group = parameters["groupe"]
@@ -143,26 +154,28 @@ def convert_predictions(raw_predictions, parameters):
     return predictions, [metadata_baseline, metadata_ml]
 
 
-def aggregate_predictions(Toto, 
-                          Quux, 
-                          Something,
-                          Plugh,
-                          Tata,
-                          Quuz,
-                          titi,
-                          Tutu,
-                          Grault,
-                          Waldo,
-                          Foo,
-                          Bar,
-                          Qux,
-                          Baz,
-                          Corge,
-                          xyzzy,
-                          Garply,
-                          Fred,
-                          Babble,
-                          Thud):
+def aggregate_predictions(
+    Toto,
+    Quux,
+    Something,
+    Plugh,
+    Tata,
+    Quuz,
+    titi,
+    Tutu,
+    Grault,
+    Waldo,
+    Foo,
+    Bar,
+    Qux,
+    Baz,
+    Corge,
+    xyzzy,
+    Garply,
+    Fred,
+    Babble,
+    Thud,
+):
     print(" - Aggregating predictions")
 
     df_aggregated = pd.DataFrame(
@@ -465,12 +478,12 @@ def create_cash_position(full_dataset):
 
 
 class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
-    
+
     BENCHMARK_REPORT_FILE_NAME = "endtoend_scenario_benchmark_report.csv"
     DEFAULT_SCENARIO_COUNTS = [10**2, 10**3]
-    
+
     def __init__(self, scenario_counts: list[int] = None, report_path: str = None):
-        super().__init__(report_path=report_path, folder_path=Path(__file__).parent.resolve())
+        super().__init__(report_path=report_path)
 
         self.scenario_counts = scenario_counts if scenario_counts else self.DEFAULT_SCENARIO_COUNTS.copy()
 
@@ -487,26 +500,36 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
         create_scenario(scenario_cfg, scenario_count)
 
     @staticmethod
-    def _generate_methods(properties_as_str):        
+    def _generate_methods(properties_as_str):
         @timer(properties_as_str)
         def create_scenario(scenario_config: ScenarioConfig, scenario_counts: int):
             scenarios = []
             for i in range(scenario_counts):
-                scenarios.append(tp.create_scenario(scenario_config, name=f"scenario_{i}", creation_date=dt.datetime.now()))
+                scenarios.append(
+                    tp.create_scenario(scenario_config, name=f"scenario_{i}", creation_date=dt.datetime.now())
+                )
+
         return create_scenario
-    
+
     def _generate_configs(self):
         Config.unblock_update()
         tp.clean_all_entities()
-        
+
         raw_historical_data_cfg = Config.configure_data_node(
-            id="raw_historical_data", path="performance/dataset/raw_historical_data.csv", has_header=True, storage_type="csv", scope=Scope.GLOBAL
+            id="raw_historical_data",
+            path="performance/dataset/raw_historical_data.csv",
+            has_header=True,
+            storage_type="csv",
+            scope=Scope.GLOBAL,
         )
 
         historical_data_cfg = Config.configure_data_node(id="historical_data", scope=Scope.GLOBAL)
 
         task_historical_cfg = Config.configure_task(
-            id="task_historical_data", function=convert_raw_history, input=[raw_historical_data_cfg], output=historical_data_cfg
+            id="task_historical_data",
+            function=convert_raw_history,
+            input=[raw_historical_data_cfg],
+            output=historical_data_cfg,
         )
 
         tasks = []
@@ -575,7 +598,10 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
         )
 
         task_reform_cfg = Config.configure_task(
-            id="task_reform", function=reform_dataset, input=[full_dataset_cfg, reformist_cfg], output=[final_dataset_cfg]
+            id="task_reform",
+            function=reform_dataset,
+            input=[full_dataset_cfg, reformist_cfg],
+            output=[final_dataset_cfg],
         )
 
         pipeline_historical_data_cfg = Config.configure_pipeline(
@@ -596,7 +622,10 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
         cash_position_dict_cfg = Config.configure_data_node(id="cash_position_dict")
 
         task_cash_position_cfg = Config.configure_task(
-            id="task_cash_position", function=create_cash_position, input=[final_dataset_cfg], output=[cash_position_dict_cfg]
+            id="task_cash_position",
+            function=create_cash_position,
+            input=[final_dataset_cfg],
+            output=[cash_position_dict_cfg],
         )
 
         pipeline_result_cfg = Config.configure_pipeline(
