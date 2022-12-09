@@ -1,8 +1,20 @@
-import functools
-import time
+# Copyright 2022 Avaiga Private Limited
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+# an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
+
 import dataclasses
-from datetime import datetime
+import functools
 import json
+import time
+from datetime import datetime
+
 import pandas as pd
 
 
@@ -23,9 +35,8 @@ class Row:
                 try:
                     setattr(self, field.name, field.type(value))
                 except ValueError:
-                    raise ValueError(f'Expected {field.name} to be {field.type}, '
-                                    f'got {repr(value)}')
- 
+                    raise ValueError(f"Expected {field.name} to be {field.type}, " f"got {repr(value)}")
+
 
 def timer(properties_as_str):
     def __wrapper(f):
@@ -36,12 +47,13 @@ def timer(properties_as_str):
             end = time.time()
             elapsed = round(end - start, 4)
             dims = ", ".join(properties_as_str)
-            print(f'{str(datetime.today())}, {dims}, {f.__name__}, {elapsed}')
+            print(f"{str(datetime.today())}, {dims}, {f.__name__}, {elapsed}")
             return result
 
         return __execute_wrapper
 
     return __wrapper
+
 
 class RowEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -52,8 +64,7 @@ class RowEncoder(json.JSONEncoder):
 
 class RowDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
-        json.JSONDecoder.__init__(
-            self, object_hook=self.object_hook, *args, **kwargs)
+        json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
 
     def object_hook(self, d):
         if "__type__" in d and d["__type__"] == "Row":
