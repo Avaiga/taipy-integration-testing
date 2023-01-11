@@ -10,16 +10,19 @@ on:
 jobs:
   backend:
     timeout-minutes: 30
+    
+    strategy:
+      matrix:
+        python-versions: ['3.9']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4 
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          python-version: 'pypy3.9'
-      - name: Install tox
-        run: pip install tox
+          python-version: ${{ matrix.python-versions }}
       - name: Performance Benchmark
-        env: 
-          TOX_PARALLEL_NO_SPINNER: 1
-        run:
+        run: |
           pip install git+https://git@github.com/Avaiga/taipy.git@develop scikit-learn
           python performance/main.py
