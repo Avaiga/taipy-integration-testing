@@ -11,6 +11,7 @@
 
 import os
 import shutil
+from abc import ABC
 from pathlib import Path
 from typing import Dict, List
 
@@ -21,7 +22,7 @@ from taipy.core.data import JoinOperator, Operator
 from utils import timer
 
 
-class DataPerfBenchmark(PerfBenchmarkAbstract):
+class DataPerfBenchmark(PerfBenchmarkAbstract, ABC):
 
     DEFAULT_ROW_COUNTS = [10**3, 10**4, 10**5, 10**6, 10**7]
     prop_dicts: List[Dict] = [{}]

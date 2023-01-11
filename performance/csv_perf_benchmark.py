@@ -20,6 +20,7 @@ from utils import Row, algorithm
 
 
 class CSVPerfBenchmark(DataPerfBenchmark):
+    BENCHMARK_NAME = "CSV Data node"
 
     BENCHMARK_REPORT_FILE_NAME = "csv_data_node_benchmark_report.csv"
 
@@ -34,6 +35,7 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         ]
 
     def run(self):
+        self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             for row_count in self.row_counts:

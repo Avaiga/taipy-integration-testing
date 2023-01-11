@@ -8,16 +8,18 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-
+import abc
 import os
 from pathlib import Path
-from typing import Optional, Union
-
+from typing import Optional
+from taipy.logger._taipy_logger import _TaipyLogger
 import taipy as tp
 from taipy.config import Config
 
 
 class PerfBenchmarkAbstract:
+
+    logger = _TaipyLogger._get_logger()
 
     BENCHMARK_REPORT_FILE_NAME: Optional[str]
     BENCHMARK_FOLDER_NAME: str = "benchmark_results"
@@ -44,3 +46,12 @@ class PerfBenchmarkAbstract:
 
     def run(self):
         ...
+
+    @property
+    def BENCHMARK_NAME(self):
+        raise NotImplementedError
+
+    def log_header(self):
+        self.logger.info("----------------------------------------------")
+        self.logger.info("---  " + self.BENCHMARK_NAME.center(36) + "  ---")
+        self.logger.info("----------------------------------------------")

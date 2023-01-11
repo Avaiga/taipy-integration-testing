@@ -20,6 +20,7 @@ from utils import algorithm, timer
 
 
 class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
+    BENCHMARK_NAME = "Scenario perf"
 
     BENCHMARK_REPORT_FILE_NAME = "scenario_benchmark_report.csv"
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
@@ -32,6 +33,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         self.entity_counts = entity_counts if entity_counts else self.DEFAULT_ENTITY_COUNTS.copy()
 
     def run(self):
+        self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             for test_parameters in self._generate_test_parameter_list():

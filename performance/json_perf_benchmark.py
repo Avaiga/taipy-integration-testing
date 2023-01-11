@@ -21,6 +21,7 @@ from utils import Row, RowDecoder, RowEncoder, algorithm
 
 
 class JsonPerfBenchmark(DataPerfBenchmark):
+    BENCHMARK_NAME = "JSON Data node perf"
 
     BENCHMARK_REPORT_FILE_NAME = "json_data_node_benchmark_report.csv"
 
@@ -33,6 +34,7 @@ class JsonPerfBenchmark(DataPerfBenchmark):
         ]
 
     def run(self):
+        self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             for row_count in self.row_counts:
