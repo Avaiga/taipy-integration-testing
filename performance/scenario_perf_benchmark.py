@@ -10,13 +10,12 @@
 # specific language governing permissions and limitations under the License.
 
 import sys
-from pathlib import Path
 
 import taipy as tp
-from perf_benchmark_abstract import PerfBenchmarkAbstract
 from taipy import Config
 from taipy.config.common.scope import Scope
-from taipy.config.scenario.scenario_config import ScenarioConfig
+
+from perf_benchmark_abstract import PerfBenchmarkAbstract
 from utils import algorithm, timer
 
 
@@ -61,11 +60,11 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     @staticmethod
     def _generate_methods(properties_as_str):
         @timer(properties_as_str)
-        def create_scenario(scenario_config: ScenarioConfig):
+        def create_scenario(scenario_config):
             return tp.create_scenario(scenario_config)
 
         @timer(properties_as_str)
-        def create_scenario_multiple_times(entity_count: int, scenario_config: ScenarioConfig):
+        def create_scenario_multiple_times(entity_count: int, scenario_config):
             scenarios = []
             for _ in range(entity_count):
                 scenarios.append(tp.create_scenario(scenario_config))
