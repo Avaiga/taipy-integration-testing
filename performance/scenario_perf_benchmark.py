@@ -10,17 +10,17 @@
 # specific language governing permissions and limitations under the License.
 
 import sys
-from pathlib import Path
 
 import taipy as tp
-from perf_benchmark_abstract import PerfBenchmarkAbstract
 from taipy import Config
 from taipy.config.common.scope import Scope
-from taipy.config.scenario.scenario_config import ScenarioConfig
+
+from perf_benchmark_abstract import PerfBenchmarkAbstract
 from utils import algorithm, timer
 
 
 class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
+    BENCHMARK_NAME = "Scenario perf"
 
     BENCHMARK_REPORT_FILE_NAME = "scenario_benchmark_report.csv"
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
@@ -33,6 +33,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         self.entity_counts = entity_counts if entity_counts else self.DEFAULT_ENTITY_COUNTS.copy()
 
     def run(self):
+        self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             for test_parameters in self._generate_test_parameter_list():
@@ -61,11 +62,11 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     @staticmethod
     def _generate_methods(properties_as_str):
         @timer(properties_as_str)
-        def create_scenario(scenario_config: ScenarioConfig):
+        def create_scenario(scenario_config):
             return tp.create_scenario(scenario_config)
 
         @timer(properties_as_str)
-        def create_scenario_multiple_times(entity_count: int, scenario_config: ScenarioConfig):
+        def create_scenario_multiple_times(entity_count: int, scenario_config):
             scenarios = []
             for _ in range(entity_count):
                 scenarios.append(tp.create_scenario(scenario_config))

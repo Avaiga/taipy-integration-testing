@@ -21,6 +21,7 @@ from utils import Row, algorithm
 
 
 class PicklePerfBenchmark(DataPerfBenchmark):
+    BENCHMARK_NAME = "PICKLE Data node perf"
 
     BENCHMARK_REPORT_FILE_NAME = "pickle_data_node_benchmark_report.csv"
 
@@ -30,6 +31,7 @@ class PicklePerfBenchmark(DataPerfBenchmark):
         self.type_formats = ["list_dict", "list_object"]
 
     def run(self):
+        self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             for row_count in self.row_counts:
@@ -60,7 +62,8 @@ class PicklePerfBenchmark(DataPerfBenchmark):
             data = self.__gen_list_of_dict_input_pickle(rows)
         if type_format == "list_object":
             data = self.__gen_list_of_objects_input_pickle(rows)
-        pickle.dump(data, open(path, "wb"))
+        with open(path, "wb") as f:
+            pickle.dump(data, f)
 
     def _run_test(self, row_count: int, type_format: str, properties):
         def to_str(val):

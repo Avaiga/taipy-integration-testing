@@ -478,6 +478,7 @@ def create_cash_position(full_dataset):
 
 
 class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
+    BENCHMARK_NAME = "End to end scenario creation"
 
     BENCHMARK_REPORT_FILE_NAME = "endtoend_scenario_benchmark_report.csv"
     DEFAULT_SCENARIO_COUNTS = [10**2, 10**3]
@@ -488,6 +489,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
         self.scenario_counts = scenario_counts if scenario_counts else self.DEFAULT_SCENARIO_COUNTS.copy()
 
     def run(self):
+        self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             for scenario_count in self.scenario_counts:

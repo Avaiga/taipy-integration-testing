@@ -21,6 +21,7 @@ from utils import Row, algorithm
 
 
 class ExcelPerfBenchmark(DataPerfBenchmark):
+    BENCHMARK_NAME = "EXCEL Data node perf"
 
     BENCHMARK_REPORT_FILE_NAME = "excel_data_node_benchmark_report.csv"
 
@@ -41,6 +42,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
         ]
 
     def run(self):
+        self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             for row_count in self.row_counts:
