@@ -18,17 +18,18 @@ from json_perf_benchmark import JsonPerfBenchmark
 from pickle_perf_benchmark import PicklePerfBenchmark
 from scenario_perf_benchmark import ScenarioPerfBenchmark
 
-ROW_COUNTS = [10**3, 10**4]
-ENTITY_COUNTS = [10**2, 10**3]
+# ROW_COUNTS = [10**3, 10**4]
+ROW_COUNTS = [10**3]
+ENTITY_COUNTS = [10**2]
 SCENARIO_COUNTS = [10**1, 10**2]
 
 if __name__ == "__main__":
     
     tp.run(tp.Core())
     
-    CSVPerfBenchmark(ROW_COUNTS).run()
-    ExcelPerfBenchmark(ROW_COUNTS).run()
+    # CSVPerfBenchmark(ROW_COUNTS).run()
+    # ExcelPerfBenchmark(ROW_COUNTS).run()
     PicklePerfBenchmark(ROW_COUNTS).run()
-    JsonPerfBenchmark(ROW_COUNTS).run()
-    ScenarioPerfBenchmark(ENTITY_COUNTS).run()
+    # JsonPerfBenchmark(ROW_COUNTS).run()
+    # ScenarioPerfBenchmark(ENTITY_COUNTS).run()
     EndToEndScenarioCreationPerfBenchmark(SCENARIO_COUNTS).run()

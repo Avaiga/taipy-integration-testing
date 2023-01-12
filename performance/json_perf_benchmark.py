@@ -66,7 +66,8 @@ class JsonPerfBenchmark(DataPerfBenchmark):
         if type_format == "list_object":
             data = self.__gen_list_of_objects_input_json(rows)
             encoder = RowEncoder
-        json.dump(data, open(path, "w"), indent=4, cls=encoder)
+        with open(path, "w") as f:
+            json.dump(data, f, indent=4, cls=encoder)
 
     def _run_test(self, row_count: int, type_format: str, properties):
         def to_str(val):

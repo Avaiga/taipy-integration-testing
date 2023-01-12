@@ -62,7 +62,8 @@ class PicklePerfBenchmark(DataPerfBenchmark):
             data = self.__gen_list_of_dict_input_pickle(rows)
         if type_format == "list_object":
             data = self.__gen_list_of_objects_input_pickle(rows)
-        pickle.dump(data, open(path, "wb"))
+        with open(path, "wb") as f:
+            pickle.dump(data, f)
 
     def _run_test(self, row_count: int, type_format: str, properties):
         def to_str(val):
