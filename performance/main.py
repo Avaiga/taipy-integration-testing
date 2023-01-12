@@ -27,9 +27,9 @@ if __name__ == "__main__":
     
     tp.run(tp.Core())
     
-    # CSVPerfBenchmark(ROW_COUNTS).run()
-    # ExcelPerfBenchmark(ROW_COUNTS).run()
+    CSVPerfBenchmark(ROW_COUNTS).run()
+    ExcelPerfBenchmark(ROW_COUNTS).run()
     PicklePerfBenchmark(ROW_COUNTS).run()
-    # JsonPerfBenchmark(ROW_COUNTS).run()
-    # ScenarioPerfBenchmark(ENTITY_COUNTS).run()
-    EndToEndScenarioCreationPerfBenchmark(SCENARIO_COUNTS).run()
+    JsonPerfBenchmark(ROW_COUNTS).run()
+    ScenarioPerfBenchmark(ENTITY_COUNTS).run()
+    # EndToEndScenarioCreationPerfBenchmark(SCENARIO_COUNTS).run()
