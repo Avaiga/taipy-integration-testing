@@ -9,9 +9,11 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+import os
 import random
 import sys
 from typing import List
+from datetime import datetime
 
 import pandas as pd
 import taipy as tp
@@ -22,8 +24,8 @@ from utils import Row, algorithm
 
 class ExcelPerfBenchmark(DataPerfBenchmark):
     BENCHMARK_NAME = "EXCEL Data node perf"
-
     BENCHMARK_REPORT_FILE_NAME = "excel_data_node_benchmark_report.csv"
+    HEADERS = ['datetime', 'exposed_type', 'sheet_counts', 'row_counts', 'function_name', 'time_elapsed']
 
     def __init__(self, row_counts: List[int] = None, report_path: str = None):
         super().__init__(row_counts=row_counts, report_path=report_path)
@@ -45,11 +47,14 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
         self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
+            if os.path.getsize(self.report_path) == 0:
+                print(','.join(self.HEADERS))
+            time_start = str(datetime.today())
             for row_count in self.row_counts:
                 for sheet_count in self.sheet_counts:
                     self._generate_input_file(row_count, sheet_count)
                     for properties in self._generate_prop_sets():
-                        self._run_test(row_count, sheet_count, properties)
+                        self._run_test(row_count, sheet_count, properties, time_start)
 
     def _generate_input_file(self, n_rows: int, n_sheets: int):
         if n_sheets < 1:
@@ -63,7 +68,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
                     rows.append(row)
                 pd.DataFrame(rows).to_excel(writer, sheet_name=sheet_name, index=False)
 
-    def _run_test(self, row_count: int, sheet_count: int, properties):
+    def _run_test(self, row_count: int, sheet_count: int, properties, time_start):
         def to_str(properties):
             exposed_type = properties["exposed_type"]
             exposed_type = exposed_type if isinstance(exposed_type, str) else exposed_type.__name__
@@ -73,6 +78,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
         properties_as_str.append(str(sheet_count))
         properties_as_str.append(str(row_count))
         prefix = "_".join(properties_as_str)
+        properties_as_str.insert(0, time_start)
 
         scenario_cfg = self._generate_configs(prefix, row_count, sheet_count, **properties)
         input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)

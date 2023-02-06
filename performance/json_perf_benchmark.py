@@ -9,10 +9,12 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+import os
 import json
 import random
 import sys
 from typing import Dict, List
+from datetime import datetime
 
 import taipy as tp
 from data_perf_benchmark import DataPerfBenchmark
@@ -22,8 +24,8 @@ from utils import Row, RowDecoder, RowEncoder, algorithm
 
 class JsonPerfBenchmark(DataPerfBenchmark):
     BENCHMARK_NAME = "JSON Data node perf"
-
     BENCHMARK_REPORT_FILE_NAME = "json_data_node_benchmark_report.csv"
+    HEADERS = ['datetime', 'exposed_type', 'row_counts', 'function_name', 'time_elapsed']
 
     def __init__(self, row_counts: List[int] = None, report_path: str = None):
         super().__init__(row_counts=row_counts, report_path=report_path)
@@ -37,10 +39,13 @@ class JsonPerfBenchmark(DataPerfBenchmark):
         self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
+            if os.path.getsize(self.report_path) == 0:
+                print(','.join(self.HEADERS))
+            time_start = str(datetime.today())
             for row_count in self.row_counts:
                 for type_format, properties in zip(self.type_formats, self._generate_prop_sets()):
                     self._generate_input_file(row_count, type_format)
-                    self._run_test(row_count, type_format, properties)
+                    self._run_test(row_count, type_format, properties, time_start)
 
     @staticmethod
     def __gen_list_of_dict_input_json(n):
@@ -69,13 +74,14 @@ class JsonPerfBenchmark(DataPerfBenchmark):
         with open(path, "w") as f:
             json.dump(data, f, indent=4, cls=encoder)
 
-    def _run_test(self, row_count: int, type_format: str, properties):
+    def _run_test(self, row_count: int, type_format: str, properties, time_start):
         def to_str(val):
             return "with_custom_encoder" if val else "without_custom_encoder"
 
         properties_as_str = [to_str(properties)]
-        prefix = "_".join(properties_as_str)
         properties_as_str.append(str(row_count))
+        prefix = "_".join(properties_as_str)
+        properties_as_str.insert(0, time_start)
 
         scenario_cfg = self._generate_configs(prefix, row_count, type_format, **properties)
         input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)

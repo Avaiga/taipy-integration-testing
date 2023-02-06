@@ -9,9 +9,11 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+import os
 import random
 import sys
 from typing import Dict, List
+from datetime import datetime
 
 import taipy as tp
 from data_perf_benchmark import DataPerfBenchmark
@@ -21,8 +23,8 @@ from utils import Row, algorithm
 
 class CSVPerfBenchmark(DataPerfBenchmark):
     BENCHMARK_NAME = "CSV Data node"
-
     BENCHMARK_REPORT_FILE_NAME = "csv_data_node_benchmark_report.csv"
+    HEADERS = ['datetime', 'exposed_type', 'row_counts', 'function_name', 'time_elapsed']
 
     def __init__(self, row_counts: List[int] = None, report_path: str = None):
         super().__init__(row_counts=row_counts, report_path=report_path)
@@ -38,10 +40,13 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
+            if os.path.getsize(self.report_path) == 0:
+                print(','.join(self.HEADERS))
+            time_start = str(datetime.today())
             for row_count in self.row_counts:
                 self._generate_input_file(row_count)
                 for properties in self._generate_prop_sets():
-                    self._run_test(row_count, properties)
+                    self._run_test(row_count, properties, time_start)
 
     def _generate_input_file(self, rows):
         path = f"{self.input_folder_path}/input_{rows}.csv"
@@ -52,13 +57,14 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         with open(path, "w+") as f:
             f.write("\n".join(lines))
 
-    def _run_test(self, row_count: int, properties):
+    def _run_test(self, row_count: int, properties, time_start):
         def to_str(val):
             return val if isinstance(val, str) else val.__name__
 
         properties_as_str = list(map(to_str, properties.values()))
         properties_as_str.append(str(row_count))
         prefix = "_".join(properties_as_str)
+        properties_as_str.insert(0, time_start)
 
         scenario_cfg = self._generate_configs(prefix, row_count, **properties)
         input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)
