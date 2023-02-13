@@ -1,4 +1,4 @@
-# Copyright 2022 Avaiga Private Limited
+# Copyright 2023 Avaiga Private Limited
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 # the License. You may obtain a copy of the License at
@@ -24,9 +24,9 @@ ENTITY_COUNTS = [10**2]
 SCENARIO_COUNTS = [10**1, 10**2]
 
 if __name__ == "__main__":
-    
+
     tp.run(tp.Core())
-    
+
     CSVPerfBenchmark(ROW_COUNTS).run()
     ExcelPerfBenchmark(ROW_COUNTS).run()
     PicklePerfBenchmark(ROW_COUNTS).run()
