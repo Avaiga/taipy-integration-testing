@@ -13,7 +13,6 @@ import dataclasses
 import functools
 import json
 import time
-from datetime import datetime
 
 import pandas as pd
 
@@ -46,8 +45,8 @@ def timer(properties_as_str):
             result = f(*args, **kwargs)
             end = time.time()
             elapsed = round(end - start, 4)
-            dims = ", ".join(properties_as_str)
-            print(f"{str(datetime.today())}, {dims}, {f.__name__}, {elapsed}")
+            dims = ",".join(properties_as_str)
+            print(f"{dims},{f.__name__},{elapsed}")
             return result
 
         return __execute_wrapper

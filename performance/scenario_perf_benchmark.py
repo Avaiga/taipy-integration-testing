@@ -10,6 +10,7 @@
 # specific language governing permissions and limitations under the License.
 
 import sys
+from datetime import datetime
 
 import taipy as tp
 from taipy import Config
@@ -21,8 +22,8 @@ from utils import algorithm, timer
 
 class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_NAME = "Scenario perf"
-
     BENCHMARK_REPORT_FILE_NAME = "scenario_benchmark_report.csv"
+    HEADERS = ['datetime', 'entity_counts', 'multi_entity_type', 'scope', 'function_name', 'time_elapsed']
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
     MULTI_ENTITY_TYPES = ["datanode", "task", "pipeline", "scenario"]
     DATA_NODE_SCOPES = [Scope.PIPELINE, Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
@@ -36,8 +37,9 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         self.log_header()
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
+            time_start = str(datetime.today())
             for test_parameters in self._generate_test_parameter_list():
-                self._run_test(test_parameters)
+                self._run_test(test_parameters, time_start)
 
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
@@ -48,10 +50,11 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
                     test_parameter_list.append((entity_count, multi_entity_type, data_node_scope))
         return test_parameter_list
 
-    def _run_test(self, test_parameters: dict):
+    def _run_test(self, test_parameters: dict, time_start):
         entity_count, multi_entity_type, data_node_scope = test_parameters[0], test_parameters[1], test_parameters[2]
 
-        properties_as_str = [str(entity_count), str(multi_entity_type), str(data_node_scope)]
+        properties_as_str = [time_start, str(entity_count), str(multi_entity_type), str(data_node_scope)]
+
         scenario_cfg = self._generate_configs(entity_count, multi_entity_type, data_node_scope)
         create_scenario, create_scenario_multiple_times = self._generate_methods(properties_as_str)
         if multi_entity_type == "scenario":
