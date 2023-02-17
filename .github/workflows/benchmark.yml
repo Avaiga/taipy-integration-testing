@@ -15,7 +15,7 @@ jobs:
       matrix:
         python-versions: ['3.9']
         os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v3
@@ -24,11 +24,10 @@ jobs:
           python-version: ${{ matrix.python-versions }}
       - name: Performance Benchmark
         run: |
-          pip install git+https://git@github.com/Avaiga/taipy.git@develop scikit-learn
+          python -m venv ./taipy-perf-env
+          source taipy-perf-env/bin/activate
+          pip install git+https://git@github.com/Avaiga/taipy-core.git@develop scikit-learn
           export TAIPY_PERFORMANCE_BENCHMARK=0
           python performance/main.py
-          git config user.name github-actions
-          git config user.email toan-quach@avaiga.com
-          git add .
-          git commit -m "generated benchmark result"
-          git push
+          deactivate
+          rm -r ./taipy-perf-env
