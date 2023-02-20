@@ -3,9 +3,12 @@ name: Performance benchmark
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "Run performance benchmarking tests."
-        required: false
+      commitSHA:
+        description: "The SHA value of the commit that triggered this action"
+        required: true
+      repo:
+        description: "The Taipy repo that called this action"
+        required: true
 
 jobs:
   backend:
@@ -28,6 +31,6 @@ jobs:
           source taipy-perf-env/bin/activate
           pip install git+https://git@github.com/Avaiga/taipy-core.git@develop scikit-learn
           export TAIPY_PERFORMANCE_BENCHMARK=0
-          python performance/main.py
+          python performance/main.py --github-sha "${{ github.event.inputs.commitSha }}" --repo "${{ github.event.inputs.repo }}"
           deactivate
           rm -r ./taipy-perf-env
