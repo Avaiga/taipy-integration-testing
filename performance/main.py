@@ -9,6 +9,8 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+import argparse
+
 import taipy as tp
 
 from csv_perf_benchmark import CSVPerfBenchmark
@@ -24,6 +26,11 @@ ENTITY_COUNTS = [10**2]
 SCENARIO_COUNTS = [10**1, 10**2]
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--github-sha', help='The SHA value of the commit that triggered this action', default='5f58153d857a66f3cf7c0f6c84e7b6ca1984a0f2')
+    parser.add_argument('--repo', help='The Taipy repo that called this action', default='taipy-core')
+    args = parser.parse_args()
 
     tp.run(tp.Core())
 
