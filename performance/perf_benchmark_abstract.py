@@ -16,6 +16,7 @@ from taipy.logger._taipy_logger import _TaipyLogger
 import taipy as tp
 from taipy.config import Config
 
+from _blob_manager import _BlobManager
 
 class PerfBenchmarkAbstract:
 
@@ -30,19 +31,24 @@ class PerfBenchmarkAbstract:
 
         self.folder_path: Path = Path(__file__).parent.resolve()
 
-        benchmark_folder_path: str = os.path.join(
-            self.folder_path,
-            ("" if os.getenv("TAIPY_PERFORMANCE_BENCHMARK") else "sample_") + self.BENCHMARK_FOLDER_NAME,
-        )
-
+        benchmark_folder_path: str = os.path.join(self.folder_path, self.BENCHMARK_FOLDER_NAME)
         self.report_path: str = (
             report_path if report_path else os.path.join(benchmark_folder_path, self.BENCHMARK_REPORT_FILE_NAME)  # type: ignore
         )
 
         Path(str(benchmark_folder_path)).mkdir(parents=True, exist_ok=True)
+        
+        if self.__is_prod:
+            _BlobManager.download_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
+
+    @property
+    def __is_prod(self):
+        return os.getenv("TAIPY_PERFORMANCE_BENCHMARK") == "0"
 
     def __del__(self):
         tp.clean_all_entities()
+        if self.__is_prod:
+            _BlobManager.upload_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
 
     def run(self):
         ...
