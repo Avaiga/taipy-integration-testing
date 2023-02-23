@@ -7,6 +7,8 @@ name = "pypi"
 taipy = {git = "https://git@github.com/avaiga/taipy.git@develop"}
 statsmodels = ">=0.13"
 scikit-learn = "*"
+azure-storage-blob = "*"
+azure-identity = "*"
 
 [dev-packages]
 pytest = "*"

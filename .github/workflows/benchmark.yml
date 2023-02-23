@@ -31,9 +31,9 @@ jobs:
         run: |
           python -m venv ./taipy-perf-env
           source taipy-perf-env/bin/activate
-          pip install git+https://git@github.com/Avaiga/taipy.git@develop scikit-learn
-          cd performance
+          pip install git+https://git@github.com/Avaiga/taipy.git@develop scikit-learn azure-storage-blob azure-identity
           export TAIPY_PERFORMANCE_BENCHMARK=0
-          python main.py --github-sha "${{ github.event.inputs.commitSha }}" --repo "${{ github.event.inputs.repo }}"
+          export AZURE_STORAGE_ACCOUNT_URL="${{ secrets.AZURE_STORAGE_ACCOUNT_URL }}"
+          export AZURE_CONTAINER_NAME="${{ secrets.AZURE_CONTAINER_NAME }}"
+          python performance/main.py --github-sha "${{ github.event.inputs.commitSha }}" --repo "${{ github.event.inputs.repo }}"
           deactivate
-          rm -r ./taipy-perf-env
