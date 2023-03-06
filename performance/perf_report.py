@@ -22,7 +22,7 @@ def create_partial_content(display_data=None, function_names=None, state=None):
     return partial_content
 
 def generate_display_data(state):
-    data = pd.read_csv(f"performance/sample_benchmark_results/{state.selected_dn_type.lower()}_data_node_benchmark_report.csv", header=0)
+    data = pd.read_csv(f"performance/benchmark_results/{state.selected_dn_type.lower()}_data_node_benchmark_report.csv", header=0)
     state.display_data = convert_data_to_display(data, state.selected_function_name)
     return state, data['function_name'].unique().tolist()
 
@@ -47,7 +47,7 @@ selected_dn_type = "json"
 selected_exposed_type = "without_custom_encoder"
 selected_function_name = "read_data_node"
 
-data = pd.read_csv("performance/sample_benchmark_results/json_data_node_benchmark_report.csv", header=0)
+data = pd.read_csv("performance/benchmark_results/json_data_node_benchmark_report.csv", header=0)
 display_data = convert_data_to_display(data, 'read_data_node')
 
 report_page = """

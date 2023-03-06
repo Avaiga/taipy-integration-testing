@@ -7,8 +7,8 @@ class _BlobManager:
 
     AZURE_STORAGE_ACCOUNT_URL = os.getenv("AZURE_STORAGE_ACCOUNT_URL")
     AZURE_CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME")
-    default_credential = DefaultAzureCredential()
-    blob_service_client = BlobServiceClient(AZURE_STORAGE_ACCOUNT_URL, credential=default_credential)
+    default_credential = DefaultAzureCredential() if AZURE_STORAGE_ACCOUNT_URL else None
+    blob_service_client = BlobServiceClient(AZURE_STORAGE_ACCOUNT_URL, credential=default_credential) if AZURE_STORAGE_ACCOUNT_URL else None
 
 
     @classmethod
