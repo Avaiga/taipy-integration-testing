@@ -23,13 +23,14 @@ from utils import algorithm, timer
 class PipelinePerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_NAME = "Pipeline perf"
     BENCHMARK_REPORT_FILE_NAME = "pipeline_benchmark_report.csv"
-    HEADERS = ['github_sha', 'datetime', 'entity_counts', 'function_name', 'time_elapsed']
+    HEADERS = ['github_sha', 'datetime', 'repo_type', 'entity_counts', 'function_name', 'time_elapsed']
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
+    REPO_TYPES = ['default', 'sql']
 
 
     def __init__(self, github_sha: str, entity_counts: list[int] = None, report_path: str = None):
         super().__init__(report_path=report_path)
-        self.github_sha = github_sha if github_sha else 'None'
+        self.github_sha = github_sha
         self.entity_counts = entity_counts if entity_counts else self.DEFAULT_ENTITY_COUNTS.copy()
 
     def run(self):
@@ -44,16 +45,17 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
 
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
-        for entity_count in self.entity_counts:
-            test_parameter_list.append([entity_count])
+        for repo_type in self.REPO_TYPES:
+            for entity_count in self.entity_counts:
+                test_parameter_list.append([repo_type, entity_count])
         return test_parameter_list
 
     def _run_test(self, test_parameters: dict, time_start):
-        entity_count = test_parameters[0]
+        repo_type, entity_count = test_parameters
 
-        properties_as_str = [self.github_sha, time_start, str(entity_count)]
+        properties_as_str = [self.github_sha, time_start, repo_type, str(entity_count)]
 
-        pipeline_cfg = self._generate_configs()
+        pipeline_cfg = self._generate_configs(repo_type)
         _, create_pipeline_multiple_times = self._generate_methods(properties_as_str)
         create_pipeline_multiple_times(entity_count, pipeline_cfg)
 
@@ -72,9 +74,9 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
 
         return create_pipeline, create_pipeline_multiple_times
 
-    def _generate_configs(self):
+    def _generate_configs(self, repo_type):
         Config.unblock_update()
-        Config.configure_global_app(clean_entities_enabled=True)
+        Config.configure_global_app(clean_entities_enabled=True, repository_type=repo_type)
         tp.clean_all_entities()
 
         input_datanode_cfgs = Config.configure_pickle_data_node(id="input_datanode")

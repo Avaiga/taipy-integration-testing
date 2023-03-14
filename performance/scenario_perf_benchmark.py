@@ -24,14 +24,15 @@ from utils import algorithm, timer
 class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_NAME = "Scenario perf"
     BENCHMARK_REPORT_FILE_NAME = "scenario_benchmark_report.csv"
-    HEADERS = ['github_sha', 'datetime', 'entity_counts', 'multi_entity_type', 'scope', 'function_name', 'time_elapsed']
+    HEADERS = ['github_sha', 'datetime', 'repo_type', 'entity_counts', 'multi_entity_type', 'scope', 'function_name', 'time_elapsed']
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
+    REPO_TYPES = ['default', 'sql']
     MULTI_ENTITY_TYPES = ["datanode", "task", "pipeline", "scenario"]
     DATA_NODE_SCOPES = [Scope.PIPELINE, Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
 
     def __init__(self, github_sha: str, entity_counts: list[int] = None, report_path: str = None):
         super().__init__(report_path=report_path)
-        self.github_sha = github_sha if github_sha else 'None'
+        self.github_sha = github_sha
         self.entity_counts = entity_counts if entity_counts else self.DEFAULT_ENTITY_COUNTS.copy()
 
     def run(self):
@@ -47,18 +48,19 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
 
-        for entity_count in self.entity_counts:
-            for multi_entity_type in self.MULTI_ENTITY_TYPES:
-                for data_node_scope in self.DATA_NODE_SCOPES:
-                    test_parameter_list.append((entity_count, multi_entity_type, data_node_scope))
+        for repo_type in self.REPO_TYPES:
+            for entity_count in self.entity_counts:
+                for multi_entity_type in self.MULTI_ENTITY_TYPES:
+                    for data_node_scope in self.DATA_NODE_SCOPES:
+                        test_parameter_list.append((repo_type, entity_count, multi_entity_type, data_node_scope))
         return test_parameter_list
 
     def _run_test(self, test_parameters: dict, time_start):
-        entity_count, multi_entity_type, data_node_scope = test_parameters[0], test_parameters[1], test_parameters[2]
+        repo_type, entity_count, multi_entity_type, data_node_scope = test_parameters
 
-        properties_as_str = [self.github_sha, time_start, str(entity_count), str(multi_entity_type), str(data_node_scope)]
+        properties_as_str = [self.github_sha, time_start, repo_type, str(entity_count), str(multi_entity_type), str(data_node_scope)]
 
-        scenario_cfg = self._generate_configs(entity_count, multi_entity_type, data_node_scope)
+        scenario_cfg = self._generate_configs(repo_type, entity_count, multi_entity_type, data_node_scope)
         create_scenario, create_scenario_multiple_times = self._generate_methods(properties_as_str)
         if multi_entity_type == "scenario":
             create_scenario_multiple_times(entity_count, scenario_cfg)
@@ -81,10 +83,10 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         return create_scenario, create_scenario_multiple_times
 
     def _generate_configs(
-        self, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE
+        self, repo_type, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE
     ):
         Config.unblock_update()
-        Config.configure_global_app(clean_entities_enabled=True)
+        Config.configure_global_app(clean_entities_enabled=True, repository_type=repo_type)
         tp.clean_all_entities()
 
         nb_dn = entity_count if multi_entity_type == "datanode" else 1
