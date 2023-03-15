@@ -34,7 +34,7 @@ def init_config():
     from taipy import Config
     from taipy.config import IssueCollector
     from taipy.config._config import _Config
-    from taipy.config._toml_serializer import _TomlSerializer
+    from taipy.config._serializer._toml_serializer import _TomlSerializer
 
     Config.unblock_update()
     Config._default_config = _Config()._default_config()
