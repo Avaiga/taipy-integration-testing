@@ -44,6 +44,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
             time_start = str(datetime.today())
             for test_parameters in self._generate_test_parameter_list():
                 self._run_test(test_parameters, time_start)
+                self.clean_test_state()
 
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
@@ -61,9 +62,19 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         properties_as_str = [self.github_sha, time_start, repo_type, str(entity_count), str(multi_entity_type), str(data_node_scope)]
 
         scenario_cfg = self._generate_configs(repo_type, entity_count, multi_entity_type, data_node_scope)
-        create_scenario, create_scenario_multiple_times = self._generate_methods(properties_as_str)
+        test_functions = self._generate_methods(properties_as_str)
+        
+        create_scenario = test_functions[0]
+        create_scenario_multiple_times = test_functions[1]
+        get_single_scenario_by_id = test_functions[2]
+        get_all_scenarios = test_functions[3]
+        delete_scenario_by_id = test_functions[4]
+        
         if multi_entity_type == "scenario":
-            create_scenario_multiple_times(entity_count, scenario_cfg)
+            scenarios = create_scenario_multiple_times(entity_count, scenario_cfg)
+            scenario = get_single_scenario_by_id(scenarios[0].id)
+            get_all_scenarios()
+            delete_scenario_by_id(scenario.id)
         else:
             create_scenario(scenario_cfg)
 
@@ -79,8 +90,24 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
             for _ in range(entity_count):
                 scenarios.append(tp.create_scenario(scenario_config))
             return scenarios
+        
+        @timer(properties_as_str)
+        def get_single_scenario_by_id(scenario_id):
+            return tp.get(scenario_id)
+        
+        @timer(properties_as_str)
+        def get_all_scenarios():
+            return tp.get_scenarios()
+        
+        @timer(properties_as_str)
+        def delete_scenario_by_id(scenario_id):
+            tp.delete(scenario_id)
 
-        return create_scenario, create_scenario_multiple_times
+        return (create_scenario,
+                create_scenario_multiple_times,
+                get_single_scenario_by_id,
+                get_all_scenarios,
+                delete_scenario_by_id,)
 
     def _generate_configs(
         self, repo_type, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE

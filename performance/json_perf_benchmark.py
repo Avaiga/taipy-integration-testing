@@ -46,6 +46,7 @@ class JsonPerfBenchmark(DataPerfBenchmark):
                 for type_format, properties in zip(self.type_formats, self._generate_prop_sets()):
                     self._generate_input_file(row_count, type_format)
                     self._run_test(row_count, type_format, properties, time_start)
+                    self.clean_test_state()
 
     @staticmethod
     def __gen_list_of_dict_input_json(n):

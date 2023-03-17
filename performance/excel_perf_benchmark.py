@@ -55,6 +55,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
                     self._generate_input_file(row_count, sheet_count)
                     for properties in self._generate_prop_sets():
                         self._run_test(row_count, sheet_count, properties, time_start)
+                        self.clean_test_state()
 
     def _generate_input_file(self, n_rows: int, n_sheets: int):
         if n_sheets < 1:

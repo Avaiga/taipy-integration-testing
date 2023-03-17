@@ -43,6 +43,7 @@ class DataNodePerfBenchmark(PerfBenchmarkAbstract):
             time_start = str(datetime.today())
             for test_parameters in self._generate_test_parameter_list():
                 self._run_test(test_parameters, time_start)
+                self.clean_test_state()
 
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
@@ -57,8 +58,17 @@ class DataNodePerfBenchmark(PerfBenchmarkAbstract):
         properties_as_str = [self.github_sha, time_start, repo_type, str(entity_count)]
 
         data_node_cfgs = self._generate_configs(repo_type)
-        _, create_data_multiple_times = self._generate_methods(properties_as_str)
-        create_data_multiple_times(entity_count, data_node_cfgs)
+        test_functions = self._generate_methods(properties_as_str)
+        
+        create_data_multiple_times = test_functions[1]
+        get_single_data_node_by_id = test_functions[2]
+        get_all_data_nodes = test_functions[3]
+        delete_data_node_by_id = test_functions[4]
+        
+        data_nodes = create_data_multiple_times(entity_count, data_node_cfgs)
+        data_node = get_single_data_node_by_id(data_nodes[0].id)
+        get_all_data_nodes()
+        delete_data_node_by_id(data_node.id)
 
     @staticmethod
     def _generate_methods(properties_as_str):
@@ -72,10 +82,26 @@ class DataNodePerfBenchmark(PerfBenchmarkAbstract):
         def create_data_node_multiple_times(entity_count: int, data_node_configs):
             data_nodes = []
             for _ in range(entity_count):
-                data_nodes.append(data_node_manager._bulk_get_or_create(data_node_configs))
+                data_nodes.append(data_node_manager._bulk_get_or_create(data_node_configs)[data_node_configs[0]])
             return data_nodes
+        
+        @timer(properties_as_str)
+        def get_single_data_node_by_id(data_node_id):
+            return tp.get(data_node_id)
+        
+        @timer(properties_as_str)
+        def get_all_data_nodes():
+            return tp.get_tasks()
+        
+        @timer(properties_as_str)
+        def delete_data_node_by_id(data_node_id):
+            tp.delete(data_node_id)
 
-        return create_data_node, create_data_node_multiple_times
+        return (create_data_node,
+                create_data_node_multiple_times,
+                get_single_data_node_by_id,
+                get_all_data_nodes,
+                delete_data_node_by_id)
 
     def _generate_configs(self, repo_type):
         Config.unblock_update()

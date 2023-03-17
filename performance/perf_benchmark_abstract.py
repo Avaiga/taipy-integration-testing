@@ -69,15 +69,18 @@ class PerfBenchmarkAbstract:
     def __is_prod(self):
         return os.getenv("TAIPY_PERFORMANCE_BENCHMARK") == "0"
 
-    def __del__(self):
-        tp.clean_all_entities()
+    def __del__(self):        
         if self.__is_prod:
             _BlobManager.upload_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
-        self.clean_config()
-        self.clean_scheduler()
+        
 
     def run(self):
         ...
+
+    def clean_test_state(self):
+        tp.clean_all_entities()
+        self.clean_config()
+        self.clean_scheduler()
 
     @property
     def BENCHMARK_NAME(self):
