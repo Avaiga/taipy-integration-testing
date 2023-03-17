@@ -19,24 +19,31 @@ from excel_perf_benchmark import ExcelPerfBenchmark
 from json_perf_benchmark import JsonPerfBenchmark
 from pickle_perf_benchmark import PicklePerfBenchmark
 from scenario_perf_benchmark import ScenarioPerfBenchmark
+from pipeline_perf_benchmark import PipelinePerfBenchmark
+from task_perf_benchmark import TaskPerfBenchmark
+from data_node_perf_benchmark import DataNodePerfBenchmark
 
 # ROW_COUNTS = [10**3, 10**4]
-ROW_COUNTS = [10**3]
-ENTITY_COUNTS = [10**2]
+ROW_COUNTS = [10**2, 10**3]
+ENTITY_COUNTS = [10**1, 10**2]
 SCENARIO_COUNTS = [10**1, 10**2]
+DATANODE_PERF_BENCHMARKS = [CSVPerfBenchmark, ExcelPerfBenchmark, PicklePerfBenchmark, JsonPerfBenchmark]
+ENTITY_PERF_BENCHMARKS = [DataNodePerfBenchmark, TaskPerfBenchmark, PipelinePerfBenchmark, ScenarioPerfBenchmark]
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--github-sha', help='The SHA value of the commit that triggered this action', default='5f58153d857a66f3cf7c0f6c84e7b6ca1984a0f2')
+    parser.add_argument('--github-sha', help='The SHA value of the commit that triggered this action', default='')
     parser.add_argument('--repo', help='The Taipy repo that called this action', default='taipy-core')
     args = parser.parse_args()
 
     tp.run(tp.Core())
-
-    CSVPerfBenchmark(ROW_COUNTS).run()
-    ExcelPerfBenchmark(ROW_COUNTS).run()
-    PicklePerfBenchmark(ROW_COUNTS).run()
-    JsonPerfBenchmark(ROW_COUNTS).run()
-    ScenarioPerfBenchmark(ENTITY_COUNTS).run()
+    
+    for datanode_perf_benchmark in DATANODE_PERF_BENCHMARKS:
+        datanode_perf_benchmark(args.github_sha, ROW_COUNTS).run()
+    
+    for entity_perf_benchmark in ENTITY_PERF_BENCHMARKS:
+        entity_perf_benchmark(args.github_sha, ENTITY_COUNTS).run()
+    
     # EndToEndScenarioCreationPerfBenchmark(SCENARIO_COUNTS).run()

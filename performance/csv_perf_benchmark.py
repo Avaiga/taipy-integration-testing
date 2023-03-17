@@ -24,10 +24,10 @@ from utils import Row, algorithm
 class CSVPerfBenchmark(DataPerfBenchmark):
     BENCHMARK_NAME = "CSV Data node"
     BENCHMARK_REPORT_FILE_NAME = "csv_data_node_benchmark_report.csv"
-    HEADERS = ['datetime', 'exposed_type', 'row_counts', 'function_name', 'time_elapsed']
+    HEADERS = ['github_sha', 'datetime', 'exposed_type', 'row_counts', 'function_name', 'time_elapsed']
 
-    def __init__(self, row_counts: List[int] = None, report_path: str = None):
-        super().__init__(row_counts=row_counts, report_path=report_path)
+    def __init__(self, github_sha: str, row_counts: List[int] = None, report_path: str = None):
+        super().__init__(github_sha=github_sha, row_counts=row_counts, report_path=report_path)
 
         self.prop_dicts: List[Dict] = [
             {"exposed_type": "pandas"},
@@ -64,7 +64,8 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         properties_as_str = list(map(to_str, properties.values()))
         properties_as_str.append(str(row_count))
         prefix = "_".join(properties_as_str)
-        properties_as_str.insert(0, time_start)
+        properties_as_str.insert(0, self.github_sha)
+        properties_as_str.insert(1, time_start)
 
         scenario_cfg = self._generate_configs(prefix, row_count, **properties)
         input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)
