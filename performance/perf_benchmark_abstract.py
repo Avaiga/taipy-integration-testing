@@ -34,7 +34,7 @@ from taipy.core.config import (
     _ScenarioConfigChecker,
     _TaskConfigChecker,
 )
-from taipy.core._scheduler._scheduler_factory import _SchedulerFactory
+from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
 
 
 from _blob_manager import _BlobManager
@@ -80,7 +80,7 @@ class PerfBenchmarkAbstract:
     def clean_test_state(self):
         tp.clean_all_entities()
         self.clean_config()
-        self.clean_scheduler()
+        self.clean_orchestrator()
 
     @property
     def BENCHMARK_NAME(self):
@@ -156,8 +156,8 @@ class PerfBenchmarkAbstract:
         _Checker.add_checker(_PipelineConfigChecker)
         _Checker.add_checker(_ScenarioConfigChecker)
         
-    def clean_scheduler(self):
+    def clean_orchestrator(self):
         self.core.stop()
         
-        _SchedulerFactory._scheduler.jobs_to_run = Queue()
-        _SchedulerFactory._scheduler.blocked_jobs = []
+        _OrchestratorFactory._orchestrator.jobs_to_run = Queue()
+        _OrchestratorFactory._orchestrator.blocked_jobs = []
