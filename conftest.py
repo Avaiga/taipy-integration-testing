@@ -25,7 +25,7 @@ def cleanup_data():
     if os.path.exists("test.db"):
         os.remove("test.db")
 
-    init_scheduler()
+    init_orchestrator()
     init_managers()
     init_config()
 
@@ -62,13 +62,13 @@ def init_managers():
     _CycleManager._delete_all()
 
 
-def init_scheduler():
+def init_orchestrator():
     from queue import Queue
 
-    from taipy.core._scheduler._scheduler_factory import _SchedulerFactory
+    from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
 
-    if _SchedulerFactory._scheduler is None:
-        _SchedulerFactory._build_scheduler()
-    _SchedulerFactory._build_dispatcher()
-    _SchedulerFactory._scheduler.jobs_to_run = Queue()
-    _SchedulerFactory._scheduler.blocked_jobs = []
+    if _OrchestratorFactory._orchestrator is None:
+        _OrchestratorFactory._build_orchestrator()
+    _OrchestratorFactory._build_dispatcher()
+    _OrchestratorFactory._orchestrator.jobs_to_run = Queue()
+    _OrchestratorFactory._orchestrator.blocked_jobs = []

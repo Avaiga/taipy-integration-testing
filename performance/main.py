@@ -23,13 +23,11 @@ from pipeline_perf_benchmark import PipelinePerfBenchmark
 from task_perf_benchmark import TaskPerfBenchmark
 from data_node_perf_benchmark import DataNodePerfBenchmark
 
-# ROW_COUNTS = [10**3, 10**4]
 ROW_COUNTS = [10**2, 10**3]
 ENTITY_COUNTS = [10**1, 10**2]
 SCENARIO_COUNTS = [10**1, 10**2]
 DATANODE_PERF_BENCHMARKS = [CSVPerfBenchmark, ExcelPerfBenchmark, PicklePerfBenchmark, JsonPerfBenchmark]
 ENTITY_PERF_BENCHMARKS = [DataNodePerfBenchmark, TaskPerfBenchmark, PipelinePerfBenchmark, ScenarioPerfBenchmark]
-
 
 if __name__ == "__main__":
 

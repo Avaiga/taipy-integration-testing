@@ -42,6 +42,7 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
             time_start = str(datetime.today())
             for test_parameters in self._generate_test_parameter_list():
                 self._run_test(test_parameters, time_start)
+                self.clean_test_state()
 
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
@@ -56,8 +57,17 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
         properties_as_str = [self.github_sha, time_start, repo_type, str(entity_count)]
 
         pipeline_cfg = self._generate_configs(repo_type)
-        _, create_pipeline_multiple_times = self._generate_methods(properties_as_str)
-        create_pipeline_multiple_times(entity_count, pipeline_cfg)
+        test_functions = self._generate_methods(properties_as_str)
+        
+        create_pipeline_multiple_times = test_functions[1]
+        get_single_pipeline_by_id = test_functions[2]
+        get_all_pipelines = test_functions[3]
+        delete_pipeline_by_id = test_functions[4]
+        
+        pipelines = create_pipeline_multiple_times(entity_count, pipeline_cfg)
+        pipeline = get_single_pipeline_by_id(pipelines[0].id)
+        get_all_pipelines()
+        delete_pipeline_by_id(pipeline.id)
 
     @staticmethod
     def _generate_methods(properties_as_str):
@@ -71,8 +81,24 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
             for _ in range(entity_count):
                 pipelines.append(tp.create_pipeline(pipeline_config))
             return pipelines
+        
+        @timer(properties_as_str)
+        def get_single_pipeline_by_id(pipeline_id):
+            return tp.get(pipeline_id)
+        
+        @timer(properties_as_str)
+        def get_all_pipelines():
+            return tp.get_pipelines()
+        
+        @timer(properties_as_str)
+        def delete_pipeline_by_id(pipeline_id):
+            tp.delete(pipeline_id)
 
-        return create_pipeline, create_pipeline_multiple_times
+        return (create_pipeline,
+                create_pipeline_multiple_times,
+                get_single_pipeline_by_id,
+                get_all_pipelines,
+                delete_pipeline_by_id)
 
     def _generate_configs(self, repo_type):
         Config.unblock_update()

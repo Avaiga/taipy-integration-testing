@@ -494,6 +494,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
             sys.stdout = f
             for scenario_count in self.scenario_counts:
                 self._run_test(scenario_count)
+                self.clean_test_state()
 
     def _run_test(self, scenario_count: int):
         properties_as_str = [str(scenario_count)]

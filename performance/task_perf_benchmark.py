@@ -43,6 +43,7 @@ class TaskPerfBenchmark(PerfBenchmarkAbstract):
             time_start = str(datetime.today())
             for test_parameters in self._generate_test_parameter_list():
                 self._run_test(test_parameters, time_start)
+                self.clean_test_state()
 
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
@@ -57,8 +58,17 @@ class TaskPerfBenchmark(PerfBenchmarkAbstract):
         properties_as_str = [self.github_sha, time_start, repo_type, str(entity_count)]
 
         task_cfgs = self._generate_configs(repo_type)
-        _, create_task_multiple_times = self._generate_methods(properties_as_str)
-        create_task_multiple_times(entity_count, task_cfgs)
+        test_functions  = self._generate_methods(properties_as_str)
+        
+        create_task_multiple_times = test_functions[1]
+        get_single_task_by_id = test_functions[2]
+        get_all_tasks = test_functions[3]
+        delete_task_by_id = test_functions[4]
+                
+        tasks = create_task_multiple_times(entity_count, task_cfgs)
+        task = get_single_task_by_id(tasks[0].id)
+        get_all_tasks()
+        delete_task_by_id(task.id)
 
     @staticmethod
     def _generate_methods(properties_as_str):
@@ -72,10 +82,26 @@ class TaskPerfBenchmark(PerfBenchmarkAbstract):
         def create_task_multiple_times(entity_count: int, task_configs):
             tasks = []
             for _ in range(entity_count):
-                tasks.append(task_manager._bulk_get_or_create(task_configs))
+                tasks.append(task_manager._bulk_get_or_create(task_configs)[0])
             return tasks
+        
+        @timer(properties_as_str)
+        def get_single_task_by_id(task_id):
+            return tp.get(task_id)
+        
+        @timer(properties_as_str)
+        def get_all_tasks():
+            return tp.get_tasks()
+        
+        @timer(properties_as_str)
+        def delete_task_by_id(task_id):
+            tp.delete(task_id)
 
-        return create_task, create_task_multiple_times
+        return (create_task,
+                create_task_multiple_times,
+                get_single_task_by_id,
+                get_all_tasks,
+                delete_task_by_id)
 
     def _generate_configs(self, repo_type):
         Config.unblock_update()
