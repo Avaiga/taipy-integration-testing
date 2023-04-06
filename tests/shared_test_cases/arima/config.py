@@ -44,3 +44,5 @@ def build_arima_config():
     arima_scenario_config = Config.configure_scenario(
         id="Arima_scenario", pipeline_configs=[arima_pipeline], frequency=Frequency.DAILY
     )
+    
+    return arima_scenario_config
