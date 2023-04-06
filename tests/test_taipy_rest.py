@@ -13,7 +13,7 @@ from typing import Optional
 
 from flask_testing import TestCase
 from taipy.rest import Rest
-
+from shared_test_cases.arima import build_arima_config
 
 class BaseTestCase(TestCase):
     def create_app(self):
@@ -33,7 +33,8 @@ class RestTest(BaseTestCase):
         return self.client.get(url)
 
     def test_create_scenario_should_create_every_entity(self):
-
+        build_arima_config()
+        
         response = self._create("scenarios", "Arima_scenario")
         assert response.status_code == 201
         assert response.json["message"] == "Scenario was created."
@@ -49,6 +50,8 @@ class RestTest(BaseTestCase):
         assert len(all_tasks.json) == 2
 
     def test_submit_scenario(self):
+        build_arima_config()
+        
         response = self._create("scenarios", "Arima_scenario")
         assert response.status_code == 201
         scenario_id = response.json["scenario"]["id"]
