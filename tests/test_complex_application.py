@@ -16,6 +16,7 @@ import taipy.core.taipy as tp
 from taipy.core import Core
 from taipy.core import Status
 from taipy.config import Config
+from taipy.core.job.status import Status
 
 from complex_application_configs import *
 from utils import assert_true_after_time
@@ -105,7 +106,7 @@ def test_complex_standlone():
     jobs = tp.submit(scenario)
     
     assert_true_after_time(lambda: os.path.exists(csv_path_out) and os.path.exists(excel_path_out))
-    assert_true_after_time(lambda: all([job.is_completed() for job in jobs]))
+    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]))
     
     csv_sum_res = pd.read_csv(csv_path_sum)
     excel_sum_res = pd.read_excel(excel_path_sum)    
@@ -142,4 +143,4 @@ def test_churn_classification_standalone():
     jobs = tp.submit(scenario)
     
     assert_true_after_time(lambda: os.path.exists(scenario.results._path))
-    assert_true_after_time(lambda: all([job.is_completed() for job in jobs]), time=15)
+    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)
