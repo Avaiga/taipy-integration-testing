@@ -18,6 +18,9 @@ import pytest
 @pytest.fixture(autouse=True)
 def cleanup_data():
     from time import sleep
+    from sqlalchemy.orm import close_all_sessions
+
+    close_all_sessions()
 
     sleep(0.1)
     if os.path.exists(".data"):
@@ -25,6 +28,7 @@ def cleanup_data():
     if os.path.exists("test.db"):
         os.remove("test.db")
 
+    init_managers()
     init_config()
     init_orchestrator()
     init_managers()
@@ -116,19 +120,21 @@ def init_config():
 
 
 def init_managers():
-    from taipy.core.cycle._cycle_manager import _CycleManager
-    from taipy.core.data._data_manager import _DataManager
-    from taipy.core.job._job_manager import _JobManager
-    from taipy.core.pipeline._pipeline_manager import _PipelineManager
-    from taipy.core.scenario._scenario_manager import _ScenarioManager
-    from taipy.core.task._task_manager import _TaskManager
+    from taipy.core.cycle._cycle_manager_factory import _CycleManagerFactory
+    from taipy.core.data._data_manager_factory import _DataManagerFactory
+    from taipy.core.job._job_manager_factory import _JobManagerFactory
+    from taipy.core.pipeline._pipeline_manager_factory import _PipelineManagerFactory
+    from taipy.core.scenario._scenario_manager_factory import _ScenarioManagerFactory
+    from taipy.core.task._task_manager_factory import _TaskManagerFactory
+    from taipy.core._version._version_manager_factory import _VersionManagerFactory
 
-    _ScenarioManager._delete_all()
-    _PipelineManager._delete_all()
-    _DataManager._delete_all()
-    _TaskManager._delete_all()
-    _JobManager._delete_all()
-    _CycleManager._delete_all()
+    _CycleManagerFactory._build_manager()._delete_all()
+    _ScenarioManagerFactory._build_manager()._delete_all()
+    _PipelineManagerFactory._build_manager()._delete_all()
+    _JobManagerFactory._build_manager()._delete_all()
+    _TaskManagerFactory._build_manager()._delete_all()
+    _DataManagerFactory._build_manager()._delete_all()
+    _VersionManagerFactory._build_manager()._delete_all()
 
 
 def init_orchestrator():
