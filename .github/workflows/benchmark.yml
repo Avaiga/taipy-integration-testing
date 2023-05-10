@@ -71,6 +71,7 @@ jobs:
     needs: run-benchmark
     timeout-minutes: 20
     runs-on: ubuntu-latest
+    if: always()
 
     steps:
       - name: 'Az CLI login'
