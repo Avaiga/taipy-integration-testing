@@ -6,7 +6,7 @@ on:
       commitSHA:
         description: "The SHA value of the commit that triggered this action"
         required: true
-        default: "5f58153d857a66f3cf7c0f6c84e7b6ca1984a0f2"
+        default: "a01c4dc179fa08e94e97ac93da41d9bab700d5dc"
       repo:
         description: "The Taipy repo that called this action"
         required: true
@@ -38,7 +38,7 @@ jobs:
       - name: Start the self-hosted runner
         run: az vm start -g github-runner -n integration-testing-runner
 
-  backend:
+  run-benchmark:
     needs: start-the-runner
     timeout-minutes: 30
     
@@ -68,7 +68,7 @@ jobs:
           deactivate
 
   stop-the-runner:
-    needs: backend
+    needs: run-benchmark
     timeout-minutes: 20
     runs-on: ubuntu-latest
 
