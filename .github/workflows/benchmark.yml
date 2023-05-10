@@ -1,7 +1,6 @@
 name: Performance benchmark
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       commitSHA:
@@ -15,6 +14,7 @@ on:
 
 
 # OIDC token for Azure connection.
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
 permissions:
   id-token: write
   contents: read
@@ -24,7 +24,6 @@ jobs:
   start-the-runner:
     timeout-minutes: 20
     runs-on: ubuntu-latest
-    environment: azure
 
     steps:
       - name: 'Az CLI login'
@@ -72,7 +71,6 @@ jobs:
     needs: backend
     timeout-minutes: 20
     runs-on: ubuntu-latest
-    environment: azure
 
     steps:
       - name: 'Az CLI login'
