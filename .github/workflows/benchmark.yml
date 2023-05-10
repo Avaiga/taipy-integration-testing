@@ -23,6 +23,7 @@ jobs:
   start-the-runner:
     timeout-minutes: 20
     runs-on: ubuntu-latest
+    environment: azure
 
     steps:
       - name: 'Az CLI login'
@@ -68,6 +69,7 @@ jobs:
     needs: backend
     timeout-minutes: 20
     runs-on: ubuntu-latest
+    environment: azure
 
     steps:
       - name: 'Az CLI login'
