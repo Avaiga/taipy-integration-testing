@@ -38,6 +38,7 @@ jobs:
         run: az vm start -g github-runner -n integration-testing-runner
 
   backend:
+    needs: start-the-runner
     timeout-minutes: 30
     
     strategy:
@@ -62,3 +63,22 @@ jobs:
           export AZURE_CONTAINER_NAME="${{secrets.AZURE_CONTAINER_NAME}}"
           python performance/main.py --github-sha "${{github.event.inputs.commitSha}}" --repo "${{github.event.inputs.repo}}"
           deactivate
+
+  stop-the-runner:
+    needs: backend
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: actions/checkout@v3
+
+      - name: Start the self-hosted runner
+        run: az vm stop -g github-runner -n integration-testing-runner
+        
