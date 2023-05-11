@@ -55,8 +55,6 @@ jobs:
           python-version: ${{ matrix.python-versions }}
       - name: Performance Benchmark
         run: |
-          echo ${{ github.event.inputs.commitSHA }}
-          echo ${{ github.event.inputs.commitSha }}
           python -m venv ./taipy-perf-env
           source taipy-perf-env/bin/activate
           pip install git+https://git@github.com/Avaiga/taipy.git@develop scikit-learn azure-storage-blob azure-identity
