@@ -82,5 +82,5 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Stop the self-hosted runner
-        run: az vm stop -g github-runner -n integration-testing-runner
+        run: az vm deallocate -g github-runner -n integration-testing-runner
         
