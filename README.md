@@ -1,6 +1,13 @@
 # taipy-integration-testing
 This repository holds GH actions that have the purpose of testing Taipy Enterprise and all its dependencies.
 
+The performance tests are executed via an API call on the GitHub Action called `benchmark` which is triggered by Taipy-Core during merges.
+
+To ensure that the tests are relevant and consistent, we always use the same machine configuration. This machine is a VM on Azure which has a GitHub Runner configured on it. The machine is started and stopped on demand when the `benchmark` GitHub Action is executed. You can refer to the "GitHub Runner" documentation below to access this machine.
+
+The result of each execution is stored on an Azure Blob Storage for future reference and analysis.
+
+
 # GitHub Runner
 
 The GitHub Action `benchmark` is running on a dedicated GitHub Runner for reliability in the result. 
