@@ -20,7 +20,7 @@ Azure Information:
 
 ## Accessing to the Runner for maintenance
 
-The Virtual Machine on witch the GitHub Runner is running do not have a public IP address for security reason.
+The Virtual Machine on which the GitHub Runner is running does not have a public IP address for security reason.
 To be able to access to it, you have to use an Azure Bastion.
 
 ### Creating an Azure Bastion:
