@@ -9,6 +9,7 @@ statsmodels = ">=0.13"
 scikit-learn = "*"
 azure-storage-blob = "*"
 azure-identity = "*"
+mongomock = "*"
 
 [dev-packages]
 autopep8 = "*"
