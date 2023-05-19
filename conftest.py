@@ -38,6 +38,7 @@ def cleanup_data():
 def init_config():
     from taipy import Config
     from taipy.core.config import (
+        CoreSection,
         DataNodeConfig,
         JobConfig,
         PipelineConfig,
