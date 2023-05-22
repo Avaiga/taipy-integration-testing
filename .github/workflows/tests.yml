@@ -23,5 +23,5 @@ jobs:
 
       - name: Tests
         run: |
-          pip install git+https://git@github.com/Avaiga/taipy.git@develop statsmodels Flask-Testing pytest scikit-learn
+          pip install git+https://git@github.com/Avaiga/taipy.git@develop statsmodels Flask-Testing pytest scikit-learn mongomock
           pytest tests
