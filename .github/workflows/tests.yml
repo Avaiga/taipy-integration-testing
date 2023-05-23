@@ -24,6 +24,6 @@ jobs:
         run: |
           pip install git+https://git@github.com/Avaiga/taipy.git@develop
           pip install git+https://${{ secrets.SSH_PRIVATE_KEY }}@github.com/Avaiga/taipy-auth
-          pip install git+https://${{ secrets.SSH_PRIVATE_KEY }}@github.com/Avaiga/taipy-enterprise
+          pip install git+https://${{ secrets.SSH_PRIVATE_KEY }}@github.com/Avaiga/taipy-enterprise --no-dependencies
           pip install statsmodels Flask-Testing pytest scikit-learn mongomock
           pytest tests
