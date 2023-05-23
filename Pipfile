@@ -9,7 +9,6 @@ statsmodels = ">=0.13"
 scikit-learn = "*"
 azure-storage-blob = "*"
 azure-identity = "*"
-mongomock = "*"
 
 [dev-packages]
 autopep8 = "*"
@@ -20,6 +19,7 @@ isort = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
+mongomock = "*"
 flask_testing = "*"
 
 [requires]
