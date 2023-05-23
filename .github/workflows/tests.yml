@@ -20,13 +20,9 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-versions }}
-      - uses: webfactory/ssh-agent@v0.4.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Tests
         run: |
           pip install git+https://git@github.com/Avaiga/taipy.git@develop
-          pip install git+https://git@github.com/Avaiga/taipy-enterprise.git@develop
+          pip install git+https://${{ secrets.SSH_PRIVATE_KEY }}@github.com/Avaiga/taipy-enterprise.git@develop
           pip install statsmodels Flask-Testing pytest scikit-learn mongomock
           pytest tests
