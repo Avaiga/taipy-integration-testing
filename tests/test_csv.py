@@ -133,24 +133,6 @@ def test_csv():
     output_data_node_4 = scenario_4.output_csv_dataset_4
     pipeline_4 = scenario_4.p4
 
-    # read_data_4 = input_data_node_4.read()
-    # assert len(read_data_4) == ROW_COUNT
-    # assert modin_data.equals(read_data_4)
-
-    # assert output_data_node_4.read() is None
-    # output_data_node_4.write(read_data_4)
-    # assert modin_data.equals(output_data_node_4.read())
-
-    # output_data_node_4.write(None)
-    # assert output_data_node_4.read().empty
-    # pipeline_4.submit()
-    # assert modin_data.equals(output_data_node_4.read())
-
-    # output_data_node_4.write(None)
-    # assert output_data_node_4.read().empty
-    # scenario_4.submit()
-    # assert modin_data.equals(output_data_node_4.read())
-
     read_data_4 = input_data_node_4.read()
     assert len(read_data_4) == ROW_COUNT
     assert all(modin_data._to_pandas() == read_data_4._to_pandas())

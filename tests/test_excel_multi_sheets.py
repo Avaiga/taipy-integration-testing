@@ -153,27 +153,6 @@ def test_excel_multi_sheet():
     output_data_node_4 = scenario_4.output_excel_multi_sheet_dataset_4
     pipeline_4 = scenario_4.p4
 
-    # read_data_4 = input_data_node_4.read()
-    # assert len(read_data_4) == len(SHEET_NAMES)
-    # assert all([modin_data[sheet_name].equals(read_data_4[sheet_name]) for sheet_name in SHEET_NAMES])
-
-    # assert output_data_node_4.read() is None
-    # output_data_node_4.write(read_data_4)
-    # assert len(read_data_4) == len(SHEET_NAMES)
-    # assert all([modin_data[sheet_name].equals(output_data_node_4.read()[sheet_name]) for sheet_name in SHEET_NAMES])
-
-    # output_data_node_4.write(None)
-    # with pytest.raises(ValueError):
-    #     output_data_node_4.read()  # TODO: test excel file has no header provided
-    # pipeline_4.submit()
-    # assert all([modin_data[sheet_name].equals(output_data_node_4.read()[sheet_name]) for sheet_name in SHEET_NAMES])
-
-    # output_data_node_4.write(None)
-    # with pytest.raises(ValueError):
-    #     output_data_node_4.read()  # TODO: test excel file has no header provided
-    # scenario_4.submit()
-    # assert all([modin_data[sheet_name].equals(output_data_node_4.read()[sheet_name]) for sheet_name in SHEET_NAMES])
-    
     read_data_4 = input_data_node_4.read()
     assert len(read_data_4) == len(SHEET_NAMES)
     assert all([all(modin_data[sheet_name]._to_pandas() == read_data_4[sheet_name]._to_pandas()) for sheet_name in SHEET_NAMES])
