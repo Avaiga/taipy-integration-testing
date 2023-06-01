@@ -52,10 +52,10 @@ def init_config():
     from taipy.config import IssueCollector
     from taipy.config._config import _Config
     from taipy.config._serializer._toml_serializer import _TomlSerializer
-    from taipy.config.checker._checkers._gLobal_config_checker import _GlobalConfigChecker
+    from taipy.config.checker._checkers._global_config_checker import _GlobalConfigChecker
     from taipy.config.checker._checker import _Checker
     from taipy.core.config import _inject_section
-    
+
     Config.unblock_update()
     Config._default_config = _Config()._default_config()
     Config._python_config = _Config()

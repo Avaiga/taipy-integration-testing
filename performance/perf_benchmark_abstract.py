@@ -21,7 +21,7 @@ from taipy.config._config import _Config
 from taipy.config.checker.issue_collector import IssueCollector
 from taipy.config._serializer._toml_serializer import _TomlSerializer
 from taipy.config.checker._checker import _Checker
-from taipy.config.checker._checkers._gLobal_config_checker import _GlobalConfigChecker
+from taipy.config.checker._checkers._global_config_checker import _GlobalConfigChecker
 from taipy.core.config import (
     DataNodeConfig,
     JobConfig,
@@ -38,6 +38,7 @@ from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
 
 
 from _blob_manager import _BlobManager
+
 
 class PerfBenchmarkAbstract:
 
@@ -56,23 +57,24 @@ class PerfBenchmarkAbstract:
         self.report_path: str = (
             report_path if report_path else os.path.join(benchmark_folder_path, self.BENCHMARK_REPORT_FILE_NAME)  # type: ignore
         )
-
         Path(str(benchmark_folder_path)).mkdir(parents=True, exist_ok=True)
 
         if self.__is_prod:
             _BlobManager.download_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
-        
+
         self.core = tp.Core()
         self.core.run(force_restart=True)
+        Config.unblock_update()
+        Config.configure_global_app(clean_entities_enabled=True)
 
     @property
     def __is_prod(self):
         return os.getenv("TAIPY_PERFORMANCE_BENCHMARK") == "0"
 
-    def __del__(self):        
+    def __del__(self):
         if self.__is_prod:
             _BlobManager.upload_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
-        
+
 
     def run(self):
         ...
@@ -155,9 +157,9 @@ class PerfBenchmarkAbstract:
         _Checker.add_checker(_TaskConfigChecker)
         _Checker.add_checker(_PipelineConfigChecker)
         _Checker.add_checker(_ScenarioConfigChecker)
-        
+
     def clean_orchestrator(self):
         self.core.stop()
-        
+
         _OrchestratorFactory._orchestrator.jobs_to_run = Queue()
         _OrchestratorFactory._orchestrator.blocked_jobs = []

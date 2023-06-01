@@ -36,12 +36,10 @@ if __name__ == "__main__":
     parser.add_argument('--repo', help='The Taipy repo that called this action', default='taipy-core')
     args = parser.parse_args()
 
-    tp.run(tp.Core())
-    
     for datanode_perf_benchmark in DATANODE_PERF_BENCHMARKS:
         datanode_perf_benchmark(args.github_sha, ROW_COUNTS).run()
-    
+
     for entity_perf_benchmark in ENTITY_PERF_BENCHMARKS:
         entity_perf_benchmark(args.github_sha, ENTITY_COUNTS).run()
-    
+
     # EndToEndScenarioCreationPerfBenchmark(SCENARIO_COUNTS).run()
