@@ -25,5 +25,5 @@ jobs:
 
       - name: Tests
         run: |
-          pip install git+https://git@github.com/Avaiga/taipy.git@develop statsmodels Flask-Testing pytest
+          pip install git+https://git@github.com/Avaiga/taipy.git@develop statsmodels Flask-Testing pytest scikit-learn
           pytest tests

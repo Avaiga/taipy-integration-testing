@@ -2,14 +2,13 @@ import os
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 
+
 class _BlobManager:
-
-
     AZURE_STORAGE_ACCOUNT_URL = os.getenv("AZURE_STORAGE_ACCOUNT_URL")
     AZURE_CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME")
     default_credential = DefaultAzureCredential() if AZURE_STORAGE_ACCOUNT_URL else None
-    blob_service_client = BlobServiceClient(AZURE_STORAGE_ACCOUNT_URL, credential=default_credential) if AZURE_STORAGE_ACCOUNT_URL else None
-
+    blob_service_client = BlobServiceClient(AZURE_STORAGE_ACCOUNT_URL,
+                                            credential=default_credential) if AZURE_STORAGE_ACCOUNT_URL else None
 
     @classmethod
     def __get_container(cls):
@@ -29,9 +28,7 @@ class _BlobManager:
             if os.path.isfile(file_path):
                 os.remove(file_path)
 
-
     @classmethod
     def upload_file(cls, blob_name: str, file_path: str):
         with open(file_path, mode="rb") as data:
             cls.__get_container().upload_blob(blob_name, data, overwrite=True)
-

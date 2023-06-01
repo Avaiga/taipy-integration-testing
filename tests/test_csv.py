@@ -136,20 +136,20 @@ def test_csv():
 
     read_data_4 = input_data_node_4.read()
     assert len(read_data_4) == ROW_COUNT
-    assert modin_data.equals(read_data_4)
+    assert all(modin_data._to_pandas() == read_data_4._to_pandas())
 
     assert output_data_node_4.read() is None
     output_data_node_4.write(read_data_4)
-    assert modin_data.equals(output_data_node_4.read())
+    assert all(modin_data._to_pandas() == output_data_node_4.read()._to_pandas())
 
     output_data_node_4.write(None)
     assert output_data_node_4.read().empty
     pipeline_4.submit()
-    assert modin_data.equals(output_data_node_4.read())
+    assert all(modin_data._to_pandas() == output_data_node_4.read()._to_pandas())
 
     output_data_node_4.write(None)
     assert output_data_node_4.read().empty
     scenario_4.submit()
-    assert modin_data.equals(output_data_node_4.read())
+    assert all(modin_data._to_pandas() == output_data_node_4.read()._to_pandas())
 
     os.remove(CSV_OUTPUT_PATH)

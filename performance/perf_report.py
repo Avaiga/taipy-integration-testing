@@ -6,7 +6,7 @@ def on_change(state, var_name, var_value):
     state, function_names = generate_display_data(state)
     if var_name == "selected_dn_type":
         state.partial.update_content(state, create_partial_content(display_data=display_data, function_names=function_names, state=state))
-        
+
 def create_partial_content(display_data=None, function_names=None, state=None):
     if state:
         col_to_line = col_to_lines[state.selected_dn_type]
@@ -17,7 +17,7 @@ def create_partial_content(display_data=None, function_names=None, state=None):
         function_names = ';'.join(function_names)
     else:
         function_names = 'read_data_node;write_data_node;submit_pipeline;submit_scenario'
-    
+
     partial_content = '''##Select function name: <center><|{selected_function_name}|toggle|lov='''+function_names+'''|></center><|{display_data}|chart|mode=line|x=datetime|'''+col_to_line+'''|>'''
     return partial_content
 
@@ -27,11 +27,11 @@ def generate_display_data(state):
     return state, data['function_name'].unique().tolist()
 
 def convert_data_to_display(data, selected_function_name):
-    data = data[data['function_name'] == selected_function_name]    
+    data = data[data['function_name'] == selected_function_name]
     columns = ['datetime']
     columns.extend(data['exposed_type'].unique())
     display_data = pd.DataFrame(columns=columns)
-    
+
     for _, row in data.iterrows():
         if row['datetime'] in display_data['datetime'].unique():
             display_data.loc[display_data['datetime'] == row['datetime'], row['exposed_type']] = row['time_elapsed']
@@ -73,5 +73,6 @@ col_to_lines = {
 gui = Gui(page=report_page)
 partial = gui.add_partial(create_partial_content(display_data=display_data))
 
-gui.run()
+if __name__ == "__main__":
+    gui.run()
 
