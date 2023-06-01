@@ -48,6 +48,7 @@ def init_config():
         _PipelineConfigChecker,
         _ScenarioConfigChecker,
         _TaskConfigChecker,
+        CoreSection,
     )
     from taipy.config import IssueCollector
     from taipy.config._config import _Config
@@ -111,6 +112,13 @@ def init_config():
             ("configure_default_scenario", ScenarioConfig._configure_default),
             ("configure_scenario_from_tasks", ScenarioConfig._configure_from_tasks),
         ],
+    )
+    _inject_section(
+        CoreSection,
+        "core",
+        CoreSection.default_config(),
+        [("configure_core", CoreSection._configure)],
+        add_to_unconflicted_sections=True,
     )
     _Checker.add_checker(_JobConfigChecker)
     _Checker.add_checker(_DataNodeConfigChecker)

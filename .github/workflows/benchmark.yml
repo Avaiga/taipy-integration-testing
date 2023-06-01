@@ -6,14 +6,40 @@ on:
       commitSHA:
         description: "The SHA value of the commit that triggered this action"
         required: true
-        default: "5f58153d857a66f3cf7c0f6c84e7b6ca1984a0f2"
+        default: "a01c4dc179fa08e94e97ac93da41d9bab700d5dc"
       repo:
         description: "The Taipy repo that called this action"
         required: true
         default: "taipy-core"
 
+
+# OIDC token for Azure connection.
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
+permissions:
+  id-token: write
+  contents: read
+
+
 jobs:
-  backend:
+  start-the-runner:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: actions/checkout@v3
+
+      - name: Start the self-hosted runner
+        run: az vm start -g github-runner -n integration-testing-runner
+
+  run-benchmark:
+    needs: start-the-runner
     timeout-minutes: 30
     
     strategy:
@@ -32,9 +58,29 @@ jobs:
           python -m venv ./taipy-perf-env
           source taipy-perf-env/bin/activate
           pip install git+https://git@github.com/Avaiga/taipy.git@develop scikit-learn azure-storage-blob azure-identity
-          pip install "git+https://git@github.com/Avaiga/taipy-core.git@$github.event.inputs.commitSha"
+          pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.commitSHA }}"
           export TAIPY_PERFORMANCE_BENCHMARK=0
-          export AZURE_STORAGE_ACCOUNT_URL="${{secrets.AZURE_STORAGE_ACCOUNT_URL}}"
-          export AZURE_CONTAINER_NAME="${{secrets.AZURE_CONTAINER_NAME}}"
-          python performance/main.py --github-sha "${{github.event.inputs.commitSha}}" --repo "${{github.event.inputs.repo}}"
+          export AZURE_STORAGE_ACCOUNT_URL="${{ secrets.AZURE_STORAGE_ACCOUNT_URL }}"
+          export AZURE_CONTAINER_NAME="${{ secrets.AZURE_CONTAINER_NAME }}"
+          python performance/main.py --github-sha "${{ github.event.inputs.commitSHA }}" --repo "${{ github.event.inputs.repo }}"
           deactivate
+
+  stop-the-runner:
+    needs: run-benchmark
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: actions/checkout@v3
+
+      - name: Stop the self-hosted runner
+        run: az vm deallocate -g github-runner -n integration-testing-runner
+        
