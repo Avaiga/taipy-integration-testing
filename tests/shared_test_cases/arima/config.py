@@ -18,8 +18,8 @@ from .algorithms import predict, train
 
 def build_arima_config():
 
-    CSV_INPUT_PATH = "tests/shared_test_cases/arima/daily-min-temperatures.csv"
-    XLSX_OUTPUT_PATH = "tests/shared_test_cases/arima/res.xlsx"
+    CSV_INPUT_PATH = "shared_test_cases/arima/daily-min-temperatures.csv"
+    XLSX_OUTPUT_PATH = "shared_test_cases/arima/res.xlsx"
 
     historical_data_set = Config.configure_csv_data_node(id="historical_data_set", path=CSV_INPUT_PATH, scope=Scope.GLOBAL)
 
@@ -44,5 +44,5 @@ def build_arima_config():
     arima_scenario_config = Config.configure_scenario(
         id="Arima_scenario", pipeline_configs=[arima_pipeline], frequency=Frequency.DAILY
     )
-    
+
     return arima_scenario_config

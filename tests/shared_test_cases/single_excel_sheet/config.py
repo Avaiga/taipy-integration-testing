@@ -16,8 +16,8 @@ from taipy.config.config import Config
 
 from .algorithms import algorithm
 
-EXCEL_SINGLE_SHEET_INPUT_PATH = "tests/shared_test_cases/single_excel_sheet/input_1000.xlsx"
-EXCEL_SINGLE_SHEET_OUTPUT_PATH = "tests/shared_test_cases/single_excel_sheet/output_1000.xlsx"
+EXCEL_SINGLE_SHEET_INPUT_PATH = "shared_test_cases/single_excel_sheet/input_1000.xlsx"
+EXCEL_SINGLE_SHEET_OUTPUT_PATH = "shared_test_cases/single_excel_sheet/output_1000.xlsx"
 ROW_COUNT = 1000
 SHEET_NAME = "Sheet1"
 

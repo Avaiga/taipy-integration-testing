@@ -19,7 +19,7 @@ from taipy.config import Config
 
 
 def test_csv():
-    from shared_test_cases.csv_files.config import (
+    from tests.shared_test_cases.csv_files.config import (
         CSV_INPUT_PATH,
         CSV_OUTPUT_PATH,
         ROW_COUNT,

@@ -10,13 +10,15 @@
 # specific language governing permissions and limitations under the License.
 
 import os
-
 import pandas as pd
+
 import taipy.core.taipy as tp
-from complex_application_configs import *
+from taipy.core import Core
+from taipy.core import Status
 from taipy.config import Config
-from taipy.core import Core, Status
 from taipy.core.job.status import Status
+
+from complex_application_configs import *
 from utils import assert_true_after_time
 
 
@@ -128,7 +130,7 @@ def test_churn_classification_development():
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
 
-    assert all([job.is_completed() or job.is_skipped() for job in jobs])
+    assert all([job.is_completed() for job in jobs])
 
 
 def test_churn_classification_standalone():
@@ -141,4 +143,4 @@ def test_churn_classification_standalone():
     jobs = tp.submit(scenario)
 
     assert_true_after_time(lambda: os.path.exists(scenario.results._path))
-    assert_true_after_time(lambda: all([job._status in {Status.COMPLETED, Status.SKIPPED} for job in jobs]), time=15)
+    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)

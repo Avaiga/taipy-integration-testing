@@ -16,8 +16,8 @@ from taipy.config.config import Config
 
 from .algorithms import algorithm
 
-CSV_INPUT_PATH = "tests/shared_test_cases/csv_files/input_1000.csv"
-CSV_OUTPUT_PATH = "tests/shared_test_cases/csv_files/output_1000.csv"
+CSV_INPUT_PATH = "shared_test_cases/csv_files/input_1000.csv"
+CSV_OUTPUT_PATH = "shared_test_cases/csv_files/output_1000.csv"
 ROW_COUNT = 1000
 
 
