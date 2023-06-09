@@ -16,10 +16,10 @@ from taipy.config.config import Config
 
 from .algorithms import algorithm
 
-PICKLE_DICT_INPUT_PATH = "shared_test_cases/pickle_files/input_dict_1000.p"
-PICKLE_DICT_OUTPUT_PATH = "shared_test_cases/pickle_files/output_dict_1000.p"
-PICKLE_LIST_INPUT_PATH = "shared_test_cases/pickle_files/input_object_1000.p"
-PICKLE_LIST_OUTPUT_PATH = "shared_test_cases/pickle_files/output_object_1000.p"
+PICKLE_DICT_INPUT_PATH = "tests/shared_test_cases/pickle_files/input_dict_1000.p"
+PICKLE_DICT_OUTPUT_PATH = "tests/shared_test_cases/pickle_files/output_dict_1000.p"
+PICKLE_LIST_INPUT_PATH = "tests/shared_test_cases/pickle_files/input_object_1000.p"
+PICKLE_LIST_OUTPUT_PATH = "tests/shared_test_cases/pickle_files/output_object_1000.p"
 ROW_COUNT = 1000
 
 

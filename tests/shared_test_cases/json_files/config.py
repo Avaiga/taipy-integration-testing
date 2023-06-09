@@ -15,10 +15,10 @@ from taipy.config.config import Config
 from .algorithms import algorithm
 from .utils import RowDecoder, RowEncoder
 
-JSON_DICT_INPUT_PATH = "shared_test_cases/json_files/input_dict_1000.json"
-JSON_DICT_OUTPUT_PATH = "shared_test_cases/json_files/output_dict_1000.json"
-JSON_OBJECT_INPUT_PATH = "shared_test_cases/json_files/input_object_1000.json"
-JSON_OBJECT_OUTPUT_PATH = "shared_test_cases/json_files/output_object_1000.json"
+JSON_DICT_INPUT_PATH = "tests/shared_test_cases/json_files/input_dict_1000.json"
+JSON_DICT_OUTPUT_PATH = "tests/shared_test_cases/json_files/output_dict_1000.json"
+JSON_OBJECT_INPUT_PATH = "tests/shared_test_cases/json_files/input_object_1000.json"
+JSON_OBJECT_OUTPUT_PATH = "tests/shared_test_cases/json_files/output_object_1000.json"
 ROW_COUNT = 1000
 
 Config.unblock_update()

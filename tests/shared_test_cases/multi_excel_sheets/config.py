@@ -16,8 +16,8 @@ from taipy.config.config import Config
 
 from .algorithms import algorithm
 
-EXCEL_INPUT_PATH = "shared_test_cases/multi_excel_sheets/input_1000_multi_sheets.xlsx"
-EXCEL_OUTPUT_PATH = "shared_test_cases/multi_excel_sheets/output_1000.xlsx"
+EXCEL_INPUT_PATH = "tests/shared_test_cases/multi_excel_sheets/input_1000_multi_sheets.xlsx"
+EXCEL_OUTPUT_PATH = "tests/shared_test_cases/multi_excel_sheets/output_1000.xlsx"
 ROW_COUNT = 1000
 SHEET_NAMES = ["Sheet 0", "Sheet 1", "Sheet 2", "Sheet 3", "Sheet 4", "Sheet 5"]
 

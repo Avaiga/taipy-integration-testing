@@ -30,7 +30,7 @@ class TestChurnClassification:
         for job in jobs:
             assert_true_after_time(job.is_completed,
                                    msg=f"job {job.id} is not completed. Status: {job.status}.",
-                                   time=180)
+                                   time=30)
 
     def test_development_fs_repo(self):
         self.__test()

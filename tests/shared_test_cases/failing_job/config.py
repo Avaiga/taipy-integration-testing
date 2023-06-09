@@ -17,7 +17,7 @@ from taipy.config.config import Config
 from .algorithms import failing_job, predict
 
 historical_data_set = Config.configure_csv_data_node(
-    id="historical_data_set", path="./shared_test_cases/arima/daily-min-temperatures.csv", scope=Scope.GLOBAL
+    id="historical_data_set", path="tests//shared_test_cases/arima/daily-min-temperatures.csv", scope=Scope.GLOBAL
 )
 
 arima_model = Config.configure_data_node(id="arima_model")
@@ -27,7 +27,7 @@ dates_to_forecast = Config.configure_data_node(
 )
 
 forecast_values = Config.configure_excel_data_node(
-    id="forecast_values", has_header=False, path="./shared_test_cases/arima/res.xlsx"
+    id="forecast_values", has_header=False, path="tests//shared_test_cases/arima/res.xlsx"
 )
 
 arima_fail_algo = Config.configure_task(
