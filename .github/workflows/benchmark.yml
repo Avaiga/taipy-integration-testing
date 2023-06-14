@@ -53,6 +53,13 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-versions }}
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-username: taipy
+          mongodb-password: taipy
+          mongodb-db: taipy
+
       - name: Performance Benchmark
         run: |
           python -m venv ./taipy-perf-env

@@ -25,7 +25,7 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_REPORT_FILE_NAME = "pipeline_benchmark_report.csv"
     HEADERS = ['github_sha', 'datetime', 'repo_type', 'entity_counts', 'function_name', 'time_elapsed']
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
-    REPO_TYPES = ['default', 'sql']
+    REPO_TYPES = ['default', 'sql', 'mongo']
 
 
     def __init__(self, github_sha: str, entity_counts: list[int] = None, report_path: str = None):
@@ -58,12 +58,12 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
 
         pipeline_cfg = self._generate_configs(repo_type)
         test_functions = self._generate_methods(properties_as_str)
-        
+
         create_pipeline_multiple_times = test_functions[1]
         get_single_pipeline_by_id = test_functions[2]
         get_all_pipelines = test_functions[3]
         delete_pipeline_by_id = test_functions[4]
-        
+
         pipelines = create_pipeline_multiple_times(entity_count, pipeline_cfg)
         pipeline = get_single_pipeline_by_id(pipelines[0].id)
         get_all_pipelines()
@@ -81,15 +81,15 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
             for _ in range(entity_count):
                 pipelines.append(tp.create_pipeline(pipeline_config))
             return pipelines
-        
+
         @timer(properties_as_str)
         def get_single_pipeline_by_id(pipeline_id):
             return tp.get(pipeline_id)
-        
+
         @timer(properties_as_str)
         def get_all_pipelines():
             return tp.get_pipelines()
-        
+
         @timer(properties_as_str)
         def delete_pipeline_by_id(pipeline_id):
             tp.delete(pipeline_id)

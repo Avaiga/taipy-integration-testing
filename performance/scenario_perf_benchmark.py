@@ -26,7 +26,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_REPORT_FILE_NAME = "scenario_benchmark_report.csv"
     HEADERS = ['github_sha', 'datetime', 'repo_type', 'entity_counts', 'multi_entity_type', 'scope', 'function_name', 'time_elapsed']
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
-    REPO_TYPES = ['default', 'sql']
+    REPO_TYPES = ['default', 'sql', 'mongo']
     MULTI_ENTITY_TYPES = ["datanode", "task", "pipeline", "scenario"]
     DATA_NODE_SCOPES = [Scope.PIPELINE, Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
 
@@ -63,13 +63,13 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
 
         scenario_cfg = self._generate_configs(repo_type, entity_count, multi_entity_type, data_node_scope)
         test_functions = self._generate_methods(properties_as_str)
-        
+
         create_scenario = test_functions[0]
         create_scenario_multiple_times = test_functions[1]
         get_single_scenario_by_id = test_functions[2]
         get_all_scenarios = test_functions[3]
         delete_scenario_by_id = test_functions[4]
-        
+
         if multi_entity_type == "scenario":
             scenarios = create_scenario_multiple_times(entity_count, scenario_cfg)
             scenario = get_single_scenario_by_id(scenarios[0].id)
@@ -90,15 +90,15 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
             for _ in range(entity_count):
                 scenarios.append(tp.create_scenario(scenario_config))
             return scenarios
-        
+
         @timer(properties_as_str)
         def get_single_scenario_by_id(scenario_id):
             return tp.get(scenario_id)
-        
+
         @timer(properties_as_str)
         def get_all_scenarios():
             return tp.get_scenarios()
-        
+
         @timer(properties_as_str)
         def delete_scenario_by_id(scenario_id):
             tp.delete(scenario_id)

@@ -26,7 +26,7 @@ class DataNodePerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_REPORT_FILE_NAME = "data_node_benchmark_report.csv"
     HEADERS = ['github_sha', 'datetime', 'repo_type', 'entity_counts', 'function_name', 'time_elapsed']
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
-    REPO_TYPES = ['default', 'sql']
+    REPO_TYPES = ['default', 'sql', 'mongo']
 
 
     def __init__(self, github_sha: str, entity_counts: list[int] = None, report_path: str = None):
@@ -59,12 +59,12 @@ class DataNodePerfBenchmark(PerfBenchmarkAbstract):
 
         data_node_cfgs = self._generate_configs(repo_type)
         test_functions = self._generate_methods(properties_as_str)
-        
+
         create_data_multiple_times = test_functions[1]
         get_single_data_node_by_id = test_functions[2]
         get_all_data_nodes = test_functions[3]
         delete_data_node_by_id = test_functions[4]
-        
+
         data_nodes = create_data_multiple_times(entity_count, data_node_cfgs)
         data_node = get_single_data_node_by_id(data_nodes[0].id)
         get_all_data_nodes()
@@ -73,7 +73,7 @@ class DataNodePerfBenchmark(PerfBenchmarkAbstract):
     @staticmethod
     def _generate_methods(properties_as_str):
         data_node_manager = _DataManagerFactory._build_manager()
-        
+
         @timer(properties_as_str)
         def create_data_node(data_node_configs):
             return data_node_manager._bulk_get_or_create(data_node_configs)
@@ -84,15 +84,15 @@ class DataNodePerfBenchmark(PerfBenchmarkAbstract):
             for _ in range(entity_count):
                 data_nodes.append(data_node_manager._bulk_get_or_create(data_node_configs)[data_node_configs[0]])
             return data_nodes
-        
+
         @timer(properties_as_str)
         def get_single_data_node_by_id(data_node_id):
             return tp.get(data_node_id)
-        
+
         @timer(properties_as_str)
         def get_all_data_nodes():
             return tp.get_tasks()
-        
+
         @timer(properties_as_str)
         def delete_data_node_by_id(data_node_id):
             tp.delete(data_node_id)

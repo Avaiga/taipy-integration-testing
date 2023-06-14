@@ -26,7 +26,7 @@ class TaskPerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_REPORT_FILE_NAME = "task_benchmark_report.csv"
     HEADERS = ['github_sha', 'datetime', 'repo_type', 'entity_counts', 'function_name', 'time_elapsed']
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
-    REPO_TYPES = ['default', 'sql']
+    REPO_TYPES = ['default', 'sql', 'mongo']
 
 
     def __init__(self, github_sha: str, entity_counts: list[int] = None, report_path: str = None):
@@ -59,12 +59,12 @@ class TaskPerfBenchmark(PerfBenchmarkAbstract):
 
         task_cfgs = self._generate_configs(repo_type)
         test_functions  = self._generate_methods(properties_as_str)
-        
+
         create_task_multiple_times = test_functions[1]
         get_single_task_by_id = test_functions[2]
         get_all_tasks = test_functions[3]
         delete_task_by_id = test_functions[4]
-                
+
         tasks = create_task_multiple_times(entity_count, task_cfgs)
         task = get_single_task_by_id(tasks[0].id)
         get_all_tasks()
@@ -73,7 +73,7 @@ class TaskPerfBenchmark(PerfBenchmarkAbstract):
     @staticmethod
     def _generate_methods(properties_as_str):
         task_manager = _TaskManagerFactory._build_manager()
-        
+
         @timer(properties_as_str)
         def create_task(task_configs):
             return task_manager._bulk_get_or_create(task_configs)
@@ -84,15 +84,15 @@ class TaskPerfBenchmark(PerfBenchmarkAbstract):
             for _ in range(entity_count):
                 tasks.append(task_manager._bulk_get_or_create(task_configs)[0])
             return tasks
-        
+
         @timer(properties_as_str)
         def get_single_task_by_id(task_id):
             return tp.get(task_id)
-        
+
         @timer(properties_as_str)
         def get_all_tasks():
             return tp.get_tasks()
-        
+
         @timer(properties_as_str)
         def delete_task_by_id(task_id):
             tp.delete(task_id)
