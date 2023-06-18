@@ -26,7 +26,11 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_REPORT_FILE_NAME = "scenario_benchmark_report.csv"
     HEADERS = ['github_sha', 'datetime', 'repo_type', 'entity_counts', 'multi_entity_type', 'scope', 'function_name', 'time_elapsed']
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
-    REPO_TYPES = ['default', 'sql', 'mongo']
+    REPO_CONFIGS = [
+        {'repository_type': 'default'},
+        {'repository_type': 'sql'},
+        {'repository_type': 'mongo', 'repository_properties': {'mongo_username': 'taipy', 'mongo_password': 'taipy'}}
+    ]
     MULTI_ENTITY_TYPES = ["datanode", "task", "pipeline", "scenario"]
     DATA_NODE_SCOPES = [Scope.PIPELINE, Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
 
@@ -49,7 +53,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
 
-        for repo_type in self.REPO_TYPES:
+        for repo_type in self.REPO_CONFIGS:
             for entity_count in self.entity_counts:
                 for multi_entity_type in self.MULTI_ENTITY_TYPES:
                     for data_node_scope in self.DATA_NODE_SCOPES:
@@ -59,7 +63,14 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     def _run_test(self, test_parameters: dict, time_start):
         repo_type, entity_count, multi_entity_type, data_node_scope = test_parameters
 
-        properties_as_str = [self.github_sha, time_start, repo_type, str(entity_count), str(multi_entity_type), str(data_node_scope)]
+        properties_as_str = [
+            self.github_sha,
+            time_start,
+            repo_type.get('repository_type'),
+            str(entity_count),
+            str(multi_entity_type),
+            str(data_node_scope)
+        ]
 
         scenario_cfg = self._generate_configs(repo_type, entity_count, multi_entity_type, data_node_scope)
         test_functions = self._generate_methods(properties_as_str)
@@ -113,7 +124,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         self, repo_type, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE
     ):
         Config.unblock_update()
-        Config.configure_global_app(clean_entities_enabled=True, repository_type=repo_type)
+        Config.configure_global_app(clean_entities_enabled=True, **repo_type)
         tp.clean_all_entities()
 
         nb_dn = entity_count if multi_entity_type == "datanode" else 1
