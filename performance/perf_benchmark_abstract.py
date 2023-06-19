@@ -11,18 +11,20 @@
 
 import os
 from pathlib import Path
-from typing import Optional
 from queue import Queue
+from typing import Optional
 
 import taipy as tp
-from taipy.logger._taipy_logger import _TaipyLogger
+from _blob_manager import _BlobManager
 from taipy.config import Config
 from taipy.config._config import _Config
-from taipy.config.checker.issue_collector import IssueCollector
 from taipy.config._serializer._toml_serializer import _TomlSerializer
 from taipy.config.checker._checker import _Checker
 from taipy.config.checker._checkers._global_config_checker import _GlobalConfigChecker
+from taipy.config.checker.issue_collector import IssueCollector
+from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
 from taipy.core.config import (
+    CoreSection,
     DataNodeConfig,
     JobConfig,
     PipelineConfig,
@@ -34,10 +36,7 @@ from taipy.core.config import (
     _ScenarioConfigChecker,
     _TaskConfigChecker,
 )
-from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
-
-
-from _blob_manager import _BlobManager
+from taipy.logger._taipy_logger import _TaipyLogger
 
 
 class PerfBenchmarkAbstract:
@@ -74,7 +73,6 @@ class PerfBenchmarkAbstract:
     def __del__(self):
         if self.__is_prod:
             _BlobManager.upload_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
-
 
     def run(self):
         ...
@@ -151,6 +149,13 @@ class PerfBenchmarkAbstract:
                 ("configure_default_scenario", ScenarioConfig._configure_default),
                 ("configure_scenario_from_tasks", ScenarioConfig._configure_from_tasks),
             ],
+        )
+        _inject_section(
+            CoreSection,
+            "core",
+            CoreSection.default_config(),
+            [("configure_core", CoreSection._configure)],
+            add_to_unconflicted_sections=True,
         )
         _Checker.add_checker(_JobConfigChecker)
         _Checker.add_checker(_DataNodeConfigChecker)
