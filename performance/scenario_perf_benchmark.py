@@ -14,22 +14,30 @@ import sys
 from datetime import datetime
 
 import taipy as tp
+from perf_benchmark_abstract import PerfBenchmarkAbstract
 from taipy import Config
 from taipy.config.common.scope import Scope
-
-from perf_benchmark_abstract import PerfBenchmarkAbstract
 from utils import algorithm, timer
 
 
 class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     BENCHMARK_NAME = "Scenario perf"
     BENCHMARK_REPORT_FILE_NAME = "scenario_benchmark_report.csv"
-    HEADERS = ['github_sha', 'datetime', 'repo_type', 'entity_counts', 'multi_entity_type', 'scope', 'function_name', 'time_elapsed']
+    HEADERS = [
+        "github_sha",
+        "datetime",
+        "repo_type",
+        "entity_counts",
+        "multi_entity_type",
+        "scope",
+        "function_name",
+        "time_elapsed",
+    ]
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
     REPO_CONFIGS = [
-        {'repository_type': 'default'},
-        {'repository_type': 'sql'},
-        {'repository_type': 'mongo', 'repository_properties': {'mongo_username': 'taipy', 'mongo_password': 'taipy'}}
+        {"repository_type": "default"},
+        {"repository_type": "sql"},
+        {"repository_type": "mongo", "repository_properties": {"mongo_username": "taipy", "mongo_password": "taipy"}},
     ]
     MULTI_ENTITY_TYPES = ["datanode", "task", "pipeline", "scenario"]
     DATA_NODE_SCOPES = [Scope.PIPELINE, Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
@@ -44,7 +52,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             if os.path.getsize(self.report_path) == 0:
-                print(','.join(self.HEADERS))
+                print(",".join(self.HEADERS))
             time_start = str(datetime.today())
             for test_parameters in self._generate_test_parameter_list():
                 self._run_test(test_parameters, time_start)
@@ -53,26 +61,26 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     def _generate_test_parameter_list(self) -> list:
         test_parameter_list = []
 
-        for repo_type in self.REPO_CONFIGS:
+        for repo_config in self.REPO_CONFIGS:
             for entity_count in self.entity_counts:
                 for multi_entity_type in self.MULTI_ENTITY_TYPES:
                     for data_node_scope in self.DATA_NODE_SCOPES:
-                        test_parameter_list.append((repo_type, entity_count, multi_entity_type, data_node_scope))
+                        test_parameter_list.append((repo_config, entity_count, multi_entity_type, data_node_scope))
         return test_parameter_list
 
     def _run_test(self, test_parameters: dict, time_start):
-        repo_type, entity_count, multi_entity_type, data_node_scope = test_parameters
+        repo_config, entity_count, multi_entity_type, data_node_scope = test_parameters
 
         properties_as_str = [
             self.github_sha,
             time_start,
-            repo_type.get('repository_type'),
+            repo_config.get("repository_type"),
             str(entity_count),
             str(multi_entity_type),
-            str(data_node_scope)
+            str(data_node_scope),
         ]
 
-        scenario_cfg = self._generate_configs(repo_type, entity_count, multi_entity_type, data_node_scope)
+        scenario_cfg = self._generate_configs(repo_config, entity_count, multi_entity_type, data_node_scope)
         test_functions = self._generate_methods(properties_as_str)
 
         create_scenario = test_functions[0]
@@ -114,17 +122,19 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         def delete_scenario_by_id(scenario_id):
             tp.delete(scenario_id)
 
-        return (create_scenario,
-                create_scenario_multiple_times,
-                get_single_scenario_by_id,
-                get_all_scenarios,
-                delete_scenario_by_id,)
+        return (
+            create_scenario,
+            create_scenario_multiple_times,
+            get_single_scenario_by_id,
+            get_all_scenarios,
+            delete_scenario_by_id,
+        )
 
     def _generate_configs(
-        self, repo_type, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE
+        self, repo_config, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE
     ):
         Config.unblock_update()
-        Config.configure_global_app(clean_entities_enabled=True, **repo_type)
+        Config.configure_global_app(clean_entities_enabled=True, **repo_config)
         tp.clean_all_entities()
 
         nb_dn = entity_count if multi_entity_type == "datanode" else 1
@@ -136,7 +146,9 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         pipeline_cfgs = []
 
         for i in range(nb_dn):
-            input_datanode_cfgs.append(Config.configure_pickle_data_node(id=f"input_datanode_{i}", scope=data_node_scope))
+            input_datanode_cfgs.append(
+                Config.configure_pickle_data_node(id=f"input_datanode_{i}", scope=data_node_scope)
+            )
 
         output_datanode_cfg = [Config.configure_pickle_data_node(id="output_datanode", scope=data_node_scope)]
 
