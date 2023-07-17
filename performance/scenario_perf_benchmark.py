@@ -40,7 +40,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         {"repository_type": "mongo", "repository_properties": {"mongo_username": "taipy", "mongo_password": "taipy"}},
     ]
     MULTI_ENTITY_TYPES = ["datanode", "task", "pipeline", "scenario"]
-    DATA_NODE_SCOPES = [Scope.PIPELINE, Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
+    DATA_NODE_SCOPES = [Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
 
     def __init__(self, github_sha: str, entity_counts: list[int] = None, report_path: str = None):
         super().__init__(report_path=report_path)
@@ -131,7 +131,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         )
 
     def _generate_configs(
-        self, repo_config, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.PIPELINE
+        self, repo_config, entity_count, multi_entity_type: str = "datanode", data_node_scope: Scope = Scope.SCENARIO
     ):
         Config.unblock_update()
         Config.configure_core(**repo_config)
