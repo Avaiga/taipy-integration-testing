@@ -29,8 +29,7 @@ def test_pickle_files():
         scenario_cfg_2,
     )
 
-    Config.configure_global_app(clean_entities_enabled=True)
-    tp.clean_all_entities()
+    tp.clean_all_entities_by_version(None)
 
     # generate 2 pickles files
     gen_list_of_dict_input_pickle(PICKLE_DICT_INPUT_PATH, ROW_COUNT)

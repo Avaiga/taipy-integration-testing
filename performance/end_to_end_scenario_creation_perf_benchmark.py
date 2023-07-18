@@ -516,7 +516,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
 
     def _generate_configs(self):
         Config.unblock_update()
-        tp.clean_all_entities()
+        tp.clean_all_entities_by_version(None)
 
         raw_historical_data_cfg = Config.configure_data_node(
             id="raw_historical_data",

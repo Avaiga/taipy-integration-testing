@@ -106,8 +106,8 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
 
     def _generate_configs(self, repo_config):
         Config.unblock_update()
-        Config.configure_global_app(clean_entities_enabled=True, **repo_config)
-        tp.clean_all_entities()
+        Config.configure_core(**repo_config)
+        tp.clean_all_entities_by_version(None)
 
         input_datanode_cfgs = Config.configure_pickle_data_node(id="input_datanode")
         output_datanode_cfg = Config.configure_pickle_data_node(id="output_datanode")

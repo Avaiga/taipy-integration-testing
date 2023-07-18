@@ -30,8 +30,7 @@ def test_csv():
         scenario_cfg_4,
     )
 
-    Config.configure_global_app(clean_entities_enabled=True)
-    tp.clean_all_entities()
+    tp.clean_all_entities_by_version(None)
 
     pandas_data = pd.read_csv(CSV_INPUT_PATH)
     numpy_data = pandas_data.to_numpy()

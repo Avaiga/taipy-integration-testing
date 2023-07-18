@@ -42,8 +42,7 @@ def test_excel_multi_sheet():
             rows.append(Row(int(row.id), int(row.age), float(row.rating)))
         custom_data[sheet_name] = rows
 
-    Config.configure_global_app(clean_entities_enabled=True)
-    tp.clean_all_entities()
+    tp.clean_all_entities_by_version(None)
 
     # 📊 Without exposed type (pandas is the default exposed type)
 
