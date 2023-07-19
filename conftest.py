@@ -75,7 +75,7 @@ def init_config():
         DataNodeConfig.default_config(),
         [
             ("configure_data_node", DataNodeConfig._configure),
-            ("configure_default_data_node", DataNodeConfig._configure_default),
+            ("configure_default_data_node", DataNodeConfig._set_default_configuration),
             ("configure_csv_data_node", DataNodeConfig._configure_csv),
             ("configure_json_data_node", DataNodeConfig._configure_json),
             ("configure_sql_table_data_node", DataNodeConfig._configure_sql_table),
@@ -91,7 +91,7 @@ def init_config():
         TaskConfig,
         "tasks",
         TaskConfig.default_config(),
-        [("configure_task", TaskConfig._configure), ("configure_default_task", TaskConfig._configure_default)],
+        [("configure_task", TaskConfig._configure), ("configure_default_task", TaskConfig._set_default_configuration)],
     )
     _inject_section(
         PipelineConfig,
@@ -99,7 +99,7 @@ def init_config():
         PipelineConfig.default_config(),
         [
             ("configure_pipeline", PipelineConfig._configure),
-            ("configure_default_pipeline", PipelineConfig._configure_default),
+            ("configure_default_pipeline", PipelineConfig._set_default_configuration),
         ],
     )
     _inject_section(
@@ -108,7 +108,7 @@ def init_config():
         ScenarioConfig.default_config(),
         [
             ("configure_scenario", ScenarioConfig._configure),
-            ("configure_default_scenario", ScenarioConfig._configure_default),
+            ("configure_default_scenario", ScenarioConfig._set_default_configuration),
             ("configure_scenario_from_tasks", ScenarioConfig._configure_from_tasks),
         ],
     )
