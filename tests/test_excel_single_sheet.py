@@ -37,8 +37,7 @@ def test_excel():
         Row(int(v.id), int(v.age), float(v.rating)) for i, v in pd.read_excel(EXCEL_SINGLE_SHEET_INPUT_PATH).iterrows()
     ]
 
-    Config.configure_global_app(clean_entities_enabled=True)
-    tp.clean_all_entities()
+    tp.clean_all_entities_by_version(None)
 
     # 📊 Without exposed type (pandas is the default exposed type)
 

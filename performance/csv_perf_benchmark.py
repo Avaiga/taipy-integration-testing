@@ -90,7 +90,7 @@ class CSVPerfBenchmark(DataPerfBenchmark):
 
     def _generate_configs(self, prefix: str, row_count: int, **kwargs):
         Config.unblock_update()
-        tp.clean_all_entities()
+        tp.clean_all_entities_by_version(None)
 
         input_datanode_cfg = Config.configure_csv_data_node(
             id=prefix + "_input_datanode", path=f"{self.input_folder_path}/input_{row_count}.csv", **kwargs

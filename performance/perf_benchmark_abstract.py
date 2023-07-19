@@ -20,7 +20,6 @@ from taipy.config import Config
 from taipy.config._config import _Config
 from taipy.config._serializer._toml_serializer import _TomlSerializer
 from taipy.config.checker._checker import _Checker
-from taipy.config.checker._checkers._global_config_checker import _GlobalConfigChecker
 from taipy.config.checker.issue_collector import IssueCollector
 from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
 from taipy.core.config import (
@@ -48,7 +47,6 @@ class PerfBenchmarkAbstract:
 
     def __init__(self, report_path: str = None):
         Config.unblock_update()
-        Config.configure_global_app(clean_entities_enabled=True)
 
         self.folder_path: Path = Path(__file__).parent.resolve()
 
@@ -64,7 +62,6 @@ class PerfBenchmarkAbstract:
         self.core = tp.Core()
         self.core.run(force_restart=True)
         Config.unblock_update()
-        Config.configure_global_app(clean_entities_enabled=True)
 
     @property
     def __is_prod(self):
@@ -78,7 +75,7 @@ class PerfBenchmarkAbstract:
         ...
 
     def clean_test_state(self):
-        tp.clean_all_entities()
+        tp.clean_all_entities_by_version(None)
         self.clean_config()
         self.clean_orchestrator()
 
@@ -100,7 +97,7 @@ class PerfBenchmarkAbstract:
         Config._applied_config = _Config._default_config()
         Config._collector = IssueCollector()
         Config._serializer = _TomlSerializer()
-        _Checker._checkers = [_GlobalConfigChecker]
+        _Checker._checkers = []
 
         from taipy.core.config import _inject_section
 

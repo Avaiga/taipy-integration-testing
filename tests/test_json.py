@@ -29,8 +29,7 @@ def test_json():
         scenario_cfg_2,
     )
 
-    Config.configure_global_app(clean_entities_enabled=True)
-    tp.clean_all_entities()
+    tp.clean_all_entities_by_version(None)
 
     with open(JSON_DICT_INPUT_PATH, "r") as f:
         json_dict_data = json.load(f)

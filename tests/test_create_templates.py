@@ -30,7 +30,7 @@ def clean_templates():
 
 
 def test_default_template():
-    assert os.path.exists(_ScaffoldCLI._TEMPLATE_MAP["default"])
+    assert os.path.exists(_ScaffoldCLI._TEMPLATE_MAP["taipy-default-template"])
 
     inputs = "\n".join(["foo_app", "main.py", "bar"])
     with pytest.raises(SystemExit) as error:
@@ -43,7 +43,7 @@ def test_default_template():
     inputs = "\n".join(["bar_app", "main.py", "bar"])
     with pytest.raises(SystemExit) as error:
         with patch("sys.stdin", StringIO(f"{inputs}\n")):
-            with patch("sys.argv", ["prog", "create", "--template", "default"]):
+            with patch("sys.argv", ["prog", "create", "--template", "taipy-default-template"]):
                 _entrypoint()
     assert "bar_app" in os.listdir(os.getcwd())
     assert error.value.code == 0

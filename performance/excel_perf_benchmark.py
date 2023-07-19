@@ -105,7 +105,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
 
     def _generate_configs(self, prefix: str, row_count: int, sheet_count: int, **kwargs):
         Config.unblock_update()
-        tp.clean_all_entities()
+        tp.clean_all_entities_by_version(None)
 
         input_datanode_cfg = Config.configure_excel_data_node(
             id=prefix + "_input_datanode",
