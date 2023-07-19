@@ -10,23 +10,21 @@
 # specific language governing permissions and limitations under the License.
 
 import os
+
 import pandas as pd
-
 import taipy.core.taipy as tp
-from taipy.core import Core
-from taipy.core import Status
-from taipy.config import Config
-from taipy.core.job.status import Status
-
 from complex_application_configs import *
+from taipy.config import Config
+from taipy.core import Core, Status
+from taipy.core.job.status import Status
 from utils import assert_true_after_time
 
 
 def test_skipped_jobs():
     pipeline_config = build_skipped_jobs_config()
-    
+
     Core().run()
-    
+
     pipeline = tp.create_pipeline(pipeline_config)
     pipeline.input.write(2)
     pipeline.submit()
@@ -41,7 +39,7 @@ def test_skipped_jobs():
             assert job.status == Status.SKIPPED
             skipped.append(job)
     assert len(skipped) == 2
-    
+
 
 def test_complex_development():
     # d1 --- t1
@@ -60,7 +58,7 @@ def test_complex_development():
 
     _, _, csv_path_sum, excel_path_sum, excel_path_out, csv_path_out = build_complex_required_file_paths()
     scenario_config = build_complex_config()
-    
+
     Core().run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_config)
@@ -98,21 +96,21 @@ def test_complex_standlone():
     _, _, csv_path_sum, excel_path_sum, excel_path_out, csv_path_out = build_complex_required_file_paths()
     scenario_config = build_complex_config()
     Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
-    
+
     Core().run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_config)
 
     jobs = tp.submit(scenario)
-    
+
     assert_true_after_time(lambda: os.path.exists(csv_path_out) and os.path.exists(excel_path_out))
     assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]))
-    
+
     csv_sum_res = pd.read_csv(csv_path_sum)
-    excel_sum_res = pd.read_excel(excel_path_sum)    
+    excel_sum_res = pd.read_excel(excel_path_sum)
     csv_out = pd.read_csv(csv_path_out)
     excel_out = pd.read_excel(excel_path_out)
-    
+
     assert csv_sum_res.to_numpy().flatten().tolist() == [i * 20 for i in range(1, 11)]
     assert excel_sum_res.to_numpy().flatten().tolist() == [i * 2 for i in range(1, 11)]
     assert average(csv_sum_res["number"] - excel_sum_res["number"]) == csv_out.to_numpy()[0]
@@ -126,21 +124,21 @@ def test_churn_classification_development():
     scenario_cfg = build_churn_classification_config()
 
     Core().run(force_restart=True)
-    
+
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
-    
+
     assert all([job.is_completed() for job in jobs])
-    
+
 
 def test_churn_classification_standalone():
     scenario_cfg = build_churn_classification_config()
     Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
-    
+
     Core().run(force_restart=True)
-    
+
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
-    
+
     assert_true_after_time(lambda: os.path.exists(scenario.results._path))
     assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)
