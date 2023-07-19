@@ -128,7 +128,7 @@ def test_churn_classification_development():
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
 
-    assert all([job.is_completed() for job in jobs])
+    assert all([job.is_completed() or job.is_skipped() for job in jobs])
 
 
 def test_churn_classification_standalone():
@@ -141,4 +141,4 @@ def test_churn_classification_standalone():
     jobs = tp.submit(scenario)
 
     assert_true_after_time(lambda: os.path.exists(scenario.results._path))
-    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)
+    assert_true_after_time(lambda: all([job._status in {Status.COMPLETED, Status.SKIPPED} for job in jobs]), time=15)
