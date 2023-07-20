@@ -3,16 +3,16 @@
 name: Python tests
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  pull_request:
+    branches: [ develop ]
 
 jobs:
   backend:
     timeout-minutes: 30
     strategy:
       matrix:
-        python-versions: ['3.8', '3.9', '3.10', '3.11']
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-versions: ['3.8', '3.11']
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
