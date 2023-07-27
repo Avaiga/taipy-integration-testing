@@ -1,17 +1,8 @@
 name: Performance benchmark
 
 on:
-  workflow_dispatch:
-    inputs:
-      commitSHA:
-        description: "The SHA value of the commit that triggered this action"
-        required: true
-        default: "a01c4dc179fa08e94e97ac93da41d9bab700d5dc"
-      repo:
-        description: "The Taipy repo that called this action"
-        required: true
-        default: "taipy-core"
-
+  repository_dispatch:
+    types: [benchmark]
 
 # OIDC token for Azure connection.
 # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
@@ -74,7 +65,7 @@ jobs:
           export AZURE_STORAGE_ACCOUNT_URL="${{ secrets.AZURE_STORAGE_ACCOUNT_URL }}"
           export AZURE_CONTAINER_NAME="${{ secrets.AZURE_CONTAINER_NAME }}"
 
-          python performance/main.py --github-sha "${{ github.event.inputs.commitSHA }}" --repo "${{ github.event.inputs.repo }}"
+          python performance/main.py --github-sha "${{ github.event.client_payload.commitSHA }}" --repo "${{ github.event.client_payload.repo }}"
 
           deactivate
 
