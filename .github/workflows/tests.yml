@@ -20,10 +20,13 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-versions }}
+      - name: Install mongomock
+        run: pip install mongomock
       - name: Tests
         run: |
+          pip install statsmodels Flask-Testing pytest scikit-learn
           pip install git+https://git@github.com/Avaiga/taipy.git@develop
           pip install git+https://${{ secrets.SSH_PRIVATE_KEY }}@github.com/Avaiga/taipy-auth
           pip install git+https://${{ secrets.SSH_PRIVATE_KEY }}@github.com/Avaiga/taipy-enterprise --no-dependencies
-          pip install statsmodels Flask-Testing pytest scikit-learn mongomock
+
           pytest tests

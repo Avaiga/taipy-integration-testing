@@ -17,8 +17,8 @@ from taipy import Config
 from taipy.core import Core
 from taipy.core.config import JobConfig
 
-from tests.test_complex_application.utils.algos import average
-from tests.test_complex_application.utils.config_builders import build_complex_required_file_paths, build_complex_config
+from tests.test_complex.utils.algos import average
+from tests.test_complex.utils.config_builders import build_complex_required_file_paths, build_complex_config
 from tests.utils import assert_true_after_time
 
 
