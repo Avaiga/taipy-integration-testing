@@ -49,7 +49,6 @@ def test_excel_multi_sheet():
     scenario_1 = tp.create_scenario(scenario_cfg)
     input_data_node_1 = scenario_1.input_excel_multi_sheet_dataset_1
     output_data_node_1 = scenario_1.output_excel_multi_sheet_dataset_1
-    pipeline_1 = scenario_1.p1
 
     read_data_1 = input_data_node_1.read()
     assert len(read_data_1) == len(SHEET_NAMES)
@@ -64,13 +63,7 @@ def test_excel_multi_sheet():
     # No sheetname
     with pytest.raises(ValueError):
         assert output_data_node_1.read()
-    pipeline_1.submit()
-    assert all([pandas_data[sheet_name].equals(output_data_node_1.read()[sheet_name]) for sheet_name in SHEET_NAMES])
 
-    output_data_node_1.write(None)
-    # No sheetname
-    with pytest.raises(ValueError):
-        assert output_data_node_1.read()
     scenario_1.submit()
     assert all([pandas_data[sheet_name].equals(output_data_node_1.read()[sheet_name]) for sheet_name in SHEET_NAMES])
 
@@ -87,7 +80,6 @@ def test_excel_multi_sheet():
     scenario_2 = tp.create_scenario(scenario_cfg_2)
     input_data_node_2 = scenario_2.input_excel_multi_sheet_dataset_2
     output_data_node_2 = scenario_2.output_excel_multi_sheet_dataset_2
-    # pipeline_2 = scenario_2.p2
 
     read_data_2 = input_data_node_2.read()
     assert len(read_data_2) == len(SHEET_NAMES)
@@ -116,7 +108,6 @@ def test_excel_multi_sheet():
     scenario_3 = tp.create_scenario(scenario_cfg_3)
     input_data_node_3 = scenario_3.input_excel_multi_sheet_dataset_3
     output_data_node_3 = scenario_3.output_excel_multi_sheet_dataset_3
-    pipeline_3 = scenario_3.p3
 
     read_data_3 = input_data_node_3.read()
     assert len(read_data_3) == len(SHEET_NAMES)
@@ -132,14 +123,7 @@ def test_excel_multi_sheet():
     output_data_node_3.write(None)
     with pytest.raises(ValueError):
         assert output_data_node_1.read()
-    pipeline_3.submit()
-    assert [
-        np.array_equal(read_data_3[sheet_name], output_data_node_3.read()[sheet_name]) for sheet_name in SHEET_NAMES
-    ]
 
-    output_data_node_3.write(None)
-    with pytest.raises(ValueError):
-        assert output_data_node_1.read()
     scenario_3.submit()
     assert [
         np.array_equal(read_data_3[sheet_name], output_data_node_3.read()[sheet_name]) for sheet_name in SHEET_NAMES
@@ -151,7 +135,6 @@ def test_excel_multi_sheet():
     scenario_4 = tp.create_scenario(scenario_cfg_4)
     input_data_node_4 = scenario_4.input_excel_multi_sheet_dataset_4
     output_data_node_4 = scenario_4.output_excel_multi_sheet_dataset_4
-    pipeline_4 = scenario_4.p4
 
     read_data_4 = input_data_node_4.read()
     assert len(read_data_4) == len(SHEET_NAMES)
@@ -165,12 +148,7 @@ def test_excel_multi_sheet():
     output_data_node_4.write(None)
     with pytest.raises(ValueError):
         output_data_node_4.read()  # TODO: test excel file has no header provided
-    pipeline_4.submit()
-    assert all([all(modin_data[sheet_name]._to_pandas() == output_data_node_4.read()[sheet_name]._to_pandas()) for sheet_name in SHEET_NAMES])
 
-    output_data_node_4.write(None)
-    with pytest.raises(ValueError):
-        output_data_node_4.read()  # TODO: test excel file has no header provided
     scenario_4.submit()
     assert all([all(modin_data[sheet_name]._to_pandas() == output_data_node_4.read()[sheet_name]._to_pandas()) for sheet_name in SHEET_NAMES])
 

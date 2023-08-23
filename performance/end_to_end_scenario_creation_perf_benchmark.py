@@ -540,11 +540,11 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
 
         for group in groups:
             # Predictions
-            parameters_cfg = Config.configure_data_node(id="parameters_" + group.lower(), scope=Scope.PIPELINE)
+            parameters_cfg = Config.configure_data_node(id="parameters_" + group.lower(), scope=Scope.SCENARIO)
 
             raw_predictions_cfg = Config.configure_data_node(
                 id="raw_predictions_" + group.lower(),
-                scope=Scope.PIPELINE,
+                scope=Scope.SCENARIO,
                 validity_period=dt.timedelta(days=7),
                 cacheable=True,
             )
@@ -555,7 +555,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
 
             tasks += [task_predict_cfg]
 
-            metadata_cfg = Config.configure_data_node(id="metadata_" + group.lower(), scope=Scope.PIPELINE)
+            metadata_cfg = Config.configure_data_node(id="metadata_" + group.lower(), scope=Scope.SCENARIO)
 
             predictions_cfg = Config.configure_data_node(id="predictions_" + group.lower())
 

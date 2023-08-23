@@ -42,7 +42,6 @@ def test_csv():
     scenario_1 = tp.create_scenario(scenario_cfg)
     input_data_node_1 = scenario_1.input_csv_dataset_1
     output_data_node_1 = scenario_1.output_csv_dataset_1
-    pipeline_1 = scenario_1.p1
 
     read_data_1 = input_data_node_1.read()
     assert len(read_data_1) == ROW_COUNT
@@ -54,11 +53,7 @@ def test_csv():
 
     output_data_node_1.write(None)
     assert output_data_node_1.read().empty
-    pipeline_1.submit()
-    assert pandas_data.equals(output_data_node_1.read())
 
-    output_data_node_1.write(None)
-    assert output_data_node_1.read().empty
     scenario_1.submit()
     assert pandas_data.equals(output_data_node_1.read())
 
@@ -75,7 +70,6 @@ def test_csv():
     scenario_2 = tp.create_scenario(scenario_cfg_2)
     input_data_node_2 = scenario_2.input_csv_dataset_2
     output_data_node_2 = scenario_2.output_csv_dataset_2
-    pipeline_2 = scenario_2.p2
 
     read_data_2 = input_data_node_2.read()
     assert len(read_data_2) == ROW_COUNT
@@ -88,12 +82,7 @@ def test_csv():
     output_data_node_2.write(None)
     assert isinstance(output_data_node_2.read(), list)
     assert len(output_data_node_2.read()) == 0
-    pipeline_2.submit()
-    assert all(compare_custom_date(output_data_node_2.read(), custom_data))
 
-    output_data_node_2.write(None)
-    assert isinstance(output_data_node_2.read(), list)
-    assert len(output_data_node_2.read()) == 0
     scenario_2.submit()
     assert all(compare_custom_date(output_data_node_2.read(), custom_data))
 
@@ -103,7 +92,6 @@ def test_csv():
     scenario_3 = tp.create_scenario(scenario_cfg_3)
     input_data_node_3 = scenario_3.input_csv_dataset_3
     output_data_node_3 = scenario_3.output_csv_dataset_3
-    pipeline_3 = scenario_3.p3
 
     read_data_3 = input_data_node_3.read()
     assert len(read_data_3) == ROW_COUNT
@@ -116,12 +104,7 @@ def test_csv():
     output_data_node_3.write(None)
     assert isinstance(output_data_node_3.read(), np.ndarray)
     assert output_data_node_3.read().size == 0
-    pipeline_3.submit()
-    assert np.array_equal(output_data_node_3.read(), numpy_data)
 
-    output_data_node_3.write(None)
-    assert isinstance(output_data_node_3.read(), np.ndarray)
-    assert output_data_node_3.read().size == 0
     scenario_3.submit()
     assert np.array_equal(output_data_node_3.read(), numpy_data)
 
@@ -131,7 +114,6 @@ def test_csv():
     scenario_4 = tp.create_scenario(scenario_cfg_4)
     input_data_node_4 = scenario_4.input_csv_dataset_4
     output_data_node_4 = scenario_4.output_csv_dataset_4
-    pipeline_4 = scenario_4.p4
 
     read_data_4 = input_data_node_4.read()
     assert len(read_data_4) == ROW_COUNT
@@ -143,11 +125,7 @@ def test_csv():
 
     output_data_node_4.write(None)
     assert output_data_node_4.read().empty
-    pipeline_4.submit()
-    assert all(modin_data._to_pandas() == output_data_node_4.read()._to_pandas())
 
-    output_data_node_4.write(None)
-    assert output_data_node_4.read().empty
     scenario_4.submit()
     assert all(modin_data._to_pandas() == output_data_node_4.read()._to_pandas())
 

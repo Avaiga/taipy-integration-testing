@@ -29,22 +29,22 @@ def build_skipped_jobs_config():
     output_config = Config.configure_data_node(id="output")
     task_config_1 = Config.configure_task("first", mult_by_2, input_config, intermediate_config, skippable=True)
     task_config_2 = Config.configure_task("second", mult_by_2, intermediate_config, output_config, skippable=True)
-    pipeline_config = Config.configure_pipeline("pipeline", [task_config_1, task_config_2])
-    return pipeline_config
+    scenario_config = Config.configure_scenario("scenario", task_configs=[task_config_1, task_config_2])
+    return scenario_config
 
 
 class TestSkipJobs:
     @staticmethod
     def __test():
-        pipeline_config = build_skipped_jobs_config()
+        scenario_config= build_skipped_jobs_config()
         Core().run()
-        pipeline = tp.create_pipeline(pipeline_config)
-        pipeline.input.write(2)
-        pipeline.submit()
+        scenario = tp.create_scenario(scenario_config)
+        scenario.input.write(2)
+        scenario.submit()
         assert len(tp.get_jobs()) == 2
         for job in tp.get_jobs():
             assert_true_after_time(job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}")
-        pipeline.submit()
+        scenario.submit()
         assert len(tp.get_jobs()) == 4
         skipped = []
         for job in tp.get_jobs():

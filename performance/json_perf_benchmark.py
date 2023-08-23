@@ -86,14 +86,14 @@ class JsonPerfBenchmark(DataPerfBenchmark):
         properties_as_str.insert(1, time_start)
 
         scenario_cfg = self._generate_configs(prefix, row_count, type_format, **properties)
-        input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)
-        read_data_node, _, _, write_data_node, submit_pipeline, submit_scenario = self._generate_methods(
+        input_data_node, output_data_node, sequence, scenario = self._generate_entities(prefix, scenario_cfg)
+        read_data_node, _, _, write_data_node, submit_sequence, submit_scenario = self._generate_methods(
             properties_as_str
         )
 
         data = read_data_node(input_data_node)
         write_data_node(output_data_node, data)
-        submit_pipeline(pipeline)
+        submit_sequence(sequence)
         submit_scenario(scenario)
 
     def _generate_configs(self, prefix: str, row_count: int, type_format: str, **kwargs):

@@ -110,7 +110,6 @@ def init_config():
         [
             ("configure_scenario", ScenarioConfig._configure),
             ("configure_default_scenario", ScenarioConfig._set_default_configuration),
-            ("configure_scenario_from_tasks", ScenarioConfig._configure_from_tasks),
         ],
     )
     _inject_section(

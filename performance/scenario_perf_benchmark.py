@@ -39,7 +39,7 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
         {"repository_type": "sql"},
         {"repository_type": "mongo", "repository_properties": {"mongo_username": "taipy", "mongo_password": "taipy"}},
     ]
-    MULTI_ENTITY_TYPES = ["datanode", "task", "pipeline", "scenario"]
+    MULTI_ENTITY_TYPES = ["datanode", "task", "scenario"]
     DATA_NODE_SCOPES = [Scope.SCENARIO, Scope.CYCLE, Scope.GLOBAL]
 
     def __init__(self, github_sha: str, entity_counts: list[int] = None, report_path: str = None):
@@ -139,11 +139,9 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
 
         nb_dn = entity_count if multi_entity_type == "datanode" else 1
         nb_task = entity_count if multi_entity_type == "task" else 1
-        nb_pipeline = entity_count if multi_entity_type == "pipeline" else 1
 
         input_datanode_cfgs = []
         task_cfgs = []
-        pipeline_cfgs = []
 
         for i in range(nb_dn):
             input_datanode_cfgs.append(
@@ -159,9 +157,6 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
                 )
             )
 
-        for i in range(nb_pipeline):
-            pipeline_cfgs.append(Config.configure_pipeline(id=f"pipeline_{i}", task_configs=task_cfgs))
-
-        scenario_cfg = Config.configure_scenario(id="scenario", pipeline_configs=pipeline_cfgs)
+        scenario_cfg = Config.configure_scenario(id="scenario", task_configs=task_cfgs)
 
         return scenario_cfg

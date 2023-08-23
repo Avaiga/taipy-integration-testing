@@ -39,10 +39,8 @@ def build_arima_config():
         id="arima_scoring", input=[arima_model, dates_to_forecast], function=predict, output=forecast_values
     )
 
-    arima_pipeline = Config.configure_pipeline(id="arima_pipelines", task_configs=[arima_training_algo, arima_scoring_algo])
-
     arima_scenario_config = Config.configure_scenario(
-        id="Arima_scenario", pipeline_configs=[arima_pipeline], frequency=Frequency.DAILY
+        id="Arima_scenario", task_configs=[arima_training_algo, arima_scoring_algo], frequency=Frequency.DAILY
     )
 
     return arima_scenario_config

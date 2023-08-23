@@ -41,12 +41,10 @@ class RestTest(BaseTestCase):
         assert response.json["message"] == "Scenario was created."
 
         all_scenarios = self._get("scenarios")
-        all_pipelines = self._get("pipelines")
         all_data_nodes = self._get("datanodes")
         all_tasks = self._get("tasks")
 
         assert len(all_scenarios.json) == 1
-        assert len(all_pipelines.json) == 1
         assert len(all_data_nodes.json) == 4
         assert len(all_tasks.json) == 2
 

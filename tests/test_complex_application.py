@@ -40,17 +40,18 @@ def assert_true_after_time(assertion, msg=None, time=120):
 
 
 def test_skipped_jobs():
-    pipeline_config = build_skipped_jobs_config()
+    scenario_config = build_skipped_jobs_config()
 
     Core().run()
 
-    pipeline = tp.create_pipeline(pipeline_config)
-    pipeline.input.write(2)
-    pipeline.submit()
+    scenario = tp.create_scenario(scenario_config)
+    scenario.input.write(2)
+    scenario.submit()
     assert len(tp.get_jobs()) == 2
     for job in tp.get_jobs():
         assert job.status == Status.COMPLETED
-    pipeline.submit()
+
+    scenario.submit()
     assert len(tp.get_jobs()) == 4
     skipped = []
     for job in tp.get_jobs():

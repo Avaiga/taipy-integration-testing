@@ -69,13 +69,13 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         properties_as_str.insert(1, time_start)
 
         scenario_cfg = self._generate_configs(prefix, row_count, **properties)
-        input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)
+        input_data_node, output_data_node, sequence, scenario = self._generate_entities(prefix, scenario_cfg)
         (
             read_data_node,
             filter_data_node,
             join_filter_data_node,
             write_data_node,
-            submit_pipeline,
+            submit_sequence,
             submit_scenario,
         ) = self._generate_methods(properties_as_str)
 
@@ -85,7 +85,7 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         if input_data_node.properties["exposed_type"] not in ["numpy", "modin"]:
             join_filter_data_node(input_data_node)
         write_data_node(output_data_node, data)
-        submit_pipeline(pipeline)
+        submit_sequence(sequence)
         submit_scenario(scenario)
 
     def _generate_configs(self, prefix: str, row_count: int, **kwargs):
