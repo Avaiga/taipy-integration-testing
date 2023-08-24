@@ -10,12 +10,11 @@
 # specific language governing permissions and limitations under the License.
 
 import os
-import pandas as pd
 
+import pandas as pd
 import taipy.core.taipy as tp
-from taipy.core import Core
-from taipy.core import Status
 from taipy.config import Config
+from taipy.core import Core, Status
 from taipy.core.job.status import Status
 
 from .complex_application_configs import *
@@ -147,6 +146,9 @@ def test_churn_classification_development():
 
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
+    for job in jobs:
+        if not job.is_completed():
+            print(job._task.config_id)
 
     assert all([job.is_completed() for job in jobs])
 

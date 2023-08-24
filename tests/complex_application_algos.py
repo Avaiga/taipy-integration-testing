@@ -1,12 +1,23 @@
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_auc_score
+# Copyright 2023 Avaiga Private Limited
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+# an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
 
 import datetime as dt
 from time import sleep
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
 
 
 def sum(a, b):
@@ -51,7 +62,7 @@ def return_a_number_with_sleep():
     return 10
 
 
-def preprocess_dataset(initial_dataset: pd.DataFrame, date: dt.datetime = "None"):
+def preprocess_dataset(initial_dataset: pd.DataFrame, date: dt.datetime = None):
     """This function preprocess the dataset to be used in the model
     Args:
         initial_dataset (pd.DataFrame): the raw format when we first read the data
@@ -62,26 +73,50 @@ def preprocess_dataset(initial_dataset: pd.DataFrame, date: dt.datetime = "None"
 
     # We filter the dataframe on the date
     if date != "None":
-        initial_dataset['Date'] = pd.to_datetime(initial_dataset['Date'])
-        processed_dataset = initial_dataset[initial_dataset['Date'] <= date]
+        initial_dataset["Date"] = pd.to_datetime(initial_dataset["Date"])
+        processed_dataset = initial_dataset[initial_dataset["Date"] <= date]
         print(len(processed_dataset))
     else:
         processed_dataset = initial_dataset
 
     processed_dataset = processed_dataset[
-        ['CreditScore', 'Geography', 'Gender', 'Age', 'Tenure', 'Balance', 'NumOfProducts', 'HasCrCard',
-         'IsActiveMember', 'EstimatedSalary', 'Exited']]
+        [
+            "CreditScore",
+            "Geography",
+            "Gender",
+            "Age",
+            "Tenure",
+            "Balance",
+            "NumOfProducts",
+            "HasCrCard",
+            "IsActiveMember",
+            "EstimatedSalary",
+            "Exited",
+        ]
+    ]
 
     processed_dataset = pd.get_dummies(processed_dataset)
 
-    if 'Gender_Female' in processed_dataset.columns:
-        processed_dataset.drop('Gender_Female', axis=1, inplace=True)
+    if "Gender_Female" in processed_dataset.columns:
+        processed_dataset.drop("Gender_Female", axis=1, inplace=True)
 
     processed_dataset = processed_dataset.apply(pd.to_numeric)
 
-    columns_to_select = ['CreditScore', 'Age', 'Tenure', 'Balance', 'NumOfProducts', 'HasCrCard',
-                         'IsActiveMember', 'EstimatedSalary', 'Geography_France', 'Geography_Germany',
-                         'Geography_Spain', 'Gender_Male', 'Exited']
+    columns_to_select = [
+        "CreditScore",
+        "Age",
+        "Tenure",
+        "Balance",
+        "NumOfProducts",
+        "HasCrCard",
+        "IsActiveMember",
+        "EstimatedSalary",
+        "Geography_France",
+        "Geography_Germany",
+        "Geography_Spain",
+        "Gender_Male",
+        "Exited",
+    ]
 
     processed_dataset = processed_dataset[[col for col in columns_to_select if col in processed_dataset.columns]]
 
@@ -98,9 +133,9 @@ def create_train_test_data(preprocessed_dataset: pd.DataFrame):
     """
     print("\n     Creating the training and testing dataset...")
 
-    X_train, X_test, y_train, y_test = train_test_split(preprocessed_dataset.iloc[:, :-1],
-                                                        preprocessed_dataset.iloc[:, -1], test_size=0.2,
-                                                        random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(
+        preprocessed_dataset.iloc[:, :-1], preprocessed_dataset.iloc[:, -1], test_size=0.2, random_state=42
+    )
 
     train_data = pd.concat([X_train, y_train], axis=1)
     test_data = pd.concat([X_test, y_test], axis=1)
@@ -120,8 +155,8 @@ def train_model_baseline(train_dataset: pd.DataFrame):
     model_fitted = LogisticRegression().fit(X, y)
     print("\n    ", model_fitted, " is trained!")
 
-    importance_dict = {'Features': X.columns, 'Importance': model_fitted.coef_[0]}
-    importance = pd.DataFrame(importance_dict).sort_values(by='Importance', ascending=True)
+    importance_dict = {"Features": X.columns, "Importance": model_fitted.coef_[0]}
+    importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
     return model_fitted, importance
 
 
@@ -137,8 +172,8 @@ def train_model(train_dataset: pd.DataFrame):
     model_fitted = RandomForestClassifier().fit(X, y)
     print("\n    ", model_fitted, " is trained!")
 
-    importance_dict = {'Features': X.columns, 'Importance': model_fitted.feature_importances_}
-    importance = pd.DataFrame(importance_dict).sort_values(by='Importance', ascending=True)
+    importance_dict = {"Features": X.columns, "Importance": model_fitted.feature_importances_}
+    importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
     return model_fitted, importance
 
 
@@ -230,27 +265,31 @@ def create_metrics(predictions: np.array, test_dataset: np.array):
 
     f1_score = np.around(2 * true_positive / (2 * true_positive + false_positive + false_negative), decimals=2)
     accuracy = np.around(
-        (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative), decimals=2)
+        (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative), decimals=2
+    )
     dict_ftpn = {"tp": true_positive, "tn": true_negative, "fp": false_positive, "fn": false_negative}
 
     number_of_good_predictions = true_positive + true_negative
     number_of_false_predictions = false_positive + false_negative
 
-    metrics = {"f1_score": f1_score,
-               "accuracy": accuracy,
-               "dict_ftpn": dict_ftpn,
-               'number_of_predictions': len(predictions),
-               'number_of_good_predictions': number_of_good_predictions,
-               'number_of_false_predictions': number_of_false_predictions}
+    metrics = {
+        "f1_score": f1_score,
+        "accuracy": accuracy,
+        "dict_ftpn": dict_ftpn,
+        "number_of_predictions": len(predictions),
+        "number_of_good_predictions": number_of_good_predictions,
+        "number_of_false_predictions": number_of_false_predictions,
+    }
 
     print("     Creating the metrics done!")
     return metrics
 
 
 def create_results(forecast_values, test_dataset):
-    forecast_series_proba = pd.Series(np.around(forecast_values, decimals=2), index=test_dataset.index,
-                                      name='Probability')
-    forecast_series = pd.Series((forecast_values > 0.5).astype(int), index=test_dataset.index, name='Forecast')
+    forecast_series_proba = pd.Series(
+        np.around(forecast_values, decimals=2), index=test_dataset.index, name="Probability"
+    )
+    forecast_series = pd.Series((forecast_values > 0.5).astype(int), index=test_dataset.index, name="Forecast")
     true_series = pd.Series(test_dataset.iloc[:, -1], name="Historical", index=test_dataset.index)
     index_series = pd.Series(range(len(true_series)), index=test_dataset.index, name="Id")
 

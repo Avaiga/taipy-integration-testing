@@ -12,9 +12,10 @@
 import os
 import pathlib
 
-from .complex_application_algos import *
 from taipy.config import Config, Frequency, Scope
 from taipy.core.config.job_config import JobConfig
+
+from .complex_application_algos import *
 
 
 def build_skipped_jobs_config():
@@ -22,15 +23,9 @@ def build_skipped_jobs_config():
     input_config = Config.configure_data_node(id="input")
     intermediate_config = Config.configure_data_node(id="intermediate")
     output_config = Config.configure_data_node(id="output")
-    task_config_1 = Config.configure_task(
-        "first", mult_by_2, input_config, intermediate_config, skippable=True
-    )
-    task_config_2 = Config.configure_task(
-        "second", mult_by_2, intermediate_config, output_config, skippable=True
-    )
-    scenario_config = Config.configure_scenario(
-        "scenario", [task_config_1, task_config_2]
-    )
+    task_config_1 = Config.configure_task("first", mult_by_2, input_config, intermediate_config, skippable=True)
+    task_config_2 = Config.configure_task("second", mult_by_2, intermediate_config, output_config, skippable=True)
+    scenario_config = Config.configure_scenario("scenario", [task_config_1, task_config_2])
 
     return scenario_config
 
@@ -45,9 +40,7 @@ def build_complex_required_file_paths():
         "shared_test_cases/data_sample/example.xlsx",
     )
 
-    csv_path_sum = os.path.join(
-        pathlib.Path(__file__).parent.resolve(), "shared_test_cases/data_sample/sum.csv"
-    )
+    csv_path_sum = os.path.join(pathlib.Path(__file__).parent.resolve(), "shared_test_cases/data_sample/sum.csv")
     excel_path_sum = os.path.join(
         pathlib.Path(__file__).parent.resolve(),
         "shared_test_cases/data_sample/sum.xlsx",
@@ -57,9 +50,7 @@ def build_complex_required_file_paths():
         pathlib.Path(__file__).parent.resolve(),
         "shared_test_cases/data_sample/res.xlsx",
     )
-    csv_path_out = os.path.join(
-        pathlib.Path(__file__).parent.resolve(), "shared_test_cases/data_sample/res.csv"
-    )
+    csv_path_out = os.path.join(pathlib.Path(__file__).parent.resolve(), "shared_test_cases/data_sample/res.csv")
     return (
         csv_path_inp,
         excel_path_inp,
@@ -80,26 +71,16 @@ def build_complex_config():
         csv_path_out,
     ) = build_complex_required_file_paths()
 
-    inp_csv_dn_1 = Config.configure_csv_data_node(
-        "dn_csv_in_1", default_path=csv_path_inp
-    )
-    inp_csv_dn_2 = Config.configure_csv_data_node(
-        "dn_csv_in_2", default_path=csv_path_inp
-    )
+    inp_csv_dn_1 = Config.configure_csv_data_node("dn_csv_in_1", default_path=csv_path_inp)
+    inp_csv_dn_2 = Config.configure_csv_data_node("dn_csv_in_2", default_path=csv_path_inp)
 
-    inp_excel_dn_1 = Config.configure_excel_data_node(
-        "dn_excel_in_1", default_path=excel_path_inp, sheet_name="Sheet1"
-    )
-    inp_excel_dn_2 = Config.configure_excel_data_node(
-        "dn_excel_in_2", default_path=excel_path_inp, sheet_name="Sheet1"
-    )
+    inp_excel_dn_1 = Config.configure_excel_data_node("dn_excel_in_1", default_path=excel_path_inp, sheet_name="Sheet1")
+    inp_excel_dn_2 = Config.configure_excel_data_node("dn_excel_in_2", default_path=excel_path_inp, sheet_name="Sheet1")
 
     placeholder = Config.configure_data_node(id="dn_placeholder", default_data=10)
 
     dn_csv_sum = Config.configure_csv_data_node("dn_sum_csv", default_path=csv_path_sum)
-    dn_excel_sum = Config.configure_excel_data_node(
-        "dn_sum_excel", default_path=excel_path_sum, sheet_name="Sheet1"
-    )
+    dn_excel_sum = Config.configure_excel_data_node("dn_sum_excel", default_path=excel_path_sum, sheet_name="Sheet1")
 
     dn_subtract_csv_excel = Config.configure_pickle_data_node("dn_subtract_csv_excel")
     dn_mult = Config.configure_pickle_data_node("dn_mult")
@@ -109,12 +90,8 @@ def build_complex_config():
     output_excel_dn = Config.configure_excel_data_node("excel_out", excel_path_out)
 
     task_print_csv = Config.configure_task("task_print_csv", print, input=inp_csv_dn_1)
-    task_print_excel = Config.configure_task(
-        "task_print_excel", print, input=inp_excel_dn_1
-    )
-    task_sum_csv = Config.configure_task(
-        "task_sum_csv", sum, input=[inp_csv_dn_2, inp_csv_dn_1], output=dn_csv_sum
-    )
+    task_print_excel = Config.configure_task("task_print_excel", print, input=inp_excel_dn_1)
+    task_sum_csv = Config.configure_task("task_sum_csv", sum, input=[inp_csv_dn_2, inp_csv_dn_1], output=dn_csv_sum)
     task_sum_excel = Config.configure_task(
         "task_sum_excel",
         sum,
@@ -128,24 +105,16 @@ def build_complex_config():
         input=[dn_csv_sum, dn_excel_sum],
         output=dn_subtract_csv_excel,
     )
-    task_insert_placeholder = Config.configure_task(
-        "task_insert_placeholder", return_a_number, output=[placeholder]
-    )
+    task_insert_placeholder = Config.configure_task("task_insert_placeholder", return_a_number, output=[placeholder])
     task_mult = Config.configure_task(
         "task_mult_by_placeholder",
         mult,
         input=[dn_subtract_csv_excel, placeholder],
         output=dn_mult,
     )
-    task_div = Config.configure_task(
-        "task_div_by_placeholder", divide, input=[dn_mult, placeholder], output=dn_div
-    )
-    task_avg_div = Config.configure_task(
-        "task_avg_div", average, input=dn_div, output=output_csv_dn
-    )
-    task_avg_mult = Config.configure_task(
-        "task_avg_mult", average, input=dn_mult, output=output_excel_dn
-    )
+    task_div = Config.configure_task("task_div_by_placeholder", divide, input=[dn_mult, placeholder], output=dn_div)
+    task_avg_div = Config.configure_task("task_avg_div", average, input=dn_div, output=output_csv_dn)
+    task_avg_mult = Config.configure_task("task_avg_mult", average, input=dn_mult, output=output_excel_dn)
 
     scenario_config = Config.configure_scenario(
         "scenario",
@@ -189,14 +158,10 @@ def build_churn_classification_config():
     )
 
     # the final datanode that contains the processed data
-    train_dataset = Config.configure_data_node(
-        id="train_dataset", cacheable=True, validity_period=dt.timedelta(days=1)
-    )
+    train_dataset = Config.configure_data_node(id="train_dataset", cacheable=True, validity_period=dt.timedelta(days=1))
 
     # the final datanode that contains the processed data
-    trained_model = Config.configure_data_node(
-        id="trained_model", cacheable=True, validity_period=dt.timedelta(days=1)
-    )
+    trained_model = Config.configure_data_node(id="trained_model", cacheable=True, validity_period=dt.timedelta(days=1))
 
     trained_model_baseline = Config.configure_data_node(
         id="trained_model_baseline",
@@ -205,47 +170,50 @@ def build_churn_classification_config():
     )
 
     # the final datanode that contains the processed data
-    test_dataset = Config.configure_data_node(
-        id="test_dataset", cacheable=True, validity_period=dt.timedelta(days=1)
+    test_dataset = Config.configure_data_node(id="test_dataset", cacheable=True, validity_period=dt.timedelta(days=1))
+
+    forecast_baseline_dataset = Config.configure_data_node(
+        id="forecast_baseline_dataset",
+        scope=Scope.SCENARIO,
+        # cacheable=True,
+        # validity_period=dt.timedelta(days=1),
     )
 
-    forecast_dataset = Config.configure_data_node(
-        id="forecast_dataset",
+    forecast_test_dataset = Config.configure_data_node(
+        id="forecast_test_dataset",
         scope=Scope.SCENARIO,
-        cacheable=True,
-        validity_period=dt.timedelta(days=1),
+        # cacheable=True,
+        # validity_period=dt.timedelta(days=1),
     )
 
     roc_data = Config.configure_data_node(
         id="roc_data",
         scope=Scope.SCENARIO,
-        cacheable=True,
-        validity_period=dt.timedelta(days=1),
+        # cacheable=True,
+        # validity_period=dt.timedelta(days=1),
     )
 
     score_auc = Config.configure_data_node(
         id="score_auc",
         scope=Scope.SCENARIO,
-        cacheable=True,
-        validity_period=dt.timedelta(days=1),
+        # cacheable=True,
+        # validity_period=dt.timedelta(days=1),
     )
 
     metrics = Config.configure_data_node(
         id="metrics",
         scope=Scope.SCENARIO,
-        cacheable=True,
-        validity_period=dt.timedelta(days=1),
+        # cacheable=True,
+        # validity_period=dt.timedelta(days=1),
     )
 
-    feature_importance_cfg = Config.configure_data_node(
-        id="feature_importance", scope=Scope.SCENARIO
-    )
+    feature_importance_cfg = Config.configure_data_node(id="feature_importance", scope=Scope.SCENARIO)
 
     results = Config.configure_data_node(
         id="results",
         scope=Scope.SCENARIO,
-        cacheable=True,
-        validity_period=dt.timedelta(days=1),
+        # cacheable=True,
+        # validity_period=dt.timedelta(days=1),
     )
 
     ##############################################################################################################################
@@ -292,7 +260,7 @@ def build_churn_classification_config():
         id="predict_the_test_data",
         input=[test_dataset, trained_model],
         function=forecast,
-        output=forecast_dataset,
+        output=forecast_test_dataset,
     )
 
     # test_dataset --> forecast --> forecast_dataset
@@ -300,33 +268,47 @@ def build_churn_classification_config():
         id="predict_of_baseline",
         input=[test_dataset, trained_model_baseline],
         function=forecast_baseline,
-        output=forecast_dataset,
+        output=forecast_baseline_dataset,
     )
 
     task_roc = Config.configure_task(
         id="task_roc",
-        input=[forecast_dataset, test_dataset],
+        input=[forecast_test_dataset, test_dataset],
         function=roc_from_scratch,
         output=[roc_data, score_auc],
     )
 
     task_roc_baseline = Config.configure_task(
         id="task_roc_baseline",
-        input=[forecast_dataset, test_dataset],
+        input=[forecast_baseline_dataset, test_dataset],
         function=roc_from_scratch,
         output=[roc_data, score_auc],
     )
 
     task_create_metrics = Config.configure_task(
         id="task_create_metrics",
-        input=[forecast_dataset, test_dataset],
+        input=[forecast_test_dataset, test_dataset],
         function=create_metrics,
         output=metrics,
     )
 
     task_create_results = Config.configure_task(
         id="task_create_results",
-        input=[forecast_dataset, test_dataset],
+        input=[forecast_test_dataset, test_dataset],
+        function=create_results,
+        output=results,
+    )
+
+    task_create_baseline_metrics = Config.configure_task(
+        id="task_create_baseline_metrics",
+        input=[forecast_baseline_dataset, test_dataset],
+        function=create_metrics,
+        output=metrics,
+    )
+
+    task_create_baseline_results = Config.configure_task(
+        id="task_create_baseline_results",
+        input=[forecast_baseline_dataset, test_dataset],
         function=create_results,
         output=results,
     )
@@ -351,6 +333,8 @@ def build_churn_classification_config():
             task_roc_baseline,
             task_create_metrics,
             task_create_results,
+            task_create_baseline_metrics,
+            task_create_baseline_results,
         ],
         frequency=Frequency.WEEKLY,
     )
