@@ -19,9 +19,9 @@ from taipy import Config
 from utils import algorithm, timer
 
 
-class PipelinePerfBenchmark(PerfBenchmarkAbstract):
-    BENCHMARK_NAME = "Pipeline perf"
-    BENCHMARK_REPORT_FILE_NAME = "pipeline_benchmark_report.csv"
+class SequencePerfBenchmark(PerfBenchmarkAbstract):
+    BENCHMARK_NAME = "Sequence perf"
+    BENCHMARK_REPORT_FILE_NAME = "sequence_benchmark_report.csv"
     HEADERS = ["github_sha", "datetime", "repo_type", "entity_counts", "function_name", "time_elapsed"]
     DEFAULT_ENTITY_COUNTS = [10**2, 10**3, 10**4]
     REPO_CONFIGS = [
@@ -58,50 +58,50 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
 
         properties_as_str = [self.github_sha, time_start, repo_config.get("repository_type"), str(entity_count)]
 
-        pipeline_cfg = self._generate_configs(repo_config)
+        sequence_cfg = self._generate_configs(repo_config)
         test_functions = self._generate_methods(properties_as_str)
 
-        create_pipeline_multiple_times = test_functions[1]
-        get_single_pipeline_by_id = test_functions[2]
-        get_all_pipelines = test_functions[3]
-        delete_pipeline_by_id = test_functions[4]
+        create_sequence_multiple_times = test_functions[1]
+        get_single_sequence_by_id = test_functions[2]
+        get_all_sequences = test_functions[3]
+        delete_sequence_by_id = test_functions[4]
 
-        pipelines = create_pipeline_multiple_times(entity_count, pipeline_cfg)
-        pipeline = get_single_pipeline_by_id(pipelines[0].id)
-        get_all_pipelines()
-        delete_pipeline_by_id(pipeline.id)
+        sequences = create_sequence_multiple_times(entity_count, sequence_cfg)
+        sequence = get_single_sequence_by_id(sequences[0].id)
+        get_all_sequences()
+        delete_sequence_by_id(sequence.id)
 
     @staticmethod
     def _generate_methods(properties_as_str):
         @timer(properties_as_str)
-        def create_pipeline(pipeline_config):
-            return tp.create_pipeline(pipeline_config)
+        def create_sequence(sequence_config):
+            return tp.create_sequence(sequence_config)
 
         @timer(properties_as_str)
-        def create_pipeline_multiple_times(entity_count: int, pipeline_config):
-            pipelines = []
+        def create_sequence_multiple_times(entity_count: int, sequence_config):
+            sequences = []
             for _ in range(entity_count):
-                pipelines.append(tp.create_pipeline(pipeline_config))
-            return pipelines
+                sequences.append(tp.create_sequence(sequence_config))
+            return sequences
 
         @timer(properties_as_str)
-        def get_single_pipeline_by_id(pipeline_id):
-            return tp.get(pipeline_id)
+        def get_single_sequence_by_id(sequence_id):
+            return tp.get(sequence_id)
 
         @timer(properties_as_str)
-        def get_all_pipelines():
-            return tp.get_pipelines()
+        def get_all_sequences():
+            return tp.get_sequences()
 
         @timer(properties_as_str)
-        def delete_pipeline_by_id(pipeline_id):
-            tp.delete(pipeline_id)
+        def delete_sequence_by_id(sequence_id):
+            tp.delete(sequence_id)
 
         return (
-            create_pipeline,
-            create_pipeline_multiple_times,
-            get_single_pipeline_by_id,
-            get_all_pipelines,
-            delete_pipeline_by_id,
+            create_sequence,
+            create_sequence_multiple_times,
+            get_single_sequence_by_id,
+            get_all_sequences,
+            delete_sequence_by_id,
         )
 
     def _generate_configs(self, repo_config):
@@ -114,6 +114,6 @@ class PipelinePerfBenchmark(PerfBenchmarkAbstract):
         task_cfg = Config.configure_task(
             id="task", input=input_datanode_cfgs, function=algorithm, output=output_datanode_cfg
         )
-        pipeline_cfg = Config.configure_pipeline(id="pipeline", task_configs=task_cfg)
+        sequence_cfg = Config.configure_sequence(id="sequence", task_configs=task_cfg)
 
-        return pipeline_cfg
+        return sequence_cfg

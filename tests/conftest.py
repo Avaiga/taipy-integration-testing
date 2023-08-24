@@ -18,6 +18,7 @@ import pytest
 @pytest.fixture(autouse=True)
 def cleanup_data():
     from time import sleep
+
     from sqlalchemy.orm import close_all_sessions
 
     close_all_sessions()
@@ -37,25 +38,24 @@ def cleanup_data():
 
 def init_config():
     from taipy import Config
-    from taipy.core.config import (
-        CoreSection,
-        DataNodeConfig,
-        JobConfig,
-        PipelineConfig,
-        ScenarioConfig,
-        TaskConfig,
-        _DataNodeConfigChecker,
-        _JobConfigChecker,
-        _PipelineConfigChecker,
-        _ScenarioConfigChecker,
-        _TaskConfigChecker,
-        CoreSection,
-    )
     from taipy.config import IssueCollector
     from taipy.config._config import _Config
     from taipy.config._serializer._toml_serializer import _TomlSerializer
     from taipy.config.checker._checker import _Checker
-    from taipy.core.config import _inject_section
+    from taipy.core.config import (
+        CoreSection,
+        DataNodeConfig,
+        JobConfig,
+        ScenarioConfig,
+        SequenceConfig,
+        TaskConfig,
+        _DataNodeConfigChecker,
+        _inject_section,
+        _JobConfigChecker,
+        _ScenarioConfigChecker,
+        _SequenceConfigChecker,
+        _TaskConfigChecker,
+    )
 
     Config.unblock_update()
     Config._default_config = _Config()._default_config()
@@ -95,12 +95,12 @@ def init_config():
         [("configure_task", TaskConfig._configure), ("configure_default_task", TaskConfig._set_default_configuration)],
     )
     _inject_section(
-        PipelineConfig,
-        "pipelines",
-        PipelineConfig.default_config(),
+        SequenceConfig,
+        "sequences",
+        SequenceConfig.default_config(),
         [
-            ("configure_pipeline", PipelineConfig._configure),
-            ("configure_default_pipeline", PipelineConfig._set_default_configuration),
+            ("configure_sequence", SequenceConfig._configure),
+            ("configure_default_sequence", SequenceConfig._set_default_configuration),
         ],
     )
     _inject_section(
@@ -122,22 +122,22 @@ def init_config():
     _Checker.add_checker(_JobConfigChecker)
     _Checker.add_checker(_DataNodeConfigChecker)
     _Checker.add_checker(_TaskConfigChecker)
-    _Checker.add_checker(_PipelineConfigChecker)
+    _Checker.add_checker(_SequenceConfigChecker)
     _Checker.add_checker(_ScenarioConfigChecker)
 
 
 def init_managers():
+    from taipy.core._version._version_manager_factory import _VersionManagerFactory
     from taipy.core.cycle._cycle_manager_factory import _CycleManagerFactory
     from taipy.core.data._data_manager_factory import _DataManagerFactory
     from taipy.core.job._job_manager_factory import _JobManagerFactory
-    from taipy.core.pipeline._pipeline_manager_factory import _PipelineManagerFactory
     from taipy.core.scenario._scenario_manager_factory import _ScenarioManagerFactory
+    from taipy.core.sequence._sequence_manager_factory import _SequenceManagerFactory
     from taipy.core.task._task_manager_factory import _TaskManagerFactory
-    from taipy.core._version._version_manager_factory import _VersionManagerFactory
 
     _CycleManagerFactory._build_manager()._delete_all()
     _ScenarioManagerFactory._build_manager()._delete_all()
-    _PipelineManagerFactory._build_manager()._delete_all()
+    _SequenceManagerFactory._build_manager()._delete_all()
     _JobManagerFactory._build_manager()._delete_all()
     _TaskManagerFactory._build_manager()._delete_all()
     _DataManagerFactory._build_manager()._delete_all()

@@ -26,13 +26,13 @@ from taipy.core.config import (
     CoreSection,
     DataNodeConfig,
     JobConfig,
-    PipelineConfig,
     ScenarioConfig,
+    SequenceConfig,
     TaskConfig,
     _DataNodeConfigChecker,
     _JobConfigChecker,
-    _PipelineConfigChecker,
     _ScenarioConfigChecker,
+    _SequenceConfigChecker,
     _TaskConfigChecker,
 )
 from taipy.logger._taipy_logger import _TaipyLogger
@@ -129,12 +129,12 @@ class PerfBenchmarkAbstract:
             [("configure_task", TaskConfig._configure), ("configure_default_task", TaskConfig._configure_default)],
         )
         _inject_section(
-            PipelineConfig,
-            "pipelines",
-            PipelineConfig.default_config(),
+            SequenceConfig,
+            "sequences",
+            SequenceConfig.default_config(),
             [
-                ("configure_pipeline", PipelineConfig._configure),
-                ("configure_default_pipeline", PipelineConfig._configure_default),
+                ("configure_sequence", SequenceConfig._configure),
+                ("configure_default_sequence", SequenceConfig._configure_default),
             ],
         )
         _inject_section(
@@ -157,7 +157,7 @@ class PerfBenchmarkAbstract:
         _Checker.add_checker(_JobConfigChecker)
         _Checker.add_checker(_DataNodeConfigChecker)
         _Checker.add_checker(_TaskConfigChecker)
-        _Checker.add_checker(_PipelineConfigChecker)
+        _Checker.add_checker(_SequenceConfigChecker)
         _Checker.add_checker(_ScenarioConfigChecker)
 
     def clean_orchestrator(self):

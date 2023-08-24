@@ -31,7 +31,7 @@ class DataPerfBenchmark(PerfBenchmarkAbstract, ABC):
         self.row_counts = row_counts if row_counts else self.DEFAULT_ROW_COUNTS.copy()
 
         super().__init__(report_path=report_path)
-        
+
         self.github_sha = github_sha
         self.input_folder_path = os.path.join(self.folder_path, "inputs")
         self.output_folder_path = os.path.join(self.folder_path, "outputs")
@@ -51,8 +51,8 @@ class DataPerfBenchmark(PerfBenchmarkAbstract, ABC):
         scenario = tp.create_scenario(scenario_cfg)
         input_data_node = scenario.data_nodes[prefix + "_input_datanode"]
         output_data_node = scenario.data_nodes[prefix + "_output_datanode"]
-        pipeline = scenario.pipelines[prefix + "_pipeline"]
-        return input_data_node, output_data_node, pipeline, scenario
+        sequence = scenario.sequences[prefix + "_sequence"]
+        return input_data_node, output_data_node, sequence, scenario
 
     @staticmethod
     def _generate_methods(properties_as_str):
@@ -75,8 +75,8 @@ class DataPerfBenchmark(PerfBenchmarkAbstract, ABC):
             data_node.write(data)
 
         @timer(properties_as_str)
-        def submit_pipeline(pipeline):
-            pipeline.submit()
+        def submit_sequence(sequence):
+            sequence.submit()
 
         @timer(properties_as_str)
         def submit_scenario(scenario):
@@ -87,6 +87,6 @@ class DataPerfBenchmark(PerfBenchmarkAbstract, ABC):
             filter_data_node,
             join_filter_data_node,
             write_data_node,
-            submit_pipeline,
+            submit_sequence,
             submit_scenario,
         )

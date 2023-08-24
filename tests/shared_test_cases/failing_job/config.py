@@ -38,8 +38,8 @@ arima_scoring_algo = Config.configure_task(
     id="arima_scoring", input=[arima_model, dates_to_forecast], function=predict, output=forecast_values
 )
 
-arima_pipeline = Config.configure_pipeline(id="arima_pipelines", task_configs=[arima_fail_algo, arima_scoring_algo])
+arima_sequence = Config.configure_sequence(id="arima_sequences", task_configs=[arima_fail_algo, arima_scoring_algo])
 
 arima_scenario_config = Config.configure_scenario(
-    id="Arima_scenario", pipeline_configs=[arima_pipeline], frequency=Frequency.DAILY
+    id="Arima_scenario", sequence_configs=[arima_sequence], frequency=Frequency.DAILY
 )

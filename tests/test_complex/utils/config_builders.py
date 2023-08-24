@@ -291,7 +291,7 @@ def build_churn_classification_config():
     # Creation of the scenario
     ##############################################################################################################################
 
-    # the scenario will run the pipelines
+    # the scenario will run the sequences
     scenario_cfg = Config.configure_scenario(
         id="churn_classification",
         task_configs=[

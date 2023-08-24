@@ -91,7 +91,7 @@ def test_excel_multi_sheet():
     # output_data_node_2.write(None)
     # assert isinstance(output_data_node_2.read(), list)
     # assert len(output_data_node_2.read()) == 0
-    # pipeline_2.submit()
+    # sequence_2.submit()
     # assert all(compare_custom_date(read_data_2[sheet_name], output_data_node_2.read()[sheet_name]) for sheet_name in SHEET_NAMES)
 
     # output_data_node_2.write(None)
