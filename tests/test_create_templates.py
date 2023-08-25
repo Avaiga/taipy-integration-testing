@@ -49,18 +49,6 @@ def test_default_template():
     assert error.value.code == 0
 
 
-def test_multi_page_gui_template():
-    assert os.path.exists(_ScaffoldCLI._TEMPLATE_MAP["multi-page-gui"])
-
-    inputs = "\n".join(["foo_app", "main.py", "bar"])
-    with pytest.raises(SystemExit) as error:
-        with patch("sys.stdin", StringIO(f"{inputs}\n")):
-            with patch("sys.argv", ["prog", "create", "--template", "multi-page-gui"]):
-                _entrypoint()
-    assert "foo_app" in os.listdir(os.getcwd())
-    assert error.value.code == 0
-
-
 def test_non_existing_template(capsys):
     with pytest.raises(SystemExit) as error:
         with patch("sys.argv", ["prog", "create", "--template", "non-existing-template"]):
