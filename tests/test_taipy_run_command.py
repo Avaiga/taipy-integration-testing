@@ -77,3 +77,45 @@ def test_run_simple_taipy_app_with_taipy_args(capfd):
     assert "Config.gui_config.use_reloader: True" in std_out
     assert "Config.gui_config.ngrok_token: 1234567890" in std_out
     assert "Config.gui_config.webapp_path: path/webapp" in std_out
+
+
+def test_run_simple_taipy_app_with_taipy_and_external_args(capfd):
+    with pytest.raises(SystemExit):
+        with patch(
+            "sys.argv",
+            [
+                "prog",
+                "run",
+                "tests/simple_application/external_args_app.py",
+                "--experiment",
+                "1.0",
+                "--force",
+                "--host",
+                "example.com",
+                "--port",
+                "5001",
+                "external-args",  # This is the keyword that separates external args from taipy args
+                "--mode",
+                "inference",
+                "--force",
+                "yes",
+                "--host",
+                "user_host.com",
+                "--port",
+                "8081",
+                "--non-conflict-arg",
+                "non-conflict-arg-value",
+            ],
+        ):
+            _entrypoint()
+
+    std_out, _ = capfd.readouterr()
+    assert "Config.core.mode: experiment" in std_out
+    assert "User provided mode: inference" in std_out
+    assert "Config.core.force: True" in std_out
+    assert "User provided force: yes" in std_out
+    assert "Config.gui_config.host: example.com" in std_out
+    assert "User provided host: user_host.com" in std_out
+    assert "Config.gui_config.port: 5001" in std_out
+    assert "User provided port: 8081" in std_out
+    assert "User provided non-conflict-arg: non-conflict-arg-value" in std_out
