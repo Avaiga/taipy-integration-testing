@@ -12,8 +12,8 @@
 import os
 import random
 import sys
-from typing import List
 from datetime import datetime
+from typing import List
 
 import pandas as pd
 import taipy as tp
@@ -25,7 +25,7 @@ from utils import Row, algorithm
 class ExcelPerfBenchmark(DataPerfBenchmark):
     BENCHMARK_NAME = "EXCEL Data node perf"
     BENCHMARK_REPORT_FILE_NAME = "excel_data_node_benchmark_report.csv"
-    HEADERS = ['github_sha', 'datetime', 'exposed_type', 'sheet_counts', 'row_counts', 'function_name', 'time_elapsed']
+    HEADERS = ["github_sha", "datetime", "exposed_type", "sheet_counts", "row_counts", "function_name", "time_elapsed"]
 
     def __init__(self, github_sha: str, row_counts: List[int] = None, report_path: str = None):
         super().__init__(github_sha=github_sha, row_counts=row_counts, report_path=report_path)
@@ -48,7 +48,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             if os.path.getsize(self.report_path) == 0:
-                print(','.join(self.HEADERS))
+                print(",".join(self.HEADERS))
             time_start = str(datetime.today())
             for row_count in self.row_counts:
                 for sheet_count in self.sheet_counts:
@@ -83,13 +83,13 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
         properties_as_str.insert(1, time_start)
 
         scenario_cfg = self._generate_configs(prefix, row_count, sheet_count, **properties)
-        input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)
+        input_data_node, output_data_node, sequence, scenario = self._generate_entities(prefix, scenario_cfg)
         (
             read_data_node,
             filter_data_node,
             join_filter_data_node,
             write_data_node,
-            submit_pipeline,
+            submit_sequence,
             submit_scenario,
         ) = self._generate_methods(properties_as_str)
 
@@ -100,7 +100,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
             join_filter_data_node(input_data_node)
         if output_data_node.properties["exposed_type"] in ["pandas", "modin", "numpy"]:
             write_data_node(output_data_node, data)
-        submit_pipeline(pipeline)
+        submit_sequence(sequence)
         submit_scenario(scenario)
 
     def _generate_configs(self, prefix: str, row_count: int, sheet_count: int, **kwargs):
@@ -120,6 +120,6 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
         task_cfg = Config.configure_task(
             id=prefix + "_task", input=input_datanode_cfg, function=algorithm, output=output_datanode_cfg
         )
-        pipeline_cfg = Config.configure_pipeline(id=prefix + "_pipeline", task_configs=[task_cfg])
-        scenario_cfg = Config.configure_scenario(id=prefix + "_scenario", pipeline_configs=[pipeline_cfg])
+        sequence_cfg = Config.configure_sequence(id=prefix + "_sequence", task_configs=[task_cfg])
+        scenario_cfg = Config.configure_scenario(id=prefix + "_scenario", sequence_configs=[sequence_cfg])
         return scenario_cfg

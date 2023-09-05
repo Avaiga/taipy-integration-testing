@@ -36,10 +36,6 @@ def mult(a, b):
     return a * b
 
 
-def mult_by_2(a):
-    return a
-
-
 def divide(a, b):
     return a / b
 
@@ -49,7 +45,7 @@ def average(a):
 
 
 def div_constant_with_sleep(a):
-    sleep(1)
+    sleep(0.5)
     return a["number"] / 10
 
 
@@ -58,7 +54,7 @@ def return_a_number():
 
 
 def return_a_number_with_sleep():
-    sleep(1)
+    sleep(0.5)
     return 10
 
 
@@ -69,13 +65,13 @@ def preprocess_dataset(initial_dataset: pd.DataFrame, date: dt.datetime = None):
     Returns:
         pd.DataFrame: the preprocessed dataset for classification
     """
-    print("\n     Preprocessing the dataset...")
+    # print("\n     Preprocessing the dataset...")
 
     # We filter the dataframe on the date
     if date != "None":
         initial_dataset["Date"] = pd.to_datetime(initial_dataset["Date"])
         processed_dataset = initial_dataset[initial_dataset["Date"] <= date]
-        print(len(processed_dataset))
+        # print(len(processed_dataset))
     else:
         processed_dataset = initial_dataset
 
@@ -120,7 +116,7 @@ def preprocess_dataset(initial_dataset: pd.DataFrame, date: dt.datetime = None):
 
     processed_dataset = processed_dataset[[col for col in columns_to_select if col in processed_dataset.columns]]
 
-    print("     Preprocessing done!\n")
+    # print("     Preprocessing done!\n")
     return processed_dataset
 
 
@@ -131,7 +127,7 @@ def create_train_test_data(preprocessed_dataset: pd.DataFrame):
     Returns:
         pd.DataFrame: the training dataset
     """
-    print("\n     Creating the training and testing dataset...")
+    # print("\n     Creating the training and testing dataset...")
 
     X_train, X_test, y_train, y_test = train_test_split(
         preprocessed_dataset.iloc[:, :-1], preprocessed_dataset.iloc[:, -1], test_size=0.2, random_state=42
@@ -139,7 +135,7 @@ def create_train_test_data(preprocessed_dataset: pd.DataFrame):
 
     train_data = pd.concat([X_train, y_train], axis=1)
     test_data = pd.concat([X_test, y_test], axis=1)
-    print("     Creating done!")
+    # print("     Creating done!")
     return train_data, test_data
 
 
@@ -150,10 +146,10 @@ def train_model_baseline(train_dataset: pd.DataFrame):
     Returns:
         model (LogisticRegression): the fitted model
     """
-    print("     Training the model...\n")
+    # print("     Training the model...\n")
     X, y = train_dataset.iloc[:, :-1], train_dataset.iloc[:, -1]
     model_fitted = LogisticRegression().fit(X, y)
-    print("\n    ", model_fitted, " is trained!")
+    # print("\n    ",model_fitted," is trained!")
 
     importance_dict = {"Features": X.columns, "Importance": model_fitted.coef_[0]}
     importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
@@ -167,10 +163,10 @@ def train_model(train_dataset: pd.DataFrame):
     Returns:
         model (RandomForest): the fitted model
     """
-    print("     Training the model...\n")
+    # print("     Training the model...\n")
     X, y = train_dataset.iloc[:, :-1], train_dataset.iloc[:, -1]
     model_fitted = RandomForestClassifier().fit(X, y)
-    print("\n    ", model_fitted, " is trained!")
+    # print("\n    ",model_fitted," is trained!")
 
     importance_dict = {"Features": X.columns, "Importance": model_fitted.feature_importances_}
     importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
@@ -185,11 +181,11 @@ def forecast(test_dataset: pd.DataFrame, trained_model: RandomForestClassifier):
     Returns:
         forecast (pd.DataFrame): the forecasted dataset
     """
-    print("     Forecasting the test dataset...")
+    # print("     Forecasting the test dataset...")
     X, y = test_dataset.iloc[:, :-1], test_dataset.iloc[:, -1]
     # predictions = trained_model.predict(X)
     predictions = trained_model.predict_proba(X)[:, 1]
-    print("     Forecasting done!")
+    # print("     Forecasting done!")
     return predictions
 
 
@@ -201,7 +197,7 @@ def forecast_baseline(test_dataset: pd.DataFrame, trained_model: LogisticRegress
     Returns:
         forecast (pd.DataFrame): the forecasted dataset
     """
-    print("     Forecasting the test dataset...")
+    # print("     Forecasting the test dataset...")
     X, y = test_dataset.iloc[:, :-1], test_dataset.iloc[:, -1]
     predictions = trained_model.predict_proba(X)[:, 1]
     print("     Forecasting done!")
@@ -209,7 +205,7 @@ def forecast_baseline(test_dataset: pd.DataFrame, trained_model: LogisticRegress
 
 
 def roc_from_scratch(probabilities, test_dataset, partitions=100):
-    print("     Calculation of the ROC curve...")
+    # print("     Calculation of the ROC curve...")
     y_test = test_dataset.iloc[:, -1]
 
     roc = np.array([])
@@ -220,11 +216,11 @@ def roc_from_scratch(probabilities, test_dataset, partitions=100):
 
     roc_np = roc.reshape(-1, 2)
     roc_data = pd.DataFrame({"False positive rate": roc_np[:, 0], "True positive rate": roc_np[:, 1]})
-    print("     Calculation done")
-    print("     Scoring...")
+    # print("     Calculation done")
+    # print("     Scoring...")
 
     score_auc = roc_auc_score(y_test, probabilities)
-    print("     Scoring done\n")
+    # print("     Scoring done\n")
 
     return roc_data, score_auc
 
@@ -252,7 +248,7 @@ def true_false_positive(threshold_vector: np.array, y_test: np.array):
 
 
 def create_metrics(predictions: np.array, test_dataset: np.array):
-    print("     Creating the metrics...")
+    # print("     Creating the metrics...")
     threshold = 0.5
     threshold_vector = np.greater_equal(predictions, threshold).astype(int)
 
@@ -281,7 +277,7 @@ def create_metrics(predictions: np.array, test_dataset: np.array):
         "number_of_false_predictions": number_of_false_predictions,
     }
 
-    print("     Creating the metrics done!")
+    # print("     Creating the metrics done!")
     return metrics
 
 

@@ -47,8 +47,7 @@ output_dataset_cfg_1 = Config.configure_excel_data_node(
     sheet_name=SHEET_NAME,
 )
 task_cfg = Config.configure_task(id="t1", input=input_dataset_cfg_1, function=algorithm, output=output_dataset_cfg_1)
-pipeline_cfg = Config.configure_pipeline(id="p1", task_configs=[task_cfg])
-scenario_cfg = Config.configure_scenario(id="s1", pipeline_configs=[pipeline_cfg], frequency=Frequency.DAILY)
+scenario_cfg = Config.configure_scenario(id="s1", task_configs=[task_cfg], frequency=Frequency.DAILY)
 
 input_dataset_cfg_2 = Config.configure_excel_data_node(
     id="input_excel_single_sheet_dataset_2",
@@ -65,8 +64,7 @@ output_dataset_cfg_2 = Config.configure_excel_data_node(
     sheet_name=SHEET_NAME,
 )
 task_cfg_2 = Config.configure_task(id="t2", input=input_dataset_cfg_2, function=algorithm, output=output_dataset_cfg_2)
-pipeline_cfg_2 = Config.configure_pipeline(id="p2", task_configs=[task_cfg_2])
-scenario_cfg_2 = Config.configure_scenario(id="s2", pipeline_configs=[pipeline_cfg_2], frequency=Frequency.DAILY)
+scenario_cfg_2 = Config.configure_scenario(id="s2", task_configs=[task_cfg_2], frequency=Frequency.DAILY)
 
 input_dataset_cfg_3 = Config.configure_excel_data_node(
     id="input_excel_single_sheet_dataset_3",
@@ -83,8 +81,7 @@ output_dataset_cfg_3 = Config.configure_excel_data_node(
     sheet_name=SHEET_NAME,
 )
 task_cfg_3 = Config.configure_task(id="t3", input=input_dataset_cfg_3, function=algorithm, output=output_dataset_cfg_3)
-pipeline_cfg_3 = Config.configure_pipeline(id="p3", task_configs=[task_cfg_3])
-scenario_cfg_3 = Config.configure_scenario(id="s3", pipeline_configs=[pipeline_cfg_3], frequency=Frequency.DAILY)
+scenario_cfg_3 = Config.configure_scenario(id="s3", task_configs=[task_cfg_3], frequency=Frequency.DAILY)
 
 input_dataset_cfg_4 = Config.configure_excel_data_node(
     id="input_excel_single_sheet_dataset_4",
@@ -101,5 +98,4 @@ output_dataset_cfg_4 = Config.configure_excel_data_node(
     sheet_name=SHEET_NAME,
 )
 task_cfg_4 = Config.configure_task(id="t4", input=input_dataset_cfg_4, function=algorithm, output=output_dataset_cfg_4)
-pipeline_cfg_4 = Config.configure_pipeline(id="p4", task_configs=[task_cfg_4])
-scenario_cfg_4 = Config.configure_scenario(id="s4", pipeline_configs=[pipeline_cfg_4], frequency=Frequency.DAILY)
+scenario_cfg_4 = Config.configure_scenario(id="s4", task_configs=[task_cfg_4], frequency=Frequency.DAILY)

@@ -4,7 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-taipy = {git = "https://git@github.com/avaiga/taipy.git@develop"}
+taipy = {ref = "develop", git = "https://github.com/avaiga/taipy.git"}
+taipy-auth = {ref = "develop", git = "ssh://git@github.com/avaiga/taipy-auth.git"}
+taipy-enterprise = {ref = "develop", git = "ssh://git@github.com/avaiga/taipy-enterprise.git"}
+
 statsmodels = ">=0.13"
 scikit-learn = "*"
 azure-storage-blob = "*"
@@ -19,6 +22,7 @@ isort = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
+mongomock = "*"
 flask_testing = "*"
 
 [requires]

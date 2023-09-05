@@ -540,11 +540,11 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
 
         for group in groups:
             # Predictions
-            parameters_cfg = Config.configure_data_node(id="parameters_" + group.lower(), scope=Scope.PIPELINE)
+            parameters_cfg = Config.configure_data_node(id="parameters_" + group.lower(), scope=Scope.SCENARIO)
 
             raw_predictions_cfg = Config.configure_data_node(
                 id="raw_predictions_" + group.lower(),
-                scope=Scope.PIPELINE,
+                scope=Scope.SCENARIO,
                 validity_period=dt.timedelta(days=7),
                 cacheable=True,
             )
@@ -555,7 +555,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
 
             tasks += [task_predict_cfg]
 
-            metadata_cfg = Config.configure_data_node(id="metadata_" + group.lower(), scope=Scope.PIPELINE)
+            metadata_cfg = Config.configure_data_node(id="metadata_" + group.lower(), scope=Scope.SCENARIO)
 
             predictions_cfg = Config.configure_data_node(id="predictions_" + group.lower())
 
@@ -570,7 +570,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
 
             tasks += [task_convert_cfg]
 
-        pipeline_predictions_cfg = Config.configure_pipeline(id="pipeline_predictions", task_configs=tasks)
+        sequence_predictions_cfg = Config.configure_sequence(id="sequence_predictions", task_configs=tasks)
 
         # Aggregations of Predictions
         full_dataset_predictions_cfg = Config.configure_data_node(id="full_dataset_predictions")
@@ -582,8 +582,8 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
             output=[full_dataset_predictions_cfg],
         )
 
-        pipeline_aggregate_predictions_cfg = Config.configure_pipeline(
-            id="pipeline_aggregate_predictions", task_configs=[task_aggregate_cfg]
+        sequence_aggregate_predictions_cfg = Config.configure_sequence(
+            id="sequence_aggregate_predictions", task_configs=[task_aggregate_cfg]
         )
 
         full_dataset_cfg = Config.configure_data_node(id="full_dataset")
@@ -607,8 +607,8 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
             output=[final_dataset_cfg],
         )
 
-        pipeline_historical_data_cfg = Config.configure_pipeline(
-            id="pipeline_historical_data", task_configs=[task_historical_cfg]
+        sequence_historical_data_cfg = Config.configure_sequence(
+            id="sequence_historical_data", task_configs=[task_historical_cfg]
         )
 
         metrics_cfg = Config.configure_data_node(id="metrics")
@@ -631,16 +631,16 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
             output=[cash_position_dict_cfg],
         )
 
-        pipeline_result_cfg = Config.configure_pipeline(
-            id="pipeline_result",
+        sequence_result_cfg = Config.configure_sequence(
+            id="sequence_result",
             task_configs=[task_aggregate_historical_cfg, task_reform_cfg, task_metrics_cfg, task_cash_position_cfg],
         )
 
         # Configuration of scenario
         scenario_cfg = Config.configure_scenario(
             id="scenario",
-            pipeline_configs=[pipeline_historical_data_cfg, pipeline_predictions_cfg]
-            + [pipeline_aggregate_predictions_cfg, pipeline_result_cfg],
+            sequence_configs=[sequence_historical_data_cfg, sequence_predictions_cfg]
+            + [sequence_aggregate_predictions_cfg, sequence_result_cfg],
             frequency=Frequency.WEEKLY,
         )
 

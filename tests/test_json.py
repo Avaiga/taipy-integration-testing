@@ -41,7 +41,6 @@ def test_json():
     scenario_1 = tp.create_scenario(scenario_cfg_1)
     input_data_node_1 = scenario_1.input_json_dataset_1
     output_data_node_1 = scenario_1.output_json_dataset_1
-    pipeline_1 = scenario_1.p1
 
     read_data_1 = input_data_node_1.read()
     assert len(read_data_1) == ROW_COUNT
@@ -53,11 +52,7 @@ def test_json():
 
     output_data_node_1.write(None)
     assert output_data_node_1.read() is None
-    pipeline_1.submit()
-    assert json_dict_data == output_data_node_1.read()
 
-    output_data_node_1.write(None)
-    assert output_data_node_1.read() is None
     scenario_1.submit()
     assert json_dict_data == output_data_node_1.read()
 
@@ -74,7 +69,6 @@ def test_json():
     scenario_2 = tp.create_scenario(scenario_cfg_2)
     input_data_node_2 = scenario_2.input_json_dataset_2
     output_data_node_2 = scenario_2.output_json_dataset_2
-    pipeline_2 = scenario_2.p2
 
     read_data_2 = input_data_node_2.read()
     assert len(read_data_2) == ROW_COUNT
@@ -86,11 +80,7 @@ def test_json():
 
     output_data_node_2.write(None)
     assert output_data_node_2.read() is None
-    pipeline_2.submit()
-    assert all(compare_custom_date(output_data_node_2.read(), json_object_data))
 
-    output_data_node_2.write(None)
-    assert output_data_node_2.read() is None
     scenario_2.submit()
     assert all(compare_custom_date(output_data_node_2.read(), json_object_data))
 

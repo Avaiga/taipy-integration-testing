@@ -17,7 +17,7 @@ from taipy.config.config import Config
 from .algorithms import failing_job, predict
 
 historical_data_set = Config.configure_csv_data_node(
-    id="historical_data_set", path="./shared_test_cases/arima/daily-min-temperatures.csv", scope=Scope.GLOBAL
+    id="historical_data_set", path="tests//shared_test_cases/arima/daily-min-temperatures.csv", scope=Scope.GLOBAL
 )
 
 arima_model = Config.configure_data_node(id="arima_model")
@@ -27,7 +27,7 @@ dates_to_forecast = Config.configure_data_node(
 )
 
 forecast_values = Config.configure_excel_data_node(
-    id="forecast_values", has_header=False, path="./shared_test_cases/arima/res.xlsx"
+    id="forecast_values", has_header=False, path="tests//shared_test_cases/arima/res.xlsx"
 )
 
 arima_fail_algo = Config.configure_task(
@@ -38,8 +38,8 @@ arima_scoring_algo = Config.configure_task(
     id="arima_scoring", input=[arima_model, dates_to_forecast], function=predict, output=forecast_values
 )
 
-arima_pipeline = Config.configure_pipeline(id="arima_pipelines", task_configs=[arima_fail_algo, arima_scoring_algo])
+arima_sequence = Config.configure_sequence(id="arima_sequences", task_configs=[arima_fail_algo, arima_scoring_algo])
 
 arima_scenario_config = Config.configure_scenario(
-    id="Arima_scenario", pipeline_configs=[arima_pipeline], frequency=Frequency.DAILY
+    id="Arima_scenario", sequence_configs=[arima_sequence], frequency=Frequency.DAILY
 )

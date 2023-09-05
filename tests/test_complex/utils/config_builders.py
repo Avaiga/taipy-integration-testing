@@ -13,52 +13,8 @@ import os
 import pathlib
 
 from taipy.config import Config, Frequency, Scope
-from taipy.core.config.job_config import JobConfig
 
-from .complex_application_algos import *
-
-
-def build_skipped_jobs_config():
-
-    input_config = Config.configure_data_node(id="input")
-    intermediate_config = Config.configure_data_node(id="intermediate")
-    output_config = Config.configure_data_node(id="output")
-    task_config_1 = Config.configure_task("first", mult_by_2, input_config, intermediate_config, skippable=True)
-    task_config_2 = Config.configure_task("second", mult_by_2, intermediate_config, output_config, skippable=True)
-    scenario_config = Config.configure_scenario("scenario", [task_config_1, task_config_2])
-
-    return scenario_config
-
-
-def build_complex_required_file_paths():
-    csv_path_inp = os.path.join(
-        pathlib.Path(__file__).parent.resolve(),
-        "shared_test_cases/data_sample/example.csv",
-    )
-    excel_path_inp = os.path.join(
-        pathlib.Path(__file__).parent.resolve(),
-        "shared_test_cases/data_sample/example.xlsx",
-    )
-
-    csv_path_sum = os.path.join(pathlib.Path(__file__).parent.resolve(), "shared_test_cases/data_sample/sum.csv")
-    excel_path_sum = os.path.join(
-        pathlib.Path(__file__).parent.resolve(),
-        "shared_test_cases/data_sample/sum.xlsx",
-    )
-
-    excel_path_out = os.path.join(
-        pathlib.Path(__file__).parent.resolve(),
-        "shared_test_cases/data_sample/res.xlsx",
-    )
-    csv_path_out = os.path.join(pathlib.Path(__file__).parent.resolve(), "shared_test_cases/data_sample/res.csv")
-    return (
-        csv_path_inp,
-        excel_path_inp,
-        csv_path_sum,
-        excel_path_sum,
-        excel_path_out,
-        csv_path_out,
-    )
+from .algos import *
 
 
 def build_complex_config():
@@ -131,14 +87,32 @@ def build_complex_config():
             task_avg_mult,
         ],
     )
-
     return scenario_config
+
+
+def build_complex_required_file_paths():
+    csv_path_inp = "tests/shared_test_cases/data_sample/example.csv"
+    excel_path_inp = "tests/shared_test_cases/data_sample/example.xlsx"
+
+    csv_path_sum = "tests/shared_test_cases/data_sample/sum.csv"
+    excel_path_sum = "tests/shared_test_cases/data_sample/sum.xlsx"
+
+    excel_path_out = "tests/shared_test_cases/data_sample/res.xlsx"
+    csv_path_out = "tests/shared_test_cases/data_sample/res.csv"
+    return (
+        csv_path_inp,
+        excel_path_inp,
+        csv_path_sum,
+        excel_path_sum,
+        excel_path_out,
+        csv_path_out,
+    )
 
 
 def build_churn_classification_required_file_paths():
     csv_path_inp = os.path.join(
         pathlib.Path(__file__).parent.resolve(),
-        "shared_test_cases/data_sample/churn.csv",
+        "../../shared_test_cases/data_sample/churn.csv",
     )
     return csv_path_inp
 
@@ -314,7 +288,7 @@ def build_churn_classification_config():
     )
 
     ##############################################################################################################################
-    # Creation of the sequence and the scenario
+    # Creation of the scenario
     ##############################################################################################################################
 
     # the scenario will run the sequences

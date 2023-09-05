@@ -13,8 +13,8 @@ import os
 import pickle
 import random
 import sys
-from typing import List
 from datetime import datetime
+from typing import List
 
 import taipy as tp
 from data_perf_benchmark import DataPerfBenchmark
@@ -25,7 +25,7 @@ from utils import Row, algorithm
 class PicklePerfBenchmark(DataPerfBenchmark):
     BENCHMARK_NAME = "PICKLE Data node perf"
     BENCHMARK_REPORT_FILE_NAME = "pickle_data_node_benchmark_report.csv"
-    HEADERS = ['github_sha', 'datetime', 'exposed_type', 'row_counts', 'function_name', 'time_elapsed']
+    HEADERS = ["github_sha", "datetime", "exposed_type", "row_counts", "function_name", "time_elapsed"]
 
     def __init__(self, github_sha: str, row_counts: List[int] = None, report_path: str = None):
         super().__init__(github_sha=github_sha, row_counts=row_counts, report_path=report_path)
@@ -37,7 +37,7 @@ class PicklePerfBenchmark(DataPerfBenchmark):
         with open(self.report_path, "a", encoding="utf-8") as f:
             sys.stdout = f
             if os.path.getsize(self.report_path) == 0:
-                print(','.join(self.HEADERS))
+                print(",".join(self.HEADERS))
             time_start = str(datetime.today())
             for row_count in self.row_counts:
                 for type_format in self.type_formats:
@@ -83,14 +83,14 @@ class PicklePerfBenchmark(DataPerfBenchmark):
         properties_as_str.insert(1, time_start)
 
         scenario_cfg = self._generate_configs(prefix, row_count, type_format, **properties)
-        input_data_node, output_data_node, pipeline, scenario = self._generate_entities(prefix, scenario_cfg)
-        read_data_node, _, _, write_data_node, submit_pipeline, submit_scenario = self._generate_methods(
+        input_data_node, output_data_node, sequence, scenario = self._generate_entities(prefix, scenario_cfg)
+        read_data_node, _, _, write_data_node, submit_sequence, submit_scenario = self._generate_methods(
             properties_as_str
         )
 
         data = read_data_node(input_data_node)
         write_data_node(output_data_node, data)
-        submit_pipeline(pipeline)
+        submit_sequence(sequence)
         submit_scenario(scenario)
 
     def _generate_configs(self, prefix: str, row_count: int, type_format: str, **kwargs):
@@ -108,6 +108,6 @@ class PicklePerfBenchmark(DataPerfBenchmark):
         task_cfg = Config.configure_task(
             id=prefix + "_task", input=input_datanode_cfg, function=algorithm, output=output_datanode_cfg
         )
-        pipeline_cfg = Config.configure_pipeline(id=prefix + "_pipeline", task_configs=[task_cfg])
-        scenario_cfg = Config.configure_scenario(id=prefix + "_scenario", pipeline_configs=[pipeline_cfg])
+        sequence_cfg = Config.configure_sequence(id=prefix + "_sequence", task_configs=[task_cfg])
+        scenario_cfg = Config.configure_scenario(id=prefix + "_scenario", sequence_configs=[sequence_cfg])
         return scenario_cfg

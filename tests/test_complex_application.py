@@ -13,25 +13,44 @@ import os
 
 import pandas as pd
 import taipy.core.taipy as tp
-from complex_application_configs import *
 from taipy.config import Config
 from taipy.core import Core, Status
 from taipy.core.job.status import Status
-from utils import assert_true_after_time
+
+from .complex_application_configs import *
+
+
+def assert_true_after_time(assertion, msg=None, time=120):
+    from datetime import datetime
+    from time import sleep
+
+    start = datetime.now()
+    while (datetime.now() - start).seconds < time:
+        sleep(1)  # Limit CPU usage
+        try:
+            if assertion():
+                return
+        except BaseException as e:
+            print("Raise : ", e)
+            continue
+    if msg:
+        print(msg)
+    assert assertion()
 
 
 def test_skipped_jobs():
-    pipeline_config = build_skipped_jobs_config()
+    scenario_config = build_skipped_jobs_config()
 
     Core().run()
 
-    pipeline = tp.create_pipeline(pipeline_config)
-    pipeline.input.write(2)
-    pipeline.submit()
+    scenario = tp.create_scenario(scenario_config)
+    scenario.input.write(2)
+    scenario.submit()
     assert len(tp.get_jobs()) == 2
     for job in tp.get_jobs():
         assert job.status == Status.COMPLETED
-    pipeline.submit()
+
+    scenario.submit()
     assert len(tp.get_jobs()) == 4
     skipped = []
     for job in tp.get_jobs():
@@ -127,8 +146,11 @@ def test_churn_classification_development():
 
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
+    for job in jobs:
+        if not job.is_completed():
+            print(job._task.config_id)
 
-    assert all([job.is_completed() or job.is_skipped() for job in jobs])
+    assert all([job.is_completed() for job in jobs])
 
 
 def test_churn_classification_standalone():
@@ -141,4 +163,4 @@ def test_churn_classification_standalone():
     jobs = tp.submit(scenario)
 
     assert_true_after_time(lambda: os.path.exists(scenario.results._path))
-    assert_true_after_time(lambda: all([job._status in {Status.COMPLETED, Status.SKIPPED} for job in jobs]), time=15)
+    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)

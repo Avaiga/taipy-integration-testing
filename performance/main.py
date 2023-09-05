@@ -12,28 +12,27 @@
 import argparse
 
 import taipy as tp
-
 from csv_perf_benchmark import CSVPerfBenchmark
+from data_node_perf_benchmark import DataNodePerfBenchmark
 from end_to_end_scenario_creation_perf_benchmark import EndToEndScenarioCreationPerfBenchmark
 from excel_perf_benchmark import ExcelPerfBenchmark
 from json_perf_benchmark import JsonPerfBenchmark
 from pickle_perf_benchmark import PicklePerfBenchmark
 from scenario_perf_benchmark import ScenarioPerfBenchmark
-from pipeline_perf_benchmark import PipelinePerfBenchmark
+from sequence_perf_benchmark import SequencePerfBenchmark
 from task_perf_benchmark import TaskPerfBenchmark
-from data_node_perf_benchmark import DataNodePerfBenchmark
 
 ROW_COUNTS = [10**2, 10**3]
 ENTITY_COUNTS = [10**1, 10**2]
 SCENARIO_COUNTS = [10**1, 10**2]
 DATANODE_PERF_BENCHMARKS = [CSVPerfBenchmark, ExcelPerfBenchmark, PicklePerfBenchmark, JsonPerfBenchmark]
-ENTITY_PERF_BENCHMARKS = [DataNodePerfBenchmark, TaskPerfBenchmark, PipelinePerfBenchmark, ScenarioPerfBenchmark]
+ENTITY_PERF_BENCHMARKS = [DataNodePerfBenchmark, TaskPerfBenchmark, SequencePerfBenchmark, ScenarioPerfBenchmark]
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--github-sha', help='The SHA value of the commit that triggered this action', default='')
-    parser.add_argument('--repo', help='The Taipy repo that called this action', default='taipy-core')
+    parser.add_argument("--github-sha", help="The SHA value of the commit that triggered this action", default="")
+    parser.add_argument("--repo", help="The Taipy repo that called this action", default="taipy-core")
     args = parser.parse_args()
 
     for datanode_perf_benchmark in DATANODE_PERF_BENCHMARKS:
