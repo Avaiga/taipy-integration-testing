@@ -20,8 +20,10 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-versions }}
+      - name: Install Dependencies
+        run: |
+          pip install git+https://git@github.com/Avaiga/taipy.git@develop statsmodels Flask-Testing pytest scikit-learn mongomock
 
       - name: Tests
         run: |
-          pip install git+https://git@github.com/Avaiga/taipy.git@develop statsmodels Flask-Testing pytest scikit-learn mongomock
-          pytest tests
+          pytest

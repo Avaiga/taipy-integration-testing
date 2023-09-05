@@ -47,13 +47,11 @@ def init_config():
         DataNodeConfig,
         JobConfig,
         ScenarioConfig,
-        SequenceConfig,
         TaskConfig,
         _DataNodeConfigChecker,
         _inject_section,
         _JobConfigChecker,
         _ScenarioConfigChecker,
-        _SequenceConfigChecker,
         _TaskConfigChecker,
     )
 
@@ -95,15 +93,6 @@ def init_config():
         [("configure_task", TaskConfig._configure), ("configure_default_task", TaskConfig._set_default_configuration)],
     )
     _inject_section(
-        SequenceConfig,
-        "sequences",
-        SequenceConfig.default_config(),
-        [
-            ("configure_sequence", SequenceConfig._configure),
-            ("configure_default_sequence", SequenceConfig._set_default_configuration),
-        ],
-    )
-    _inject_section(
         ScenarioConfig,
         "scenarios",
         ScenarioConfig.default_config(),
@@ -122,7 +111,6 @@ def init_config():
     _Checker.add_checker(_JobConfigChecker)
     _Checker.add_checker(_DataNodeConfigChecker)
     _Checker.add_checker(_TaskConfigChecker)
-    _Checker.add_checker(_SequenceConfigChecker)
     _Checker.add_checker(_ScenarioConfigChecker)
 
 
