@@ -8,9 +8,52 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-
+import os
+from typing import List, Dict
+import re
 import pandas as pd
 from taipy import Gui
+from azure.storage.blob import BlobServiceClient
+
+
+CONN_STR = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+CONTAINER = "benchmark-result"
+# Create the BlobServiceClient object
+blob_service_client = BlobServiceClient.from_connection_string(CONN_STR)
+
+
+def extract_key(name: str) -> str:
+    pattern = r'\/(.*?)_'
+    match = re.search(pattern, name)
+    key = match.group(1)
+    return key if key != "data" else "data_node"
+
+
+def __list_blobs() -> List[str]:
+    container_client = blob_service_client.get_container_client(container=CONTAINER)
+    return [b.name for b in container_client.list_blobs()]
+
+
+def __download_blobs(blobs: List) -> None:
+    for blob in blobs:
+        os.makedirs(os.path.dirname(blob), exist_ok=True)
+        blob_client = blob_service_client.get_blob_client(container=CONTAINER, blob=blob)
+        with open(blob, "wb") as my_blob:
+            blob_data = blob_client.download_blob()
+            blob_data.readinto(my_blob)
+
+
+def __load_data() -> Dict[str, pd.DataFrame]:
+    blobs = __list_blobs()
+    __download_blobs(blobs)
+    data = {}
+    for blob in blobs:
+        key = extract_key(blob)
+        data[key] = pd.read_csv(blob)
+    return data
+
+
+data_storage = __load_data()
 
 
 def on_change(state, var_name, var_value):
@@ -43,9 +86,7 @@ def create_partial_content(display_data=None, function_names=None, state=None):
 
 
 def generate_display_data(state):
-    data = pd.read_csv(
-        f"performance/benchmark_results/{state.selected_dn_type.lower()}_data_node_benchmark_report.csv", header=0
-    )
+    data = data_storage[state.selected_dn_type]
     state.display_data = convert_data_to_display(data, state.selected_function_name)
     return state, data["function_name"].unique().tolist()
 
@@ -75,7 +116,7 @@ def on_change_entity(state):
 
 
 def load_repo_data(entity, function_name="create_scenario", repo_type="default"):
-    data = pd.read_csv(f"performance/benchmark_results/{entity}_benchmark_report.csv", header=0)
+    data = data_storage.get(entity)
     _functions = list(data.function_name.unique())
     function_name = function_name if function_name in _functions else _functions[0]
     data = data[data.function_name == function_name]
@@ -103,7 +144,7 @@ selected_dn_type = "json"
 selected_exposed_type = "without_custom_encoder"
 selected_function_name = "read_data_node"
 
-data = pd.read_csv("performance/benchmark_results/json_data_node_benchmark_report.csv", header=0)
+data = data_storage.get("json")
 display_data = convert_data_to_display(data, "read_data_node")
 col_to_lines = {
     "csv": "y[1]=pandas|y[2]=Row|y[3]=numpy|y[4]=modin",
