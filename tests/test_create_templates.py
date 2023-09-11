@@ -18,9 +18,13 @@ import pytest
 from taipy._cli._scaffold_cli import _ScaffoldCLI
 from taipy._entrypoint import _entrypoint
 
+from tests.utils import clean_subparser
+
 
 @pytest.fixture(autouse=True, scope="function")
 def clean_templates():
+    clean_subparser()
+
     yield
 
     if os.path.exists("foo_app"):
@@ -29,11 +33,10 @@ def clean_templates():
         shutil.rmtree("bar_app", ignore_errors=True)
 
 
-@pytest.mark.xfail(reason="taipy-default-template was replaced by default but was not changed as the default argument value in taipy cli")
 def test_default_template():
-    assert os.path.exists(_ScaffoldCLI._TEMPLATE_MAP["taipy-default-template"])
+    assert os.path.exists(_ScaffoldCLI._TEMPLATE_MAP["default"])
 
-    inputs = "\n".join(["foo_app", "main.py", "bar"])
+    inputs = "\n".join(["foo_app", "main.py", "bar", "", "", ""])
     with pytest.raises(SystemExit) as error:
         with patch("sys.stdin", StringIO(f"{inputs}\n")):
             with patch("sys.argv", ["prog", "create"]):
@@ -41,12 +44,26 @@ def test_default_template():
     assert "foo_app" in os.listdir(os.getcwd())
     assert error.value.code == 0
 
-    inputs = "\n".join(["bar_app", "main.py", "bar"])
+    clean_subparser()
+
+    inputs = "\n".join(["bar_app", "main.py", "bar", "", "", ""])
     with pytest.raises(SystemExit) as error:
         with patch("sys.stdin", StringIO(f"{inputs}\n")):
-            with patch("sys.argv", ["prog", "create", "--template", "taipy-default-template"]):
+            with patch("sys.argv", ["prog", "create", "--template", "default"]):
                 _entrypoint()
     assert "bar_app" in os.listdir(os.getcwd())
+    assert error.value.code == 0
+
+
+def test_scenario_management_template():
+    assert os.path.exists(_ScaffoldCLI._TEMPLATE_MAP["scenario-management"])
+
+    inputs = "\n".join(["foo_app", "main.py", "bar", ""])
+    with pytest.raises(SystemExit) as error:
+        with patch("sys.stdin", StringIO(f"{inputs}\n")):
+            with patch("sys.argv", ["prog", "create", "--template", "scenario-management"]):
+                _entrypoint()
+    assert "foo_app" in os.listdir(os.getcwd())
     assert error.value.code == 0
 
 
