@@ -16,7 +16,7 @@ from taipy import Gui
 from azure.storage.blob import BlobServiceClient
 
 
-CONN_STR = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+CONN_STR = os.getenv('AZ_STORAGE_CON')
 CONTAINER = "benchmark-result"
 # Create the BlobServiceClient object
 blob_service_client = BlobServiceClient.from_connection_string(CONN_STR)
