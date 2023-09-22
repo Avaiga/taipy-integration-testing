@@ -59,8 +59,8 @@ jobs:
           source taipy-perf-env/bin/activate
 
           pip install git+https://git@github.com/Avaiga/taipy.git@develop
-          pip install git+https://${{ secrets.SSH_PRIVATE_KEY }}@github.com/Avaiga/taipy-auth
-          pip install git+https://${{ secrets.SSH_PRIVATE_KEY }}@github.com/Avaiga/taipy-enterprise --no-dependencies
+          pip install git+https://${{ secrets.CLONE_PRIVATE_REPOSITORY }}@github.com/Avaiga/taipy-auth
+          pip install git+https://${{ secrets.CLONE_PRIVATE_REPOSITORY }}@github.com/Avaiga/taipy-enterprise --no-dependencies
           pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.commitSHA }}"
 
           export TAIPY_PERFORMANCE_BENCHMARK=0
