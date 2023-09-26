@@ -52,7 +52,11 @@ def __load_data() -> Dict[str, pd.DataFrame]:
         data[key] = pd.read_csv(blob)
     return data
 
-
+"""
+__load_data searches the blob storage for .csv files and loads them into pandas dataframes.
+It returns a dictionary with a key being the the entity name and the value a pandas dataframe of the corresponding
+performance data.
+"""
 data_storage = __load_data()
 
 

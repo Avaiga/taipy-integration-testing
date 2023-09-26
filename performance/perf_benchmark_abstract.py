@@ -55,7 +55,7 @@ class PerfBenchmarkAbstract:
         Path(str(benchmark_folder_path)).mkdir(parents=True, exist_ok=True)
 
         if self.__is_prod:
-            self.logger.info()
+            self.logger.info(f"Downloading report {self.report_path} from blob storage")
             _BlobManager.download_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
 
         self.core = tp.Core()
@@ -70,6 +70,7 @@ class PerfBenchmarkAbstract:
 
     def __del__(self):
         if self.__is_prod:
+            self.logger.info(f"Uploading report {self.report_path} from blob storage")
             _BlobManager.upload_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
 
     def run(self):

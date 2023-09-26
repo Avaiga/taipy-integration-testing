@@ -1,8 +1,6 @@
 name: Performance benchmark
 
 on:
-  pull_request:
-    branches: [ develop ]
   repository_dispatch:
     types: [benchmark]
 
