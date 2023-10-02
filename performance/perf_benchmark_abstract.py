@@ -27,12 +27,10 @@ from taipy.core.config import (
     DataNodeConfig,
     JobConfig,
     ScenarioConfig,
-    SequenceConfig,
     TaskConfig,
     _DataNodeConfigChecker,
     _JobConfigChecker,
     _ScenarioConfigChecker,
-    _SequenceConfigChecker,
     _TaskConfigChecker,
 )
 from taipy.logger._taipy_logger import _TaipyLogger
@@ -57,6 +55,7 @@ class PerfBenchmarkAbstract:
         Path(str(benchmark_folder_path)).mkdir(parents=True, exist_ok=True)
 
         if self.__is_prod:
+            self.logger.info(f"Downloading report {self.report_path} from blob storage")
             _BlobManager.download_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
 
         self.core = tp.Core()
@@ -65,10 +64,13 @@ class PerfBenchmarkAbstract:
 
     @property
     def __is_prod(self):
+        self.logger.info(f'------ var type {type(os.getenv("TAIPY_PERFORMANCE_BENCHMARK"))} ------')
+        self.logger.info(f'------ var value {os.getenv("TAIPY_PERFORMANCE_BENCHMARK")} ------')
         return os.getenv("TAIPY_PERFORMANCE_BENCHMARK") == "0"
 
     def __del__(self):
         if self.__is_prod:
+            self.logger.info(f"Uploading report {self.report_path} from blob storage")
             _BlobManager.upload_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
 
     def run(self):
@@ -129,15 +131,6 @@ class PerfBenchmarkAbstract:
             [("configure_task", TaskConfig._configure), ("configure_default_task", TaskConfig._configure_default)],
         )
         _inject_section(
-            SequenceConfig,
-            "sequences",
-            SequenceConfig.default_config(),
-            [
-                ("configure_sequence", SequenceConfig._configure),
-                ("configure_default_sequence", SequenceConfig._configure_default),
-            ],
-        )
-        _inject_section(
             ScenarioConfig,
             "scenarios",
             ScenarioConfig.default_config(),
@@ -157,7 +150,6 @@ class PerfBenchmarkAbstract:
         _Checker.add_checker(_JobConfigChecker)
         _Checker.add_checker(_DataNodeConfigChecker)
         _Checker.add_checker(_TaskConfigChecker)
-        _Checker.add_checker(_SequenceConfigChecker)
         _Checker.add_checker(_ScenarioConfigChecker)
 
     def clean_orchestrator(self):
