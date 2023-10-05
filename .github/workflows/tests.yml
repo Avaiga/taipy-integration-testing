@@ -3,8 +3,8 @@
 name: Python tests
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  repository_dispatch:
+    types: [benchmark]
 
 jobs:
   backend:
@@ -28,5 +28,6 @@ jobs:
           pip install git+https://git@github.com/Avaiga/taipy.git@develop
           pip install git+https://${{ secrets.CLONE_PRIVATE_REPOSITORY }}@github.com/Avaiga/taipy-auth
           pip install git+https://${{ secrets.CLONE_PRIVATE_REPOSITORY }}@github.com/Avaiga/taipy-enterprise --no-dependencies
+          pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.branchName }}"
 
           pytest tests
