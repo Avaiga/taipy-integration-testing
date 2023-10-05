@@ -4,7 +4,7 @@ name: Python tests
 
 on:
   repository_dispatch:
-    types: [benchmark]
+    types: [integration-tests]
 
 jobs:
   backend:
