@@ -7,8 +7,8 @@ on:
         description: 'Repository triggered from'
         required: true
         default: 'taipy-core'
-      branchName:
-        description: 'Branch triggered from'
+      commitSHA:
+        description: 'Commit SHA triggered for (default will be develop branch to avoid error)'
         required: true
         default: 'develop'
 
@@ -34,6 +34,6 @@ jobs:
           pip install git+https://git@github.com/Avaiga/taipy.git@develop
           pip install git+https://${{ secrets.CLONE_PRIVATE_REPOSITORY }}@github.com/Avaiga/taipy-auth
           pip install git+https://${{ secrets.CLONE_PRIVATE_REPOSITORY }}@github.com/Avaiga/taipy-enterprise --no-dependencies
-          pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.branchName }}"
+          pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.commitSHA }}"
 
           pytest tests
