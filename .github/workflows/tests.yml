@@ -2,7 +2,15 @@ name: Python tests
 
 on:
   workflow_dispatch:
-
+    inputs:
+      repo:
+        description: 'Repository triggered from'
+        required: true
+        default: 'taipy-core'
+      branchName:
+        description: 'Branch triggered from'
+        required: true
+        default: 'develop'
 
 jobs:
   backend:
