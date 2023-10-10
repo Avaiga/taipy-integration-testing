@@ -80,17 +80,16 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         ) = self._generate_methods(properties_as_str)
 
         data = read_data_node(input_data_node)
-        if input_data_node.properties["exposed_type"] != "numpy":  # Not yet implemented for numpy
-            filter_data_node(input_data_node)
-        if input_data_node.properties["exposed_type"] not in ["numpy", "modin"]:
-            join_filter_data_node(input_data_node)
+        # if input_data_node.properties["exposed_type"] != "numpy":  # Not yet implemented for numpy
+        #     filter_data_node(input_data_node)
+        # if input_data_node.properties["exposed_type"] not in ["numpy", "modin"]:
+        #     join_filter_data_node(input_data_node)
         write_data_node(output_data_node, data)
         submit_sequence(sequence)
         submit_scenario(scenario)
 
     def _generate_configs(self, prefix: str, row_count: int, **kwargs):
         Config.unblock_update()
-        tp.clean_all_entities_by_version(None)
 
         input_datanode_cfg = Config.configure_csv_data_node(
             id=prefix + "_input_datanode", path=f"{self.input_folder_path}/input_{row_count}.csv", **kwargs
@@ -101,6 +100,7 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         task_cfg = Config.configure_task(
             id=prefix + "_task", input=input_datanode_cfg, function=algorithm, output=output_datanode_cfg
         )
-        sequence_cfg = Config.configure_sequence(id=prefix + "_sequence", task_configs=[task_cfg])
-        scenario_cfg = Config.configure_scenario(id=prefix + "_scenario", sequence_configs=[sequence_cfg])
+        scenario_cfg = Config.configure_scenario(
+            id=prefix + "_scenario", task_configs=[task_cfg], sequences={prefix + "_sequence": [task_cfg]}
+        )
         return scenario_cfg
