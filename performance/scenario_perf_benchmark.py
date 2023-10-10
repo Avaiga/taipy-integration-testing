@@ -135,7 +135,6 @@ class ScenarioPerfBenchmark(PerfBenchmarkAbstract):
     ):
         Config.unblock_update()
         Config.configure_core(**repo_config)
-        tp.clean_all_entities_by_version(None)
 
         nb_dn = entity_count if multi_entity_type == "datanode" else 1
         nb_task = entity_count if multi_entity_type == "task" else 1

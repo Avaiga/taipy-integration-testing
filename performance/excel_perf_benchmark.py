@@ -105,7 +105,6 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
 
     def _generate_configs(self, prefix: str, row_count: int, sheet_count: int, **kwargs):
         Config.unblock_update()
-        tp.clean_all_entities_by_version(None)
 
         input_datanode_cfg = Config.configure_excel_data_node(
             id=prefix + "_input_datanode",
@@ -120,6 +119,7 @@ class ExcelPerfBenchmark(DataPerfBenchmark):
         task_cfg = Config.configure_task(
             id=prefix + "_task", input=input_datanode_cfg, function=algorithm, output=output_datanode_cfg
         )
-        sequence_cfg = Config.configure_sequence(id=prefix + "_sequence", task_configs=[task_cfg])
-        scenario_cfg = Config.configure_scenario(id=prefix + "_scenario", sequence_configs=[sequence_cfg])
+        scenario_cfg = Config.configure_scenario(
+            id=prefix + "_scenario", task_configs=[task_cfg], sequences={prefix + "_sequence": [task_cfg]}
+        )
         return scenario_cfg

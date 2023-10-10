@@ -26,7 +26,8 @@ ROW_COUNTS = [10**2, 10**3]
 ENTITY_COUNTS = [10**1, 10**2]
 SCENARIO_COUNTS = [10**1, 10**2]
 DATANODE_PERF_BENCHMARKS = [CSVPerfBenchmark, ExcelPerfBenchmark, PicklePerfBenchmark, JsonPerfBenchmark]
-ENTITY_PERF_BENCHMARKS = [DataNodePerfBenchmark, TaskPerfBenchmark, SequencePerfBenchmark, ScenarioPerfBenchmark]
+ENTITY_PERF_BENCHMARKS = [DataNodePerfBenchmark, TaskPerfBenchmark, ScenarioPerfBenchmark]
+# ENTITY_PERF_BENCHMARKS = [DataNodePerfBenchmark, TaskPerfBenchmark, SequencePerfBenchmark, ScenarioPerfBenchmark]
 
 if __name__ == "__main__":
 

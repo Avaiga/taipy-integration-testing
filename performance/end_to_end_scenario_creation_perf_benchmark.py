@@ -516,7 +516,6 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
 
     def _generate_configs(self):
         Config.unblock_update()
-        tp.clean_all_entities_by_version(None)
 
         raw_historical_data_cfg = Config.configure_data_node(
             id="raw_historical_data",
@@ -553,7 +552,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
                 id="predict_" + group.lower(), function=predict, input=parameters_cfg, output=raw_predictions_cfg
             )
 
-            tasks += [task_predict_cfg]
+            tasks.append(task_predict_cfg)
 
             metadata_cfg = Config.configure_data_node(id="metadata_" + group.lower(), scope=Scope.SCENARIO)
 
@@ -568,9 +567,7 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
                 output=[predictions_cfg, metadata_cfg],
             )
 
-            tasks += [task_convert_cfg]
-
-        sequence_predictions_cfg = Config.configure_sequence(id="sequence_predictions", task_configs=tasks)
+            tasks.append(task_convert_cfg)
 
         # Aggregations of Predictions
         full_dataset_predictions_cfg = Config.configure_data_node(id="full_dataset_predictions")
@@ -580,10 +577,6 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
             function=aggregate_predictions,
             input=predictions_list,
             output=[full_dataset_predictions_cfg],
-        )
-
-        sequence_aggregate_predictions_cfg = Config.configure_sequence(
-            id="sequence_aggregate_predictions", task_configs=[task_aggregate_cfg]
         )
 
         full_dataset_cfg = Config.configure_data_node(id="full_dataset")
@@ -607,10 +600,6 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
             output=[final_dataset_cfg],
         )
 
-        sequence_historical_data_cfg = Config.configure_sequence(
-            id="sequence_historical_data", task_configs=[task_historical_cfg]
-        )
-
         metrics_cfg = Config.configure_data_node(id="metrics")
         wanted_horizon_cfg = Config.configure_data_node(id="wanted_horizon", default_data=84)
         real_horizon_cfg = Config.configure_data_node(id="real_horizon", default_data=84)
@@ -631,17 +620,25 @@ class EndToEndScenarioCreationPerfBenchmark(PerfBenchmarkAbstract):
             output=[cash_position_dict_cfg],
         )
 
-        sequence_result_cfg = Config.configure_sequence(
-            id="sequence_result",
-            task_configs=[task_aggregate_historical_cfg, task_reform_cfg, task_metrics_cfg, task_cash_position_cfg],
-        )
-
         # Configuration of scenario
         scenario_cfg = Config.configure_scenario(
             id="scenario",
-            sequence_configs=[sequence_historical_data_cfg, sequence_predictions_cfg]
-            + [sequence_aggregate_predictions_cfg, sequence_result_cfg],
+            task_configs=[task_historical_cfg]
+            + tasks
+            + [task_aggregate_cfg]
+            + [task_aggregate_historical_cfg, task_reform_cfg, task_metrics_cfg, task_cash_position_cfg],
             frequency=Frequency.WEEKLY,
+            sequences={
+                "sequence_historical_data": [task_historical_cfg],
+                # "sequence_predictions": tasks,
+                "sequence_aggregate_predictions": [task_aggregate_cfg],
+                "sequence_result": [
+                    task_aggregate_historical_cfg,
+                    task_reform_cfg,
+                    task_metrics_cfg,
+                    task_cash_position_cfg,
+                ],
+            },
         )
 
         return scenario_cfg
