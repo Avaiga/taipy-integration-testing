@@ -142,6 +142,3 @@ res.xlsx
 # generated result folders
 outputs/
 benchmark_results/
-
-# generated database by sqlite repo
-None

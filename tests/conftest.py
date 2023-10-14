@@ -15,6 +15,12 @@ import shutil
 import pytest
 
 
+@pytest.fixture(scope="function")
+def tmp_sqlite(tmpdir_factory):
+    fn = tmpdir_factory.mktemp("db")
+    return os.path.join(fn.strpath, "test.db")
+
+
 @pytest.fixture(autouse=True)
 def cleanup_data():
     from time import sleep
