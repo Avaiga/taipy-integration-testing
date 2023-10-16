@@ -76,7 +76,7 @@ class PerfBenchmarkAbstract:
     def __del__(self):
         if self.__is_prod:
             self.logger.info(f"Uploading report {self.report_path} from blob storage")
-            # _BlobManager.upload_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
+            _BlobManager.upload_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
 
     def run(self):
         ...
