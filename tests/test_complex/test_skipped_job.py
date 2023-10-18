@@ -9,6 +9,8 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+from unittest.mock import patch
+
 import mongomock
 import taipy.core.taipy as tp
 from taipy import Config
@@ -36,8 +38,9 @@ def build_skipped_jobs_config():
 class TestSkipJobs:
     @staticmethod
     def __test():
-        scenario_config= build_skipped_jobs_config()
-        Core().run()
+        scenario_config = build_skipped_jobs_config()
+        with patch("sys.argv", ["prog"]):
+            Core().run()
         scenario = tp.create_scenario(scenario_config)
         scenario.input.write(2)
         scenario.submit()
@@ -63,8 +66,7 @@ class TestSkipJobs:
     @mongomock.patch(servers=(("test_host", 27017),))
     def test_development_mongo_repo(self):
         Config.configure_global_app(
-            repository_type="mongo",
-            repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
+            repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()
 
@@ -81,7 +83,6 @@ class TestSkipJobs:
     def test_standalone_mongo_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         Config.configure_global_app(
-            repository_type="mongo",
-            repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
+            repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()
