@@ -9,6 +9,7 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 import os
+from unittest.mock import patch
 
 import mongomock
 import pandas as pd
@@ -18,17 +19,17 @@ from taipy.core import Core
 from taipy.core.config import JobConfig
 
 from tests.test_complex.utils.algos import average
-from tests.test_complex.utils.config_builders import build_complex_required_file_paths, build_complex_config
+from tests.test_complex.utils.config_builders import build_complex_config, build_complex_required_file_paths
 from tests.utils import assert_true_after_time
 
 
 class TestComplexApp:
-
     @staticmethod
     def __test():
         _, _, csv_path_sum, excel_path_sum, excel_path_out, csv_path_out = build_complex_required_file_paths()
         scenario_config = build_complex_config()
-        Core().run(force_restart=True)
+        with patch("sys.argv", ["prog"]):
+            Core().run(force_restart=True)
         scenario = tp.create_scenario(scenario_config)
         jobs = tp.submit(scenario)
         for job in jobs:
@@ -56,8 +57,7 @@ class TestComplexApp:
     @mongomock.patch(servers=(("test_host", 27017),))
     def test_development_mongo_repo(self):
         Config.configure_global_app(
-            repository_type="mongo",
-            repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
+            repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()
 
@@ -74,7 +74,6 @@ class TestComplexApp:
     def test_standalone_mongo_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         Config.configure_global_app(
-            repository_type="mongo",
-            repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
+            repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()

@@ -9,6 +9,8 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+from unittest.mock import patch
+
 import mongomock
 import taipy.core.taipy as tp
 from taipy import Config
@@ -20,17 +22,17 @@ from tests.utils import assert_true_after_time
 
 
 class TestChurnClassification:
-
     @staticmethod
     def __test():
         scenario_cfg = build_churn_classification_config()
-        Core().run(force_restart=True)
+        with patch("sys.argv", ["prog"]):
+            Core().run(force_restart=True)
         scenario = tp.create_scenario(scenario_cfg)
         jobs = tp.submit(scenario)
         for job in jobs:
-            assert_true_after_time(job.is_completed,
-                                   msg=f"job {job.id} is not completed. Status: {job.status}.",
-                                   time=30)
+            assert_true_after_time(
+                job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.", time=30
+            )
 
     def test_development_fs_repo(self):
         self.__test()
@@ -42,8 +44,7 @@ class TestChurnClassification:
     @mongomock.patch(servers=(("test_host", 27017),))
     def test_development_mongo_repo(self):
         Config.configure_global_app(
-            repository_type="mongo",
-            repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
+            repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()
 
@@ -60,7 +61,6 @@ class TestChurnClassification:
     def test_standalone_mongo_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         Config.configure_global_app(
-            repository_type="mongo",
-            repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
+            repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()

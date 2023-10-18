@@ -10,14 +10,22 @@
 # specific language governing permissions and limitations under the License.
 
 import os
+from unittest.mock import patch
 
 import pandas as pd
 import taipy.core.taipy as tp
 from taipy.config import Config
-from taipy.core import Core, Status
+from taipy.core import Core
+from taipy.core.config.job_config import JobConfig
 from taipy.core.job.status import Status
 
-from .complex_application_configs import *
+from .complex_application_configs import (
+    average,
+    build_churn_classification_config,
+    build_complex_config,
+    build_complex_required_file_paths,
+    build_skipped_jobs_config,
+)
 
 
 def assert_true_after_time(assertion, msg=None, time=120):
@@ -41,7 +49,8 @@ def assert_true_after_time(assertion, msg=None, time=120):
 def test_skipped_jobs():
     scenario_config = build_skipped_jobs_config()
 
-    Core().run()
+    with patch("sys.argv", ["prog"]):
+        Core().run()
 
     scenario = tp.create_scenario(scenario_config)
     scenario.input.write(2)
@@ -78,7 +87,8 @@ def test_complex_development():
     _, _, csv_path_sum, excel_path_sum, excel_path_out, csv_path_out = build_complex_required_file_paths()
     scenario_config = build_complex_config()
 
-    Core().run(force_restart=True)
+    with patch("sys.argv", ["prog"]):
+        Core().run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_config)
 
@@ -116,7 +126,8 @@ def test_complex_standlone():
     scenario_config = build_complex_config()
     Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
 
-    Core().run(force_restart=True)
+    with patch("sys.argv", ["prog"]):
+        Core().run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_config)
 
@@ -142,7 +153,8 @@ def test_complex_standlone():
 def test_churn_classification_development():
     scenario_cfg = build_churn_classification_config()
 
-    Core().run(force_restart=True)
+    with patch("sys.argv", ["prog"]):
+        Core().run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
@@ -157,7 +169,8 @@ def test_churn_classification_standalone():
     scenario_cfg = build_churn_classification_config()
     Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
 
-    Core().run(force_restart=True)
+    with patch("sys.argv", ["prog"]):
+        Core().run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)

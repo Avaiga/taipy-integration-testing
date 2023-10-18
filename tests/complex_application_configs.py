@@ -9,13 +9,30 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+import datetime as dt
 import os
 import pathlib
 
 from taipy.config import Config, Frequency, Scope
-from taipy.core.config.job_config import JobConfig
 
-from .complex_application_algos import *
+from .complex_application_algos import (
+    average,
+    create_metrics,
+    create_results,
+    create_train_test_data,
+    divide,
+    forecast,
+    forecast_baseline,
+    mult,
+    mult_by_2,
+    preprocess_dataset,
+    return_a_number,
+    roc_from_scratch,
+    subtract,
+    sum,
+    train_model,
+    train_model_baseline,
+)
 
 
 def build_skipped_jobs_config():
