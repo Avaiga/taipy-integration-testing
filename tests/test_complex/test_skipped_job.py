@@ -15,6 +15,7 @@ import mongomock
 import taipy.core.taipy as tp
 from taipy import Config
 from taipy.core import Core
+from taipy.core._repository.db._sql_session import _build_engine, _SQLSession
 from taipy.core.config import JobConfig
 from taipy.core.job.status import Status
 
@@ -23,6 +24,18 @@ from tests.utils import assert_true_after_time
 
 def mult_by_2(a):
     return a
+
+
+def clear_sql_session():
+    _build_engine.cache_clear()
+    _SQLSession._SessionLocal = None
+    _SQLSession._engine = None
+
+
+# def init_managers():
+#     _TaskManagerFactory._build_manager()._delete_all()
+#     _DataManagerFactory._build_manager()._delete_all()
+#     _JobManagerFactory._build_manager()._delete_all()
 
 
 def build_skipped_jobs_config():
@@ -77,6 +90,7 @@ class TestSkipJobs:
         self.__test()
 
     def test_standalone_sql_repo(self, tmp_sqlite):
+        clear_sql_session()
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
         self.__test()
@@ -84,7 +98,6 @@ class TestSkipJobs:
     @mongomock.patch(servers=(("test_host", 27017),))
     def test_standalone_mongo_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
-        # Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
         Config.configure_core(
             repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )

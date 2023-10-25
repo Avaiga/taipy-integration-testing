@@ -13,6 +13,31 @@ import os
 import shutil
 
 import pytest
+from sqlalchemy import create_engine, text
+from taipy import Config
+from taipy.config import IssueCollector
+from taipy.config._config import _Config
+from taipy.config._serializer._toml_serializer import _TomlSerializer
+from taipy.config.checker._checker import _Checker
+from taipy.core._repository.db._sql_session import _build_engine
+from taipy.core._version._version_model import _VersionModel
+from taipy.core.config import (
+    CoreSection,
+    DataNodeConfig,
+    JobConfig,
+    ScenarioConfig,
+    TaskConfig,
+    _DataNodeConfigChecker,
+    _inject_section,
+    _JobConfigChecker,
+    _ScenarioConfigChecker,
+    _TaskConfigChecker,
+)
+from taipy.core.cycle._cycle_model import _CycleModel
+from taipy.core.data._data_model import _DataNodeModel
+from taipy.core.job._job_model import _JobModel
+from taipy.core.scenario._scenario_model import _ScenarioModel
+from taipy.core.task._task_model import _TaskModel
 
 
 @pytest.fixture(scope="function")
@@ -43,24 +68,6 @@ def cleanup_data():
 
 
 def init_config():
-    from taipy import Config
-    from taipy.config import IssueCollector
-    from taipy.config._config import _Config
-    from taipy.config._serializer._toml_serializer import _TomlSerializer
-    from taipy.config.checker._checker import _Checker
-    from taipy.core.config import (
-        CoreSection,
-        DataNodeConfig,
-        JobConfig,
-        ScenarioConfig,
-        TaskConfig,
-        _DataNodeConfigChecker,
-        _inject_section,
-        _JobConfigChecker,
-        _ScenarioConfigChecker,
-        _TaskConfigChecker,
-    )
-
     Config.unblock_update()
     Config._default_config = _Config()._default_config()
     Config._python_config = _Config()
@@ -148,3 +155,67 @@ def init_orchestrator():
     _OrchestratorFactory._build_dispatcher(force_restart=True)
     _OrchestratorFactory._orchestrator.jobs_to_run = Queue()
     _OrchestratorFactory._orchestrator.blocked_jobs = []
+
+
+@pytest.fixture(scope="function")
+def tmp_sqlite_db_file_path(tmpdir_factory):
+    fn = tmpdir_factory.mktemp("data")
+    db_name = "df"
+    file_extension = ".db"
+    db = create_engine("sqlite:///" + os.path.join(fn.strpath, f"{db_name}{file_extension}"))
+    conn = db.connect()
+    conn.execute(text("CREATE TABLE example (a int, b int, c int);"))
+    conn.execute(text("INSERT INTO example (a, b, c) VALUES (1, 2, 3);"))
+    conn.execute(text("INSERT INTO example (a, b, c) VALUES (4, 5, 6);"))
+    conn.commit()
+    conn.close()
+    db.dispose()
+
+    return fn.strpath, db_name, file_extension
+
+
+@pytest.fixture(scope="function")
+def tmp_sqlite_sqlite3_file_path(tmpdir_factory):
+    fn = tmpdir_factory.mktemp("data")
+    db_name = "df"
+    file_extension = ".sqlite3"
+
+    db = create_engine("sqlite:///" + os.path.join(fn.strpath, f"{db_name}{file_extension}"))
+    conn = db.connect()
+    conn.execute(text("CREATE TABLE example (a int, b int, c int);"))
+    conn.execute(text("INSERT INTO example (a, b, c) VALUES (1, 2, 3);"))
+    conn.execute(text("INSERT INTO example (a, b, c) VALUES (4, 5, 6);"))
+    conn.commit()
+    conn.close()
+    db.dispose()
+
+    return fn.strpath, db_name, file_extension
+
+
+@pytest.fixture
+def sql_engine():
+    return create_engine("sqlite:///:memory:")
+
+
+@pytest.fixture
+def init_sql_repo(tmp_sqlite):
+    Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
+
+    # Clean SQLite database
+    engine = _build_engine()
+
+    _CycleModel.__table__.drop(bind=engine, checkfirst=True)
+    _DataNodeModel.__table__.drop(bind=engine, checkfirst=True)
+    _JobModel.__table__.drop(bind=engine, checkfirst=True)
+    _ScenarioModel.__table__.drop(bind=engine, checkfirst=True)
+    _TaskModel.__table__.drop(bind=engine, checkfirst=True)
+    _VersionModel.__table__.drop(bind=engine, checkfirst=True)
+
+    _CycleModel.__table__.create(bind=engine, checkfirst=True)
+    _DataNodeModel.__table__.create(bind=engine, checkfirst=True)
+    _JobModel.__table__.create(bind=engine, checkfirst=True)
+    _ScenarioModel.__table__.create(bind=engine, checkfirst=True)
+    _TaskModel.__table__.create(bind=engine, checkfirst=True)
+    _VersionModel.__table__.create(bind=engine, checkfirst=True)
+
+    return tmp_sqlite
