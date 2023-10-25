@@ -43,29 +43,31 @@ class TestSkipJobs:
             Core().run()
         scenario = tp.create_scenario(scenario_config)
         scenario.input.write(2)
-        scenario.submit()
+        jobs = scenario.submit()
         assert len(tp.get_jobs()) == 2
         for job in tp.get_jobs():
             assert_true_after_time(job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}")
-        scenario.submit()
+        print([(job.id, job.status) for job in jobs])
+        jobs = scenario.submit()
         assert len(tp.get_jobs()) == 4
         skipped = []
         for job in tp.get_jobs():
             if job.status != Status.COMPLETED:
                 assert_true_after_time(job.is_skipped, msg=f"job {job.id} is not skipped. Status: {job.status}")
                 skipped.append(job)
+        print([(job.id, job.status) for job in jobs])
         assert len(skipped) == 2
 
     def test_development_fs_repo(self):
         self.__test()
 
     def test_development_sql_repo(self, tmp_sqlite):
-        Config.configure_global_app(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
+        Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
         self.__test()
 
     @mongomock.patch(servers=(("test_host", 27017),))
     def test_development_mongo_repo(self):
-        Config.configure_global_app(
+        Config.configure_core(
             repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()
@@ -76,13 +78,14 @@ class TestSkipJobs:
 
     def test_standalone_sql_repo(self, tmp_sqlite):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
-        Config.configure_global_app(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
+        Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
         self.__test()
 
     @mongomock.patch(servers=(("test_host", 27017),))
     def test_standalone_mongo_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
-        Config.configure_global_app(
+        # Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
+        Config.configure_core(
             repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()

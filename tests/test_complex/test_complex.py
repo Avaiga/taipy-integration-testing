@@ -51,12 +51,12 @@ class TestComplexApp:
         self.__test()
 
     def test_development_sql_repo(self, tmp_sqlite):
-        Config.configure_global_app(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
+        Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
         self.__test()
 
     @mongomock.patch(servers=(("test_host", 27017),))
     def test_development_mongo_repo(self):
-        Config.configure_global_app(
+        Config.configure_core(
             repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()
@@ -66,14 +66,14 @@ class TestComplexApp:
         self.__test()
 
     def test_standalone_sql_repo(self, tmp_sqlite):
-        Config.configure_global_app(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
+        Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         self.__test()
 
     @mongomock.patch(servers=(("test_host", 27017),))
     def test_standalone_mongo_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
-        Config.configure_global_app(
+        Config.configure_core(
             repository_type="mongo", repository_properties={"mongodb_hostname": "test_host", "application_db": "taipy"}
         )
         self.__test()
