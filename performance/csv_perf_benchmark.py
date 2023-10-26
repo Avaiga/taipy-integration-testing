@@ -80,10 +80,10 @@ class CSVPerfBenchmark(DataPerfBenchmark):
         ) = self._generate_methods(properties_as_str)
 
         data = read_data_node(input_data_node)
-        # if input_data_node.properties["exposed_type"] != "numpy":  # Not yet implemented for numpy
-        #     filter_data_node(input_data_node)
-        # if input_data_node.properties["exposed_type"] not in ["numpy", "modin"]:
-        #     join_filter_data_node(input_data_node)
+        if input_data_node.properties["exposed_type"] != "numpy":  # Not yet implemented for numpy
+            filter_data_node(input_data_node)
+        if input_data_node.properties["exposed_type"] not in ["numpy", "modin"]:
+            join_filter_data_node(input_data_node)
         write_data_node(output_data_node, data)
         submit_sequence(sequence)
         submit_scenario(scenario)
