@@ -11,9 +11,9 @@
 
 import os
 import shutil
+from queue import Queue
 
 import pytest
-from sqlalchemy import create_engine, text
 from taipy import Config
 from taipy.config import IssueCollector
 from taipy.config._config import _Config
@@ -46,25 +46,53 @@ def tmp_sqlite(tmpdir_factory):
     return os.path.join(fn.strpath, "test.db")
 
 
-@pytest.fixture(autouse=True)
-def cleanup_data():
-    from time import sleep
+@pytest.fixture
+def init_sql_repo(tmp_sqlite):
+    Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
 
-    from sqlalchemy.orm import close_all_sessions
+    # Clean SQLite database
+    engine = _build_engine()
 
-    close_all_sessions()
+    _CycleModel.__table__.drop(bind=engine, checkfirst=True)
+    _DataNodeModel.__table__.drop(bind=engine, checkfirst=True)
+    _JobModel.__table__.drop(bind=engine, checkfirst=True)
+    _ScenarioModel.__table__.drop(bind=engine, checkfirst=True)
+    _TaskModel.__table__.drop(bind=engine, checkfirst=True)
+    _VersionModel.__table__.drop(bind=engine, checkfirst=True)
 
-    sleep(0.1)
+    _CycleModel.__table__.create(bind=engine, checkfirst=True)
+    _DataNodeModel.__table__.create(bind=engine, checkfirst=True)
+    _JobModel.__table__.create(bind=engine, checkfirst=True)
+    _ScenarioModel.__table__.create(bind=engine, checkfirst=True)
+    _TaskModel.__table__.create(bind=engine, checkfirst=True)
+    _VersionModel.__table__.create(bind=engine, checkfirst=True)
+
+    return tmp_sqlite
+
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_files():
+    yield
+
     if os.path.exists(".data"):
         shutil.rmtree(".data", ignore_errors=True)
     if os.path.exists("test.db"):
         os.remove("test.db")
+
+
+@pytest.fixture(autouse=True)
+def clean_repository():
+    from sqlalchemy.orm import close_all_sessions
+
+    close_all_sessions()
 
     init_managers()
     init_config()
     init_orchestrator()
     init_managers()
     init_config()
+
+    yield
 
 
 def init_config():
@@ -146,8 +174,6 @@ def init_managers():
 
 
 def init_orchestrator():
-    from queue import Queue
-
     from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
 
     if _OrchestratorFactory._orchestrator is None:
@@ -155,67 +181,3 @@ def init_orchestrator():
     _OrchestratorFactory._build_dispatcher(force_restart=True)
     _OrchestratorFactory._orchestrator.jobs_to_run = Queue()
     _OrchestratorFactory._orchestrator.blocked_jobs = []
-
-
-@pytest.fixture(scope="function")
-def tmp_sqlite_db_file_path(tmpdir_factory):
-    fn = tmpdir_factory.mktemp("data")
-    db_name = "df"
-    file_extension = ".db"
-    db = create_engine("sqlite:///" + os.path.join(fn.strpath, f"{db_name}{file_extension}"))
-    conn = db.connect()
-    conn.execute(text("CREATE TABLE example (a int, b int, c int);"))
-    conn.execute(text("INSERT INTO example (a, b, c) VALUES (1, 2, 3);"))
-    conn.execute(text("INSERT INTO example (a, b, c) VALUES (4, 5, 6);"))
-    conn.commit()
-    conn.close()
-    db.dispose()
-
-    return fn.strpath, db_name, file_extension
-
-
-@pytest.fixture(scope="function")
-def tmp_sqlite_sqlite3_file_path(tmpdir_factory):
-    fn = tmpdir_factory.mktemp("data")
-    db_name = "df"
-    file_extension = ".sqlite3"
-
-    db = create_engine("sqlite:///" + os.path.join(fn.strpath, f"{db_name}{file_extension}"))
-    conn = db.connect()
-    conn.execute(text("CREATE TABLE example (a int, b int, c int);"))
-    conn.execute(text("INSERT INTO example (a, b, c) VALUES (1, 2, 3);"))
-    conn.execute(text("INSERT INTO example (a, b, c) VALUES (4, 5, 6);"))
-    conn.commit()
-    conn.close()
-    db.dispose()
-
-    return fn.strpath, db_name, file_extension
-
-
-@pytest.fixture
-def sql_engine():
-    return create_engine("sqlite:///:memory:")
-
-
-@pytest.fixture
-def init_sql_repo(tmp_sqlite):
-    Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
-
-    # Clean SQLite database
-    engine = _build_engine()
-
-    _CycleModel.__table__.drop(bind=engine, checkfirst=True)
-    _DataNodeModel.__table__.drop(bind=engine, checkfirst=True)
-    _JobModel.__table__.drop(bind=engine, checkfirst=True)
-    _ScenarioModel.__table__.drop(bind=engine, checkfirst=True)
-    _TaskModel.__table__.drop(bind=engine, checkfirst=True)
-    _VersionModel.__table__.drop(bind=engine, checkfirst=True)
-
-    _CycleModel.__table__.create(bind=engine, checkfirst=True)
-    _DataNodeModel.__table__.create(bind=engine, checkfirst=True)
-    _JobModel.__table__.create(bind=engine, checkfirst=True)
-    _ScenarioModel.__table__.create(bind=engine, checkfirst=True)
-    _TaskModel.__table__.create(bind=engine, checkfirst=True)
-    _VersionModel.__table__.create(bind=engine, checkfirst=True)
-
-    return tmp_sqlite
