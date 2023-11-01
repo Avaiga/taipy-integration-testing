@@ -48,24 +48,35 @@ def tmp_sqlite(tmpdir_factory):
 
 @pytest.fixture
 def init_sql_repo(tmp_sqlite):
+    from sqlalchemy.dialects import sqlite
+    from sqlalchemy.schema import CreateTable, DropTable
+    from taipy.core._repository._sql_repository import connection
+
     Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
 
     # Clean SQLite database
-    engine = _build_engine()
+    if connection:
+        connection.execute(str(DropTable(_CycleModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+        connection.execute(str(DropTable(_DataNodeModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+        connection.execute(str(DropTable(_JobModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+        connection.execute(str(DropTable(_ScenarioModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+        connection.execute(str(DropTable(_TaskModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+        connection.execute(str(DropTable(_VersionModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
 
-    _CycleModel.__table__.drop(bind=engine, checkfirst=True)
-    _DataNodeModel.__table__.drop(bind=engine, checkfirst=True)
-    _JobModel.__table__.drop(bind=engine, checkfirst=True)
-    _ScenarioModel.__table__.drop(bind=engine, checkfirst=True)
-    _TaskModel.__table__.drop(bind=engine, checkfirst=True)
-    _VersionModel.__table__.drop(bind=engine, checkfirst=True)
-
-    _CycleModel.__table__.create(bind=engine, checkfirst=True)
-    _DataNodeModel.__table__.create(bind=engine, checkfirst=True)
-    _JobModel.__table__.create(bind=engine, checkfirst=True)
-    _ScenarioModel.__table__.create(bind=engine, checkfirst=True)
-    _TaskModel.__table__.create(bind=engine, checkfirst=True)
-    _VersionModel.__table__.create(bind=engine, checkfirst=True)
+        connection.execute(
+            str(CreateTable(_CycleModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect()))
+        )
+        connection.execute(
+            str(CreateTable(_DataNodeModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect()))
+        )
+        connection.execute(str(CreateTable(_JobModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
+        connection.execute(
+            str(CreateTable(_ScenarioModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect()))
+        )
+        connection.execute(str(CreateTable(_TaskModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
+        connection.execute(
+            str(CreateTable(_VersionModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect()))
+        )
 
     return tmp_sqlite
 
