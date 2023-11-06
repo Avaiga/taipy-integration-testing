@@ -30,8 +30,6 @@ jobs:
         run: pip install git+https://git@github.com/Avaiga/taipy.git@develop
       - name: Install Taipy Core From commit hash
         run: pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.commitSHA }}"
-      - name: Install Test Dependencies
-        run: pip install statsmodels Flask-Testing pytest scikit-learn schedule
       - name: Tests
         run: |
           pytest tests
