@@ -26,8 +26,11 @@ from taipy.core.config import (
     CoreSection,
     DataNodeConfig,
     JobConfig,
+    MigrationConfig,
     ScenarioConfig,
     TaskConfig,
+    _ConfigIdChecker,
+    _CoreSectionChecker,
     _DataNodeConfigChecker,
     _JobConfigChecker,
     _ScenarioConfigChecker,
@@ -56,7 +59,9 @@ class PerfBenchmarkAbstract:
 
         if self.__is_prod:
             self.logger.info(f"Downloading report {self.report_path} from blob storage")
-            _BlobManager.download_file(self.BENCHMARK_REPORT_FILE_NAME, self.report_path)
+            _BlobManager.download_file(
+                f"{self.BENCHMARK_FOLDER_NAME}/{self.BENCHMARK_REPORT_FILE_NAME}", self.report_path
+            )
 
         self.core = tp.Core()
         self.core.run(force_restart=True)
@@ -77,7 +82,6 @@ class PerfBenchmarkAbstract:
         ...
 
     def clean_test_state(self):
-        tp.clean_all_entities_by_version(None)
         self.clean_config()
         self.clean_orchestrator()
 
@@ -104,7 +108,18 @@ class PerfBenchmarkAbstract:
         from taipy.core.config import _inject_section
 
         _inject_section(
-            JobConfig, "job_config", JobConfig("development"), [("configure_job_executions", JobConfig._configure)]
+            JobConfig,
+            "job_config",
+            JobConfig("development"),
+            [("configure_job_executions", JobConfig._configure)],
+            True,
+        )
+        _inject_section(
+            CoreSection,
+            "core",
+            CoreSection.default_config(),
+            [("configure_core", CoreSection._configure)],
+            add_to_unconflicted_sections=True,
         )
         _inject_section(
             DataNodeConfig,
@@ -112,7 +127,8 @@ class PerfBenchmarkAbstract:
             DataNodeConfig.default_config(),
             [
                 ("configure_data_node", DataNodeConfig._configure),
-                ("configure_default_data_node", DataNodeConfig._configure_default),
+                ("configure_data_node_from", DataNodeConfig._configure_from),
+                ("set_default_data_node_configuration", DataNodeConfig._set_default_configuration),
                 ("configure_csv_data_node", DataNodeConfig._configure_csv),
                 ("configure_json_data_node", DataNodeConfig._configure_json),
                 ("configure_sql_table_data_node", DataNodeConfig._configure_sql_table),
@@ -128,7 +144,10 @@ class PerfBenchmarkAbstract:
             TaskConfig,
             "tasks",
             TaskConfig.default_config(),
-            [("configure_task", TaskConfig._configure), ("configure_default_task", TaskConfig._configure_default)],
+            [
+                ("configure_task", TaskConfig._configure),
+                ("set_default_task_configuration", TaskConfig._set_default_configuration),
+            ],
         )
         _inject_section(
             ScenarioConfig,
@@ -136,21 +155,24 @@ class PerfBenchmarkAbstract:
             ScenarioConfig.default_config(),
             [
                 ("configure_scenario", ScenarioConfig._configure),
-                ("configure_default_scenario", ScenarioConfig._configure_default),
-                ("configure_scenario_from_tasks", ScenarioConfig._configure_from_tasks),
+                ("set_default_scenario_configuration", ScenarioConfig._set_default_configuration),
             ],
         )
         _inject_section(
-            CoreSection,
-            "core",
-            CoreSection.default_config(),
-            [("configure_core", CoreSection._configure)],
-            add_to_unconflicted_sections=True,
+            MigrationConfig,
+            "migration_functions",
+            MigrationConfig.default_config(),
+            [("add_migration_function", MigrationConfig._add_migration_function)],
+            True,
         )
+        _Checker.add_checker(_ConfigIdChecker)
         _Checker.add_checker(_JobConfigChecker)
+        _Checker.add_checker(_CoreSectionChecker)
         _Checker.add_checker(_DataNodeConfigChecker)
         _Checker.add_checker(_TaskConfigChecker)
         _Checker.add_checker(_ScenarioConfigChecker)
+
+        Config.configure_core(read_entity_retry=0)
 
     def clean_orchestrator(self):
         self.core.stop()

@@ -107,13 +107,15 @@ class SequencePerfBenchmark(PerfBenchmarkAbstract):
     def _generate_configs(self, repo_config):
         Config.unblock_update()
         Config.configure_core(**repo_config)
-        tp.clean_all_entities_by_version(None)
 
         input_datanode_cfgs = Config.configure_pickle_data_node(id="input_datanode")
         output_datanode_cfg = Config.configure_pickle_data_node(id="output_datanode")
         task_cfg = Config.configure_task(
             id="task", input=input_datanode_cfgs, function=algorithm, output=output_datanode_cfg
         )
-        sequence_cfg = Config.configure_sequence(id="sequence", task_configs=task_cfg)
+        # sequence_cfg = Config.configure_sequence(id="sequence", task_configs=task_cfg)
+        scenario_cfg = Config.configure_scenario(
+            id="scenario", task_configs=[task_cfg], sequences={"sequence": [task_cfg]}
+        )
 
-        return sequence_cfg
+        return scenario_cfg
