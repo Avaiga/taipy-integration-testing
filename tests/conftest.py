@@ -14,11 +14,15 @@ import shutil
 from queue import Queue
 
 import pytest
+from sqlalchemy.dialects import sqlite
+from sqlalchemy.schema import CreateTable, DropTable
 from taipy import Config
 from taipy.config import IssueCollector
 from taipy.config._config import _Config
 from taipy.config._serializer._toml_serializer import _TomlSerializer
 from taipy.config.checker._checker import _Checker
+from taipy.core._core import Core
+from taipy.core._repository.db._sql_connection import _build_connection
 from taipy.core._repository.db._sql_session import _build_engine
 from taipy.core._version._version_model import _VersionModel
 from taipy.core.config import (
@@ -48,35 +52,23 @@ def tmp_sqlite(tmpdir_factory):
 
 @pytest.fixture
 def init_sql_repo(tmp_sqlite):
-    from sqlalchemy.dialects import sqlite
-    from sqlalchemy.schema import CreateTable, DropTable
-    from taipy.core._repository._sql_repository import connection
-
     Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
 
     # Clean SQLite database
-    if connection:
-        connection.execute(str(DropTable(_CycleModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
-        connection.execute(str(DropTable(_DataNodeModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
-        connection.execute(str(DropTable(_JobModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
-        connection.execute(str(DropTable(_ScenarioModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
-        connection.execute(str(DropTable(_TaskModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
-        connection.execute(str(DropTable(_VersionModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+    connection = _build_connection()
+    connection.execute(str(DropTable(_CycleModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(DropTable(_DataNodeModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(DropTable(_JobModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(DropTable(_ScenarioModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(DropTable(_TaskModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(DropTable(_VersionModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
 
-        connection.execute(
-            str(CreateTable(_CycleModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect()))
-        )
-        connection.execute(
-            str(CreateTable(_DataNodeModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect()))
-        )
-        connection.execute(str(CreateTable(_JobModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
-        connection.execute(
-            str(CreateTable(_ScenarioModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect()))
-        )
-        connection.execute(str(CreateTable(_TaskModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
-        connection.execute(
-            str(CreateTable(_VersionModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect()))
-        )
+    connection.execute(str(CreateTable(_CycleModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(CreateTable(_DataNodeModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(CreateTable(_JobModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(CreateTable(_ScenarioModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(CreateTable(_TaskModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
+    connection.execute(str(CreateTable(_VersionModel.__table__, if_not_exists=True).compile(dialect=sqlite.dialect())))
 
     return tmp_sqlite
 
@@ -164,6 +156,9 @@ def init_config():
     _Checker.add_checker(_DataNodeConfigChecker)
     _Checker.add_checker(_TaskConfigChecker)
     _Checker.add_checker(_ScenarioConfigChecker)
+
+    Config.configure_core(read_entity_retry=0)
+    Core._is_running = False
 
 
 def init_managers():
