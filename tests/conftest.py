@@ -22,7 +22,7 @@ from taipy.config._config import _Config
 from taipy.config._serializer._toml_serializer import _TomlSerializer
 from taipy.config.checker._checker import _Checker
 from taipy.core._core import Core
-from taipy.core._repository.db._sql_connection import _build_connection
+from taipy.core._repository.db._sql_connection import _SQLConnection
 from taipy.core._repository.db._sql_session import _build_engine
 from taipy.core._version._version_model import _VersionModel
 from taipy.core.config import (
@@ -54,8 +54,8 @@ def tmp_sqlite(tmpdir_factory):
 def init_sql_repo(tmp_sqlite):
     Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
 
-    # Clean SQLite database
-    connection = _build_connection()
+    _SQLConnection._connection = None
+    connection = _SQLConnection.init_db()
     connection.execute(str(DropTable(_CycleModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
     connection.execute(str(DropTable(_DataNodeModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
     connection.execute(str(DropTable(_JobModel.__table__, if_exists=True).compile(dialect=sqlite.dialect())))
