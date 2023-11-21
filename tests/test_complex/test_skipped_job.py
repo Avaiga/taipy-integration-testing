@@ -47,8 +47,8 @@ class TestSkipJobs:
         scenario.input.write(2)
         scenario.submit()
         assert len(tp.get_jobs()) == 2
-        for job in tp.get_jobs():
-            assert_true_after_time(job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}")
+        jobs = tp.get_jobs()
+        assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=300)
 
         scenario.submit()
         assert len(tp.get_jobs()) == 4

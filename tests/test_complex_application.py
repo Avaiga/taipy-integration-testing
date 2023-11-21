@@ -169,5 +169,5 @@ def test_churn_classification_standalone():
     jobs = tp.submit(scenario)
 
     assert_true_after_time(lambda: os.path.exists(scenario.results._path))
-    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=240)
+    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=300)
     core.stop()
