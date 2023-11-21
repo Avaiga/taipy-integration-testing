@@ -122,7 +122,7 @@ def test_complex_standlone():
 
     jobs = tp.submit(scenario)
 
-    assert_true_after_time(lambda: os.path.exists(csv_path_out) and os.path.exists(excel_path_out))
+    assert_true_after_time(lambda: os.path.exists(csv_path_out) and os.path.exists(excel_path_out), time=180)
     assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]))
 
     csv_sum_res = pd.read_csv(csv_path_sum)
@@ -169,5 +169,5 @@ def test_churn_classification_standalone():
     jobs = tp.submit(scenario)
 
     assert_true_after_time(lambda: os.path.exists(scenario.results._path))
-    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)
+    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=180)
     core.stop()

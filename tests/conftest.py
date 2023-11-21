@@ -14,8 +14,6 @@ import shutil
 from queue import Queue
 
 import pytest
-from sqlalchemy.dialects import sqlite
-from sqlalchemy.schema import CreateTable, DropTable
 from taipy import Config
 from taipy.config import IssueCollector
 from taipy.config._config import _Config
@@ -23,7 +21,6 @@ from taipy.config._serializer._toml_serializer import _TomlSerializer
 from taipy.config.checker._checker import _Checker
 from taipy.core._core import Core
 from taipy.core._repository.db._sql_connection import _SQLConnection
-from taipy.core._version._version_model import _VersionModel
 from taipy.core.config import (
     CoreSection,
     DataNodeConfig,
