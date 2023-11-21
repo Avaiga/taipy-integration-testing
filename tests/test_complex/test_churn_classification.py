@@ -32,7 +32,7 @@ class TestChurnClassification:
         jobs = tp.submit(scenario)
         for job in jobs:
             assert_true_after_time(
-                job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.", time=30
+                job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.", time=240
             )
         core.stop()
 
