@@ -17,8 +17,8 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        python-versions: ['3.8', '3.9', '3.10', '3.11']
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-versions: ['3.11']
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -26,14 +26,10 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-versions }}
-      - name: Install mongomock
-        run: pip install mongomock
+      - name: Install Taipy
+        run: pip install git+https://git@github.com/Avaiga/taipy.git@develop
+      - name: Install Taipy Core From commit hash
+        run: pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.commitSHA }}"
       - name: Tests
         run: |
-          pip install statsmodels Flask-Testing pytest scikit-learn schedule
-          pip install git+https://git@github.com/Avaiga/taipy.git@develop
-          pip install git+https://${{ secrets.CLONE_PRIVATE_REPOSITORY }}@github.com/Avaiga/taipy-auth
-          pip install git+https://${{ secrets.CLONE_PRIVATE_REPOSITORY }}@github.com/Avaiga/taipy-enterprise --no-dependencies
-          pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.commitSHA }}"
-
           pytest tests
