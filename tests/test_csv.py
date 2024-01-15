@@ -11,7 +11,6 @@
 
 import os
 
-import modin.pandas as modin_pd
 import numpy as np
 import pandas as pd
 import taipy.core as tp
@@ -34,7 +33,6 @@ def test_csv():
 
     pandas_data = pd.read_csv(CSV_INPUT_PATH)
     numpy_data = pandas_data.to_numpy()
-    modin_data = modin_pd.read_csv(CSV_INPUT_PATH)
     custom_data = [Row(int(v.id), int(v.age), float(v.rating)) for i, v in pd.read_csv(CSV_INPUT_PATH).iterrows()]
 
     # 📊 Without exposed type (pandas is the default exposed type)
@@ -110,23 +108,23 @@ def test_csv():
 
     os.remove(CSV_OUTPUT_PATH)
 
-    # 📊 With modin as exposed type
+    # 📊 With modin as exposed type (migrate to using pandas)
     scenario_4 = tp.create_scenario(scenario_cfg_4)
     input_data_node_4 = scenario_4.input_csv_dataset_4
     output_data_node_4 = scenario_4.output_csv_dataset_4
 
     read_data_4 = input_data_node_4.read()
     assert len(read_data_4) == ROW_COUNT
-    assert all(modin_data._to_pandas() == read_data_4._to_pandas())
+    assert all(pandas_data == read_data_4)
 
     assert output_data_node_4.read() is None
     output_data_node_4.write(read_data_4)
-    assert all(modin_data._to_pandas() == output_data_node_4.read()._to_pandas())
+    assert all(pandas_data == output_data_node_4.read())
 
     output_data_node_4.write(None)
     assert output_data_node_4.read().empty
 
     scenario_4.submit()
-    assert all(modin_data._to_pandas() == output_data_node_4.read()._to_pandas())
+    assert all(pandas_data == output_data_node_4.read())
 
     os.remove(CSV_OUTPUT_PATH)
