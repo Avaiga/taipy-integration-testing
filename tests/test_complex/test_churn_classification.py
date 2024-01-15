@@ -27,13 +27,13 @@ class TestChurnClassification:
         with patch("sys.argv", ["prog"]):
             core = Core()
             core.run(force_restart=True)
-        scenario = tp.create_scenario(scenario_cfg)
-        jobs = tp.submit(scenario)
-        for job in jobs:
-            assert_true_after_time(
-                job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.", time=30
-            )
-        core.stop()
+            scenario = tp.create_scenario(scenario_cfg)
+            jobs = tp.submit(scenario)
+            for job in jobs:
+                assert_true_after_time(
+                    job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.", time=30
+                )
+            core.stop()
 
     def test_development_fs_repo(self):
         self.__test()

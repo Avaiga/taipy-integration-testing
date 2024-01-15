@@ -53,22 +53,22 @@ def test_skipped_jobs():
         core = Core()
         core.run()
 
-    scenario = tp.create_scenario(scenario_config)
-    scenario.input_dn.write(2)
-    scenario.submit()
-    assert len(tp.get_jobs()) == 2
-    for job in tp.get_jobs():
-        assert job.status == Status.COMPLETED
+        scenario = tp.create_scenario(scenario_config)
+        scenario.input_dn.write(2)
+        scenario.submit()
+        assert len(tp.get_jobs()) == 2
+        for job in tp.get_jobs():
+            assert job.status == Status.COMPLETED
 
-    scenario.submit()
-    assert len(tp.get_jobs()) == 4
-    skipped = []
-    for job in tp.get_jobs():
-        if job.status != Status.COMPLETED:
-            assert job.status == Status.SKIPPED
-            skipped.append(job)
-    assert len(skipped) == 2
-    core.stop()
+        scenario.submit()
+        assert len(tp.get_jobs()) == 4
+        skipped = []
+        for job in tp.get_jobs():
+            if job.status != Status.COMPLETED:
+                assert job.status == Status.SKIPPED
+                skipped.append(job)
+        assert len(skipped) == 2
+        core.stop()
 
 
 def test_complex_development():
@@ -93,23 +93,23 @@ def test_complex_development():
         core = Core()
         core.run(force_restart=True)
 
-    scenario = tp.create_scenario(scenario_config)
+        scenario = tp.create_scenario(scenario_config)
 
-    tp.submit(scenario)
+        tp.submit(scenario)
 
-    csv_sum_res = pd.read_csv(csv_path_sum)
-    excel_sum_res = pd.read_excel(excel_path_sum)
-    csv_out = pd.read_csv(csv_path_out)
-    excel_out = pd.read_excel(excel_path_out)
-    assert csv_sum_res.to_numpy().flatten().tolist() == [i * 20 for i in range(1, 11)]
-    assert excel_sum_res.to_numpy().flatten().tolist() == [i * 2 for i in range(1, 11)]
-    assert average(csv_sum_res["number"] - excel_sum_res["number"]) == csv_out.to_numpy()[0]
-    assert average((csv_sum_res["number"] - excel_sum_res["number"]) * 10) == excel_out.to_numpy()[0]
+        csv_sum_res = pd.read_csv(csv_path_sum)
+        excel_sum_res = pd.read_excel(excel_path_sum)
+        csv_out = pd.read_csv(csv_path_out)
+        excel_out = pd.read_excel(excel_path_out)
+        assert csv_sum_res.to_numpy().flatten().tolist() == [i * 20 for i in range(1, 11)]
+        assert excel_sum_res.to_numpy().flatten().tolist() == [i * 2 for i in range(1, 11)]
+        assert average(csv_sum_res["number"] - excel_sum_res["number"]) == csv_out.to_numpy()[0]
+        assert average((csv_sum_res["number"] - excel_sum_res["number"]) * 10) == excel_out.to_numpy()[0]
 
-    for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
-        os.remove(path)
+        for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
+            os.remove(path)
 
-    core.stop()
+        core.stop()
 
 
 def test_complex_standlone():
@@ -133,29 +133,30 @@ def test_complex_standlone():
 
     with patch("sys.argv", ["prog"]):
         core = Core()
+
         core.run(force_restart=True)
 
-    scenario = tp.create_scenario(scenario_config)
+        scenario = tp.create_scenario(scenario_config)
 
-    jobs = tp.submit(scenario)
+        jobs = tp.submit(scenario)
 
-    assert_true_after_time(lambda: os.path.exists(csv_path_out) and os.path.exists(excel_path_out))
-    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]))
+        assert_true_after_time(lambda: os.path.exists(csv_path_out) and os.path.exists(excel_path_out))
+        assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]))
 
-    csv_sum_res = pd.read_csv(csv_path_sum)
-    excel_sum_res = pd.read_excel(excel_path_sum)
-    csv_out = pd.read_csv(csv_path_out)
-    excel_out = pd.read_excel(excel_path_out)
+        csv_sum_res = pd.read_csv(csv_path_sum)
+        excel_sum_res = pd.read_excel(excel_path_sum)
+        csv_out = pd.read_csv(csv_path_out)
+        excel_out = pd.read_excel(excel_path_out)
 
-    assert csv_sum_res.to_numpy().flatten().tolist() == [i * 20 for i in range(1, 11)]
-    assert excel_sum_res.to_numpy().flatten().tolist() == [i * 2 for i in range(1, 11)]
-    assert average(csv_sum_res["number"] - excel_sum_res["number"]) == csv_out.to_numpy()[0]
-    assert average((csv_sum_res["number"] - excel_sum_res["number"]) * 10) == excel_out.to_numpy()[0]
+        assert csv_sum_res.to_numpy().flatten().tolist() == [i * 20 for i in range(1, 11)]
+        assert excel_sum_res.to_numpy().flatten().tolist() == [i * 2 for i in range(1, 11)]
+        assert average(csv_sum_res["number"] - excel_sum_res["number"]) == csv_out.to_numpy()[0]
+        assert average((csv_sum_res["number"] - excel_sum_res["number"]) * 10) == excel_out.to_numpy()[0]
 
-    for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
-        os.remove(path)
+        for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
+            os.remove(path)
 
-    core.stop()
+        core.stop()
 
 
 def test_churn_classification_development():
@@ -165,14 +166,14 @@ def test_churn_classification_development():
         core = Core()
         core.run(force_restart=True)
 
-    scenario = tp.create_scenario(scenario_cfg)
-    jobs = tp.submit(scenario)
-    for job in jobs:
-        if not job.is_completed():
-            print(job._task.config_id)
+        scenario = tp.create_scenario(scenario_cfg)
+        jobs = tp.submit(scenario)
+        for job in jobs:
+            if not job.is_completed():
+                print(job._task.config_id)
 
-    assert all([job.is_completed() for job in jobs])
-    core.stop()
+        assert all([job.is_completed() for job in jobs])
+        core.stop()
 
 
 def test_churn_classification_standalone():
@@ -183,9 +184,9 @@ def test_churn_classification_standalone():
         core = Core()
         core.run(force_restart=True)
 
-    scenario = tp.create_scenario(scenario_cfg)
-    jobs = tp.submit(scenario)
+        scenario = tp.create_scenario(scenario_cfg)
+        jobs = tp.submit(scenario)
 
-    assert_true_after_time(lambda: os.path.exists(scenario.results._path))
-    assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)
-    core.stop()
+        assert_true_after_time(lambda: os.path.exists(scenario.results._path))
+        assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)
+        core.stop()

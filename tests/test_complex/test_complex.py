@@ -30,24 +30,24 @@ class TestComplexApp:
         with patch("sys.argv", ["prog"]):
             core = Core()
             core.run(force_restart=True)
-        scenario = tp.create_scenario(scenario_config)
-        jobs = tp.submit(scenario)
-        for job in jobs:
-            assert_true_after_time(job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.")
+            scenario = tp.create_scenario(scenario_config)
+            jobs = tp.submit(scenario)
+            for job in jobs:
+                assert_true_after_time(job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.")
 
-        csv_sum_res = pd.read_csv(csv_path_sum)
-        excel_sum_res = pd.read_excel(excel_path_sum)
-        csv_out = pd.read_csv(csv_path_out)
-        excel_out = pd.read_excel(excel_path_out)
-        assert csv_sum_res.to_numpy().flatten().tolist() == [i * 20 for i in range(1, 11)]
-        assert excel_sum_res.to_numpy().flatten().tolist() == [i * 2 for i in range(1, 11)]
-        assert average(csv_sum_res["number"] - excel_sum_res["number"]) == csv_out.to_numpy()[0]
-        assert average((csv_sum_res["number"] - excel_sum_res["number"]) * 10) == excel_out.to_numpy()[0]
+            csv_sum_res = pd.read_csv(csv_path_sum)
+            excel_sum_res = pd.read_excel(excel_path_sum)
+            csv_out = pd.read_csv(csv_path_out)
+            excel_out = pd.read_excel(excel_path_out)
+            assert csv_sum_res.to_numpy().flatten().tolist() == [i * 20 for i in range(1, 11)]
+            assert excel_sum_res.to_numpy().flatten().tolist() == [i * 2 for i in range(1, 11)]
+            assert average(csv_sum_res["number"] - excel_sum_res["number"]) == csv_out.to_numpy()[0]
+            assert average((csv_sum_res["number"] - excel_sum_res["number"]) * 10) == excel_out.to_numpy()[0]
 
-        for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
-            os.remove(path)
+            for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
+                os.remove(path)
 
-        core.stop()
+            core.stop()
 
     def test_development_fs_repo(self):
         self.__test()
