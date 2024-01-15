@@ -26,10 +26,8 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-versions }}
-      - name: Install Taipy
-        run: pip install git+https://git@github.com/Avaiga/taipy.git@develop
-      - name: Install Taipy Core From commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy-core.git@${{ github.event.inputs.commitSHA }}"
+      - name: Install Taipy from commit hash
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
       - name: Tests
         run: |
           pytest tests
