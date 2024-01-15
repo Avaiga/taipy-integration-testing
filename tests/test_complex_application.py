@@ -50,10 +50,11 @@ def test_skipped_jobs():
     scenario_config = build_skipped_jobs_config()
 
     with patch("sys.argv", ["prog"]):
-        Core().run()
+        core = Core()
+        core.run()
 
     scenario = tp.create_scenario(scenario_config)
-    scenario.input.write(2)
+    scenario.input_dn.write(2)
     scenario.submit()
     assert len(tp.get_jobs()) == 2
     for job in tp.get_jobs():
@@ -67,6 +68,7 @@ def test_skipped_jobs():
             assert job.status == Status.SKIPPED
             skipped.append(job)
     assert len(skipped) == 2
+    core.stop()
 
 
 def test_complex_development():
@@ -88,7 +90,8 @@ def test_complex_development():
     scenario_config = build_complex_config()
 
     with patch("sys.argv", ["prog"]):
-        Core().run(force_restart=True)
+        core = Core()
+        core.run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_config)
 
@@ -105,6 +108,8 @@ def test_complex_development():
 
     for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
         os.remove(path)
+
+    core.stop()
 
 
 def test_complex_standlone():
@@ -127,7 +132,8 @@ def test_complex_standlone():
     Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
 
     with patch("sys.argv", ["prog"]):
-        Core().run(force_restart=True)
+        core = Core()
+        core.run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_config)
 
@@ -149,12 +155,15 @@ def test_complex_standlone():
     for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
         os.remove(path)
 
+    core.stop()
+
 
 def test_churn_classification_development():
     scenario_cfg = build_churn_classification_config()
 
     with patch("sys.argv", ["prog"]):
-        Core().run(force_restart=True)
+        core = Core()
+        core.run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
@@ -163,6 +172,7 @@ def test_churn_classification_development():
             print(job._task.config_id)
 
     assert all([job.is_completed() for job in jobs])
+    core.stop()
 
 
 def test_churn_classification_standalone():
@@ -170,10 +180,12 @@ def test_churn_classification_standalone():
     Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
 
     with patch("sys.argv", ["prog"]):
-        Core().run(force_restart=True)
+        core = Core()
+        core.run(force_restart=True)
 
     scenario = tp.create_scenario(scenario_cfg)
     jobs = tp.submit(scenario)
 
     assert_true_after_time(lambda: os.path.exists(scenario.results._path))
     assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)
+    core.stop()

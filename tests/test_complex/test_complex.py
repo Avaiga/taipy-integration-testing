@@ -28,7 +28,8 @@ class TestComplexApp:
         _, _, csv_path_sum, excel_path_sum, excel_path_out, csv_path_out = build_complex_required_file_paths()
         scenario_config = build_complex_config()
         with patch("sys.argv", ["prog"]):
-            Core().run(force_restart=True)
+            core = Core()
+            core.run(force_restart=True)
         scenario = tp.create_scenario(scenario_config)
         jobs = tp.submit(scenario)
         for job in jobs:
@@ -45,6 +46,8 @@ class TestComplexApp:
 
         for path in [csv_path_sum, excel_path_sum, csv_path_out, excel_path_out]:
             os.remove(path)
+
+        core.stop()
 
     def test_development_fs_repo(self):
         self.__test()

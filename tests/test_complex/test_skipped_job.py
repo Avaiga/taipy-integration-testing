@@ -25,9 +25,9 @@ def mult_by_2(a):
 
 
 def build_skipped_jobs_config():
-    input_config = Config.configure_data_node(id="input")
-    intermediate_config = Config.configure_data_node(id="intermediate")
-    output_config = Config.configure_data_node(id="output")
+    input_config = Config.configure_data_node(id="input_dn")
+    intermediate_config = Config.configure_data_node(id="intermediate_dn")
+    output_config = Config.configure_data_node(id="output_dn")
     task_config_1 = Config.configure_task("first", mult_by_2, input_config, intermediate_config, skippable=True)
     task_config_2 = Config.configure_task("second", mult_by_2, intermediate_config, output_config, skippable=True)
     scenario_config = Config.configure_scenario("scenario", task_configs=[task_config_1, task_config_2])
@@ -39,9 +39,10 @@ class TestSkipJobs:
     def __test():
         scenario_config = build_skipped_jobs_config()
         with patch("sys.argv", ["prog"]):
-            Core().run()
+            core = Core()
+            core.run()
         scenario = tp.create_scenario(scenario_config)
-        scenario.input.write(2)
+        scenario.input_dn.write(2)
         scenario.submit()
         assert len(tp.get_jobs()) == 2
         for job in tp.get_jobs():
@@ -54,6 +55,8 @@ class TestSkipJobs:
                 assert_true_after_time(job.is_skipped, msg=f"job {job.id} is not skipped. Status: {job.status}")
                 skipped.append(job)
         assert len(skipped) == 2
+
+        core.stop()
 
     def test_development_fs_repo(self):
         self.__test()

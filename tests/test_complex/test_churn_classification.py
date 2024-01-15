@@ -25,13 +25,15 @@ class TestChurnClassification:
     def __test():
         scenario_cfg = build_churn_classification_config()
         with patch("sys.argv", ["prog"]):
-            Core().run(force_restart=True)
+            core = Core()
+            core.run(force_restart=True)
         scenario = tp.create_scenario(scenario_cfg)
         jobs = tp.submit(scenario)
         for job in jobs:
             assert_true_after_time(
                 job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.", time=30
             )
+        core.stop()
 
     def test_development_fs_repo(self):
         self.__test()
