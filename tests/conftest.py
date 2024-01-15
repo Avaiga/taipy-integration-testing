@@ -13,6 +13,7 @@ import os
 import shutil
 
 import pytest
+from taipy.core import Core
 
 
 @pytest.fixture(scope="function")
@@ -118,6 +119,9 @@ def init_config():
     _Checker.add_checker(_DataNodeConfigChecker)
     _Checker.add_checker(_TaskConfigChecker)
     _Checker.add_checker(_ScenarioConfigChecker)
+
+    Config.configure_core(read_entity_retry=0)
+    Core._is_running = False
 
 
 def init_managers():
