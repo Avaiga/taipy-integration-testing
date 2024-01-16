@@ -13,21 +13,74 @@ on:
         default: 'develop'
 
 jobs:
-  backend:
-    timeout-minutes: 30
+  submit_tests:
+    timeout-minutes: 20
     strategy:
+      fail-fast: false
       matrix:
-        python-versions: ['3.11']
+        python-version: ['3.11']
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-versions }}
+          python-version: ${{ matrix.python-version }}
       - name: Install Taipy from commit hash
         run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
-      - name: Tests
-        run: |
-          pytest tests
+      - name: Pytest churn_classification
+        run: pytest -m "churn_classification" tests
+
+  complex_application:
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11']
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Taipy from commit hash
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
+      - name: Pytest complex_application
+        run: pytest -m "complex_application" tests
+
+  skipped:
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11']
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Taipy from commit hash
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
+      - name: Pytest skipped
+        run: pytest -m "skipped" tests
+
+  tests:
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11']
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Taipy from commit hash
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
+      - name: Pytest test
+        run: pytest -m "not churn_classification and not complex_application and not skipped" tests
