@@ -16,6 +16,7 @@ import taipy.core.taipy as tp
 from taipy import Config
 from taipy.core import Core
 from taipy.core.config import JobConfig
+from taipy.core.submission.submission_status import SubmissionStatus
 
 from tests.test_complex.utils.algos import average
 from tests.test_complex.utils.config_builders import build_complex_config, build_complex_required_file_paths
@@ -32,8 +33,7 @@ class TestComplexApp:
             core.run(force_restart=True)
             scenario = tp.create_scenario(scenario_config)
             jobs = tp.submit(scenario)
-            for job in jobs:
-                assert_true_after_time(job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.")
+            assert_true_after_time(lambda: tp.get(jobs[0].submit_id).submission_status == SubmissionStatus.COMPLETED)
 
             csv_sum_res = pd.read_csv(csv_path_sum)
             excel_sum_res = pd.read_excel(excel_path_sum)

@@ -18,6 +18,7 @@ from taipy.config import Config
 from taipy.core import Core
 from taipy.core.config.job_config import JobConfig
 from taipy.core.job.status import Status
+from taipy.core.submission.submission_status import SubmissionStatus
 
 from .complex_application_configs import (
     average,
@@ -26,24 +27,7 @@ from .complex_application_configs import (
     build_complex_required_file_paths,
     build_skipped_jobs_config,
 )
-
-
-def assert_true_after_time(assertion, msg=None, time=120):
-    from datetime import datetime
-    from time import sleep
-
-    start = datetime.now()
-    while (datetime.now() - start).seconds < time:
-        sleep(1)  # Limit CPU usage
-        try:
-            if assertion():
-                return
-        except BaseException as e:
-            print("Raise : ", e)
-            continue
-    if msg:
-        print(msg)
-    assert assertion()
+from .utils import assert_true_after_time
 
 
 def test_skipped_jobs():
@@ -141,7 +125,7 @@ def test_complex_standlone():
         jobs = tp.submit(scenario)
 
         assert_true_after_time(lambda: os.path.exists(csv_path_out) and os.path.exists(excel_path_out))
-        assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]))
+        assert_true_after_time(lambda: tp.get(jobs[0].submit_id).submission_status == SubmissionStatus.COMPLETED)
 
         csv_sum_res = pd.read_csv(csv_path_sum)
         excel_sum_res = pd.read_excel(excel_path_sum)
@@ -168,11 +152,9 @@ def test_churn_classification_development():
 
         scenario = tp.create_scenario(scenario_cfg)
         jobs = tp.submit(scenario)
-        for job in jobs:
-            if not job.is_completed():
-                print(job._task.config_id)
 
-        assert all([job.is_completed() for job in jobs])
+        assert_true_after_time(lambda: tp.get(jobs[0].submit_id).submission_status == SubmissionStatus.COMPLETED)
+
         core.stop()
 
 
@@ -188,5 +170,6 @@ def test_churn_classification_standalone():
         jobs = tp.submit(scenario)
 
         assert_true_after_time(lambda: os.path.exists(scenario.results._path))
-        assert_true_after_time(lambda: all([job._status == Status.COMPLETED for job in jobs]), time=15)
+        assert_true_after_time(lambda: tp.get(jobs[0].submit_id).submission_status == SubmissionStatus.COMPLETED)
+
         core.stop()

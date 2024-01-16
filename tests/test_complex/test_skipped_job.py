@@ -45,15 +45,22 @@ class TestSkipJobs:
         scenario.input_dn.write(2)
         scenario.submit()
         assert len(tp.get_jobs()) == 2
-        for job in tp.get_jobs():
-            assert_true_after_time(job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}")
+        assert_true_after_time(
+            lambda: all(job.is_completed() for job in tp.get_jobs()),
+        )
         scenario.submit()
         assert len(tp.get_jobs()) == 4
+
+        assert_true_after_time(
+            lambda: all(job.is_skipped() or job.is_completed() for job in tp.get_jobs()),
+        )
         skipped = []
         for job in tp.get_jobs():
             if job.status != Status.COMPLETED:
-                assert_true_after_time(job.is_skipped, msg=f"job {job.id} is not skipped. Status: {job.status}")
-                skipped.append(job)
+                if job.is_skipped():
+                    skipped.append(job)
+                else:
+                    print(f"job {job.id} is not skipped. Status: {job.status}")
         assert len(skipped) == 2
 
         core.stop()

@@ -15,6 +15,7 @@ import taipy.core.taipy as tp
 from taipy import Config
 from taipy.core import Core
 from taipy.core.config import JobConfig
+from taipy.core.submission.submission_status import SubmissionStatus
 
 from tests.test_complex.utils.config_builders import build_churn_classification_config
 from tests.utils import assert_true_after_time
@@ -29,10 +30,10 @@ class TestChurnClassification:
             core.run(force_restart=True)
             scenario = tp.create_scenario(scenario_cfg)
             jobs = tp.submit(scenario)
-            for job in jobs:
-                assert_true_after_time(
-                    job.is_completed, msg=f"job {job.id} is not completed. Status: {job.status}.", time=30
-                )
+
+            assert_true_after_time(
+                lambda: tp.get(jobs[0].submit_id).submission_status == SubmissionStatus.COMPLETED, time=30
+            )
             core.stop()
 
     def test_development_fs_repo(self):
