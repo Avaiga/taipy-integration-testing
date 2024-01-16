@@ -1,6 +1,4 @@
-
-
-name: Python tests
+name: Python integration repo PR tests
 
 on:
   pull_request:
@@ -20,7 +18,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Taipy from commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop"
       - name: Pytest churn_classification
         run: pytest -m "churn_classification" tests
 
@@ -38,7 +36,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Taipy from commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop"
       - name: Pytest complex_application
         run: pytest -m "complex_application" tests
 
@@ -56,7 +54,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Taipy from commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop"
       - name: Pytest skipped
         run: pytest -m "skipped" tests
 
@@ -74,6 +72,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Taipy from commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}"
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop"
       - name: Pytest test
         run: pytest -m "not churn_classification and not complex_application and not skipped" tests
