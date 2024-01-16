@@ -9,6 +9,7 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+from time import sleep
 from unittest.mock import patch
 
 import pytest
@@ -31,8 +32,8 @@ class TestChurnClassification:
             core = Core()
             core.run(force_restart=True)
             scenario = tp.create_scenario(scenario_cfg)
+            sleep(10)
             jobs = tp.submit(scenario)
-
             assert_true_after_time(
                 lambda: tp.get(jobs[0].submit_id).submission_status == SubmissionStatus.COMPLETED, time=30
             )

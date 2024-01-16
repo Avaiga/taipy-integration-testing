@@ -9,6 +9,7 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
+from time import sleep
 from unittest.mock import patch
 
 import pytest
@@ -47,12 +48,13 @@ class TestSkipJobs:
         scenario.input_dn.write(2)
         scenario.submit()
         assert len(tp.get_jobs()) == 2
+        sleep(10)
         assert_true_after_time(
             lambda: all(job.is_completed() for job in tp.get_jobs()),
         )
         scenario.submit()
         assert len(tp.get_jobs()) == 4
-
+        sleep(10)
         assert_true_after_time(
             lambda: all(job.is_skipped() or job.is_completed() for job in tp.get_jobs()),
         )

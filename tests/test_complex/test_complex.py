@@ -9,6 +9,7 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 import os
+from time import sleep
 from unittest.mock import patch
 
 import pandas as pd
@@ -49,6 +50,7 @@ class TestComplexApp:
             core.run(force_restart=True)
             scenario = tp.create_scenario(scenario_config)
             jobs = tp.submit(scenario)
+            sleep(10)
             assert_true_after_time(lambda: tp.get(jobs[0].submit_id).submission_status == SubmissionStatus.COMPLETED)
 
             csv_sum_res = pd.read_csv(csv_path_sum)
