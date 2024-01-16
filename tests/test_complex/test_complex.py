@@ -12,6 +12,7 @@ import os
 from unittest.mock import patch
 
 import pandas as pd
+import pytest
 import taipy.core.taipy as tp
 from taipy import Config
 from taipy.core import Core
@@ -23,9 +24,24 @@ from tests.test_complex.utils.config_builders import build_complex_config, build
 from tests.utils import assert_true_after_time
 
 
+@pytest.mark.complex_application
 class TestComplexApp:
     @staticmethod
     def __test():
+        # d1 --- t1
+        # |
+        # | --- t2 --- d5 --- |                   t10 --- d12
+        #        |            |                   |
+        #        |            |                   |
+        #        d2           | --- t5 --- d7 --- t7 --- d9 --- t8 --- d10 --- t9 --- d11
+        #                     |                   |             |
+        # d3 --- |            |                   |             |
+        # |      |            |     t6 --- d8 -------------------
+        # |      t3 --- d6 ---|
+        # |      |
+        # |      |
+        # t4     d4
+
         _, _, csv_path_sum, excel_path_sum, excel_path_out, csv_path_out = build_complex_required_file_paths()
         scenario_config = build_complex_config()
         with patch("sys.argv", ["prog"]):

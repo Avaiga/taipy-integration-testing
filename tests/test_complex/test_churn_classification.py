@@ -11,6 +11,7 @@
 
 from unittest.mock import patch
 
+import pytest
 import taipy.core.taipy as tp
 from taipy import Config
 from taipy.core import Core
@@ -21,6 +22,7 @@ from tests.test_complex.utils.config_builders import build_churn_classification_
 from tests.utils import assert_true_after_time
 
 
+@pytest.mark.churn_classification
 class TestChurnClassification:
     @staticmethod
     def __test():

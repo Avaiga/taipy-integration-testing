@@ -11,6 +11,7 @@
 
 from unittest.mock import patch
 
+import pytest
 import taipy.core.taipy as tp
 from taipy import Config
 from taipy.core import Core
@@ -34,6 +35,7 @@ def build_skipped_jobs_config():
     return scenario_config
 
 
+@pytest.mark.skipped
 class TestSkipJobs:
     @staticmethod
     def __test():
