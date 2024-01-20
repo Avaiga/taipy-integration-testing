@@ -17,7 +17,15 @@ from taipy.config.config import Config
 from .algorithms import predict, train
 
 def build_arima_config():
-
+    # Build a scenario config for the ARIMA algorithm.
+    #                              ___________________
+    #                             | dates_to_forecast | ___
+    #  _____________               ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅     \
+    #  | historical|                      _____________     \                              _________________
+    #  | data_set  |--->  training  ---> | arima_model | -------> arima_scoring_algo ---> | forecast_values |
+    #  |  (csv)    |       (task)         ̅̅̅̅̅̅̅̅̅̅̅̅̅               (task)              |   (excel)       |
+    #   ̅̅̅̅̅̅̅̅̅̅̅̅                                                                       ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅
+    #
     CSV_INPUT_PATH = "tests/shared_test_cases/arima/daily-min-temperatures.csv"
     XLSX_OUTPUT_PATH = "tests/shared_test_cases/arima/res.xlsx"
 
