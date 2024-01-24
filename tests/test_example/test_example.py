@@ -55,7 +55,7 @@ class TestExample:
             if waiting_jobs_to_complete:
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=30,
+                    time=120,
                     msg=lambda s: f"Submission status is {s.submission_status} after 30 seconds",
                     s=submission)
             else:

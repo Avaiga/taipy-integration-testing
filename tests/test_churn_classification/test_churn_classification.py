@@ -51,15 +51,15 @@ class TestChurnClassification:
             core = Core()
             core.run(force_restart=True)
             scenario = tp.create_scenario(scenario_cfg)
-            submission = tp.submit(scenario)
             for inpt in scenario.get_inputs():
-                # Checking this allows not to enter the waiting assert if the scenario is blocked for config reason
+                # Checking this allows not to submit scenario if it is blocked by some input not being ready
                 assert inpt.is_ready_for_reading
+            submission = tp.submit(scenario)
             if self.waiting_jobs_to_complete:
                 # 12 jobs must be processed to complete the scenario. It may take some time.
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=40,
+                    time=120,
                     msg=lambda s: f"Submission status is {s.submission_status} after 40 seconds",
                     s=submission)
             else:

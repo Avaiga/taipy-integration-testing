@@ -31,7 +31,7 @@ The scenario configuration holds the following dag where square nodes are data n
                  |                                   |        /   /
                  |    _______________________________|_______/   /
                  |   /                               |          /
-              ___|__/_                           ____|_____________
+              ___|__/_                           ____|_________/___
             / predict \                         / predict baseline \
             \_________/                         \__________________/
                  |                                        |
