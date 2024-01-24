@@ -1,4 +1,4 @@
-# Copyright 2023 Avaiga Private Limited
+# Copyright 2024 Avaiga Private Limited
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 # the License. You may obtain a copy of the License at
@@ -37,13 +37,13 @@ def clean_subparser():
                         argument_group._group_actions.remove(group_action)
 
 
-def assert_true_after_time(assertion, msg=None, time=120):
+def assert_true_after_time(assertion, time=120, msg=None, **msg_params):
     from datetime import datetime
     from time import sleep
 
     start = datetime.now()
     while (datetime.now() - start).seconds < time:
-        sleep(1)  # Limit CPU usage
+        sleep(0.2)  # Limit CPU usage
         try:
             if assertion():
                 return
@@ -51,5 +51,5 @@ def assert_true_after_time(assertion, msg=None, time=120):
             print("Raise : ", e)
             continue
     if msg:
-        print(msg)
+        print(msg(**msg_params))
     assert assertion()

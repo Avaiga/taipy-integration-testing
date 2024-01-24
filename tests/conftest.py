@@ -1,4 +1,4 @@
-# Copyright 2023 Avaiga Private Limited
+# Copyright 2024 Avaiga Private Limited
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 # the License. You may obtain a copy of the License at
@@ -10,6 +10,8 @@
 # specific language governing permissions and limitations under the License.
 
 import os
+import pathlib
+import shutil
 from queue import Queue
 
 import pytest
@@ -134,24 +136,6 @@ def inject_core_sections():
     return _inject_core_sections
 
 
-@pytest.fixture(scope="function")
-def tmp_sqlite(tmpdir_factory):
-    fn = tmpdir_factory.mktemp("db")
-    return os.path.join(fn.strpath, "test.db")
-
-
-@pytest.fixture(scope="function", autouse=True)
-def clean_repository(init_config, init_managers, init_orchestrator, init_notifier):
-    close_all_sessions()
-    init_config()
-    init_orchestrator()
-    init_managers()
-    init_config()
-    init_notifier()
-
-    yield
-
-
 @pytest.fixture
 def init_config(reset_configuration_singleton, inject_core_sections):
     def _init_config():
@@ -170,6 +154,14 @@ def init_config(reset_configuration_singleton, inject_core_sections):
         Core._is_running = False
 
     return _init_config
+
+
+@pytest.fixture
+def init_notifier():
+    def _init_notifier():
+        Notifier._topics_registrations_list = {}
+
+    return _init_notifier
 
 
 @pytest.fixture
@@ -199,20 +191,49 @@ def init_orchestrator():
     return _init_orchestrator
 
 
-@pytest.fixture
-def init_notifier():
-    def _init_notifier():
-        Notifier._topics_registrations_list = {}
+@pytest.fixture(scope="function", autouse=True)
+def cleanup_files():
+    clean_files()
+    yield
+    clean_files()
 
-    return _init_notifier
+
+def clean_files():
+    output_dir = pathlib.Path(__file__).parent.resolve() / "outputs"
+    if output_dir.exists():
+        for f in output_dir.iterdir():
+            os.remove(f)
+    if os.path.exists(".data"):
+        shutil.rmtree(".data", ignore_errors=True)
+    if os.path.exists(".my_data"):
+        shutil.rmtree(".my_data", ignore_errors=True)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function", autouse=True)
+def clean_repository(init_config, init_managers, init_orchestrator, init_notifier):
+    clean_files()
+    init_config()
+    close_all_sessions()
+    init_orchestrator()
+    init_managers()
+    init_config()
+    init_notifier()
+
+    yield
+
+
+@pytest.fixture(scope="function")
 def sql_engine():
     return create_engine("sqlite:///:memory:")
 
 
 @pytest.fixture
+def tmp_sqlite(tmpdir_factory):
+    fn = tmpdir_factory.mktemp("db")
+    return os.path.join(fn.strpath, "test.db")
+
+
+@pytest.fixture(scope="function")
 def init_sql_repo(tmp_sqlite):
     Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
 

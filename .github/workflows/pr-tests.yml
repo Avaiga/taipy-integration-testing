@@ -24,7 +24,7 @@ jobs:
       - name: Pytest churn_classification
         run: pytest -m "churn_classification" tests
 
-  complex_application:
+  example_application:
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -41,8 +41,8 @@ jobs:
       - name: Install dependencies
         run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn mongomock
 
-      - name: Pytest complex_application
-        run: pytest -m "complex_application" tests
+      - name: Pytest example_application
+        run: pytest -m "example_application" tests
 
   skipped:
     timeout-minutes: 20
@@ -82,4 +82,4 @@ jobs:
         run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn mongomock
 
       - name: Pytest test
-        run: pytest -m "not churn_classification and not complex_application and not skipped" tests
+        run: pytest -m "not churn_classification and not example_application and not skipped" tests
