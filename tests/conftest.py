@@ -201,8 +201,8 @@ def cleanup_files():
 def clean_files():
     output_dir = pathlib.Path(__file__).parent.resolve() / "outputs"
     if output_dir.exists():
-        for f in output_dir.iterdir():
-            os.remove(f)
+        shutil.rmtree(output_dir)
+    output_dir.mkdir(exist_ok=True)
     if os.path.exists(".data"):
         shutil.rmtree(".data", ignore_errors=True)
     if os.path.exists(".my_data"):

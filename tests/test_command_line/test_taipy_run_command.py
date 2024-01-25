@@ -24,10 +24,9 @@ def clean_templates():
 
 
 class TestTaipyRunCommand:
-
     def test_run_simple_taipy_app_without_taipy_args(self, capfd):
         with pytest.raises(SystemExit) as error:
-            with patch("sys.argv", ["prog", "run", "test_command_line/no_external_args_app.py"]):
+            with patch("sys.argv", ["prog", "run", "tests/test_command_line/no_external_args_app.py"]):
                 _entrypoint()
         std_out, _ = capfd.readouterr()
         assert error.value.code == 0
@@ -50,7 +49,7 @@ class TestTaipyRunCommand:
                 [
                     "prog",
                     "run",
-                    "test_command_line/no_external_args_app.py",
+                    "tests/test_command_line/no_external_args_app.py",
                     "--experiment",
                     "1.0",
                     "--force",
@@ -86,7 +85,7 @@ class TestTaipyRunCommand:
                 [
                     "prog",
                     "run",
-                    "test_command_line/external_args_app.py",
+                    "tests/test_command_line/external_args_app.py",
                     "--experiment",
                     "1.0",
                     "--force",

@@ -19,8 +19,9 @@ from taipy.core import Core
 from taipy.core.config import JobConfig
 from taipy.core.submission.submission_status import SubmissionStatus
 
-from .config import build_churn_config
 from tests.utils import assert_true_after_time
+
+from .config import build_churn_config
 
 
 @pytest.mark.churn_classification
@@ -60,8 +61,9 @@ class TestChurnClassification:
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
                     time=120,
-                    msg=lambda s: f"Submission status is {s.submission_status} after 40 seconds",
-                    s=submission)
+                    msg=lambda s: f"Submission status is {s.submission_status} after 120 seconds",
+                    s=submission,
+                )
             else:
                 assert submission.submission_status == SubmissionStatus.COMPLETED
             core.stop()
