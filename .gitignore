@@ -140,5 +140,5 @@ test.db
 res.xlsx
 
 # generated result folders
-outputs/
 benchmark_results/
+/tests/outputs/
