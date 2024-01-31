@@ -20,7 +20,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn mongomock
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn
 
       - name: Pytest test
         run: pytest tests

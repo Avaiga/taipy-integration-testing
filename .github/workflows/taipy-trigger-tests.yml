@@ -27,6 +27,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Taipy from commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}" statsmodels Flask-Testing pytest scikit-learn mongomock
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}" statsmodels Flask-Testing pytest scikit-learn
       - name: Pytest test
         run: pytest tests
