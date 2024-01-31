@@ -13,65 +13,12 @@ on:
         default: 'develop'
 
 jobs:
-  churn_classification:
-    timeout-minutes: 20
-    strategy:
-      matrix:
-        python-version: ['3.8', '3.11']
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Taipy from commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}" statsmodels Flask-Testing pytest scikit-learn mongomock
-      - name: Pytest churn_classification
-        run: pytest -m "churn_classification" tests
-
-  example_application:
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ['3.8', '3.11']
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Taipy from commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}" statsmodels Flask-Testing pytest scikit-learn mongomock
-      - name: Pytest example_application
-        run: pytest -m "example_application" tests
-
-  skipped:
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ['3.8', '3.11']
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Taipy from commit hash
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}" statsmodels Flask-Testing pytest scikit-learn mongomock
-      - name: Pytest skipped
-        run: pytest -m "skipped" tests
-
   tests:
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.8', '3.11']
+        python-version: ['3.8', '3.12']
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -82,4 +29,4 @@ jobs:
       - name: Install Taipy from commit hash
         run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}" statsmodels Flask-Testing pytest scikit-learn mongomock
       - name: Pytest test
-        run: pytest -m "not churn_classification and not example_application and not skipped" tests
+        run: pytest tests

@@ -24,7 +24,6 @@ from tests.utils import assert_true_after_time
 from .config import build_churn_config
 
 
-@pytest.mark.churn_classification
 class TestChurnClassification:
     data_set_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "dataset", "churn_10000.csv")
 

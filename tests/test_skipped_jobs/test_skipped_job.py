@@ -22,7 +22,6 @@ from tests.utils import assert_true_after_time
 
 
 
-@pytest.mark.skipped
 class TestSkipJobs:
 
     def test_development_fs_repo(self):

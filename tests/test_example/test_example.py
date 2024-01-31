@@ -25,7 +25,6 @@ from .config import build_example_config
 from tests.utils import assert_true_after_time
 
 
-@pytest.mark.example_application
 class TestExample:
     csv_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "dataset", "example_10.csv")
     excel_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "dataset", "example_10.xlsx")
