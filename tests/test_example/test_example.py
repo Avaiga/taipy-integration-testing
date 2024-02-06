@@ -58,19 +58,19 @@ class TestExample:
                     ms += "                              --------------                                    \n"
                     ms += "                               Job statuses                                     \n"
                     for job in submission.jobs:
-                        ms += f"\n{job.id}: {job.status}"
+                        ms += f"{job.id}: {job.status}\n"
                     ms += "                              --------------                                    \n"
                     ms += "                               Blocked jobs                                     \n"
                     for job in submission._blocked_jobs:
-                        ms += f"\n{job.id}"
+                        ms += f"{job.id}\n"
                     ms += "                              --------------                                    \n"
                     ms += "                               Running jobs                                     \n"
                     for job in submission._running_jobs:
-                        ms += f"\n{job.id}"
+                        ms += f"{job.id}\n"
                     ms += "                              --------------                                    \n"
                     ms += "                               Pending jobs                                     \n"
                     for job in submission._pending_jobs:
-                        ms += f"\n{job.id}"
+                        ms += f"{job.id}\n"
                     ms += "--------------------------------------------------------------------------------\n"
                     return ms
 
