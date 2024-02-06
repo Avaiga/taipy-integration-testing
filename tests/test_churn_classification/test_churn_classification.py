@@ -59,9 +59,25 @@ class TestChurnClassification:
                 # 12 jobs must be processed to complete the scenario. It may take some time.
 
                 def message(submission):
-                    ms = f"Submission status is {submission.submission_status} after 600 seconds."
+                    ms = "--------------------------------------------------------------------------------\n"
+                    ms += f"Submission status is {submission.submission_status} after 600 seconds."
+                    ms += "                              --------------                                    \n"
+                    ms += "                               Job statuses                                     \n"
                     for job in submission.jobs:
                         ms += f"\n{job.id}: {job.status}"
+                    ms += "                              --------------                                    \n"
+                    ms += "                               Blocked jobs                                     \n"
+                    for job in submission._blocked_jobs:
+                        ms += f"\n{job.id}"
+                    ms += "                              --------------                                    \n"
+                    ms += "                               Running jobs                                     \n"
+                    for job in submission._running_jobs:
+                        ms += f"\n{job.id}"
+                    ms += "                              --------------                                    \n"
+                    ms += "                               Pending jobs                                     \n"
+                    for job in submission._pending_jobs:
+                        ms += f"\n{job.id}"
+                    ms += "--------------------------------------------------------------------------------\n"
                     return ms
 
                 assert_true_after_time(

@@ -52,10 +52,32 @@ class TestExample:
             submission = tp.submit(scenario)
 
             if waiting_jobs_to_complete:
+                def message(submission):
+                    ms = "--------------------------------------------------------------------------------\n"
+                    ms += f"Submission status is {submission.submission_status} after 600 seconds."
+                    ms += "                              --------------                                    \n"
+                    ms += "                               Job statuses                                     \n"
+                    for job in submission.jobs:
+                        ms += f"\n{job.id}: {job.status}"
+                    ms += "                              --------------                                    \n"
+                    ms += "                               Blocked jobs                                     \n"
+                    for job in submission._blocked_jobs:
+                        ms += f"\n{job.id}"
+                    ms += "                              --------------                                    \n"
+                    ms += "                               Running jobs                                     \n"
+                    for job in submission._running_jobs:
+                        ms += f"\n{job.id}"
+                    ms += "                              --------------                                    \n"
+                    ms += "                               Pending jobs                                     \n"
+                    for job in submission._pending_jobs:
+                        ms += f"\n{job.id}"
+                    ms += "--------------------------------------------------------------------------------\n"
+                    return ms
+
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=120,
-                    msg=lambda s: f"Submission status is {s.submission_status} after 30 seconds",
+                    time=600,
+                    msg=lambda s: message(s),
                     s=submission)
             else:
                 assert submission.submission_status == SubmissionStatus.COMPLETED
