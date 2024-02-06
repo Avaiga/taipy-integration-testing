@@ -97,7 +97,7 @@ def train_baseline(train_dataset: pd.DataFrame):
     """
     # print("     Training the model...\n")
     X, y = train_dataset.iloc[:, :-1], train_dataset.iloc[:, -1]
-    model_fitted = LogisticRegression().fit(X, y)
+    model_fitted = LogisticRegression(max_iter=80).fit(X, y)
     # print("\n    ",model_fitted," is trained!")
 
     importance_dict = {"Features": X.columns, "Importance": model_fitted.coef_[0]}
