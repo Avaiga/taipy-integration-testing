@@ -6,7 +6,6 @@ on:
 
 jobs:
   tests:
-    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -21,6 +20,8 @@ jobs:
 
       - name: Install dependencies
         run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn
+        timeout-minutes: 30
 
       - name: Pytest test
         run: pytest tests
+        timeout-minutes: 30

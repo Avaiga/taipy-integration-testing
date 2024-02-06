@@ -14,7 +14,6 @@ on:
 
 jobs:
   tests:
-    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -23,10 +22,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install Taipy from commit hash
         run: pip install "git+https://git@github.com/Avaiga/taipy.git@${{ github.event.inputs.commitSHA }}" statsmodels Flask-Testing pytest scikit-learn
+        timeout-minutes: 30
+
       - name: Pytest test
         run: pytest tests
+        timeout-minutes: 30
