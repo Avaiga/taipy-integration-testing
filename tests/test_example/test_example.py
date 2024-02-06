@@ -54,7 +54,7 @@ class TestExample:
             if waiting_jobs_to_complete:
                 def message(submission):
                     ms = "--------------------------------------------------------------------------------\n"
-                    ms += f"Submission status is {submission.submission_status} after 600 seconds."
+                    ms += f"Submission status is {submission.submission_status} after 600 seconds.\n"
                     ms += "                              --------------                                    \n"
                     ms += "                               Job statuses                                     \n"
                     for job in submission.jobs:

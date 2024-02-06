@@ -90,7 +90,7 @@ def train_baseline(train_dataset: pd.DataFrame):
     """
     start = time.time()
     X, y = train_dataset.iloc[:, :-1], train_dataset.iloc[:, -1]
-    model_fitted = LogisticRegression(max_iter=50).fit(X, y)
+    model_fitted = LogisticRegression(max_iter=140).fit(X, y)
     importance_dict = {"Features": X.columns, "Importance": model_fitted.coef_[0]}
     importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
     print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
@@ -172,15 +172,12 @@ def true_false_positive(threshold_vector: np.array, y_test: np.array):
         tpr (pd.DataFrame): the forecasted dataset
         fpr (pd.DataFrame): the forecasted dataset
     """
-    start = time.time()
     true_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 1)
     true_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 0)
     false_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 0)
     false_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 1)
-
     tpr = true_positive.sum() / (true_positive.sum() + false_negative.sum())
     fpr = false_positive.sum() / (false_positive.sum() + true_negative.sum())
-    print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return tpr, fpr
 
 
