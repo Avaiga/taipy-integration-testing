@@ -1,4 +1,4 @@
-name: Python taipy-trigger-tests
+name: Tests triggered from taipy PR
 
 on:
   workflow_dispatch:

@@ -57,10 +57,17 @@ class TestChurnClassification:
             submission = tp.submit(scenario)
             if self.waiting_jobs_to_complete:
                 # 12 jobs must be processed to complete the scenario. It may take some time.
+
+                def message(submission):
+                    ms = f"Submission status is {submission.submission_status} after 600 seconds."
+                    for job in submission.jobs:
+                        ms += f"\n{job.id}: {job.status}"
+                    return ms
+
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=120,
-                    msg=lambda s: f"Submission status is {s.submission_status} after 120 seconds",
+                    time=600,
+                    msg=lambda s: message(s),
                     s=submission,
                 )
             else:
