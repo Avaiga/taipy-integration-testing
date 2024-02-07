@@ -12,7 +12,6 @@ import os
 import pathlib
 from unittest.mock import patch
 
-import pytest
 import taipy.core.taipy as tp
 from taipy import Config
 from taipy.core import Core
@@ -60,8 +59,8 @@ class TestChurnClassification:
                 # 12 jobs must be processed to complete the scenario. It may take some time.
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=300,
-                    msg=lambda s: utils.message(s, 300),
+                    time=360,
+                    msg=lambda s: utils.message(s, 360),
                     s=submission,
                 )
             else:

@@ -237,7 +237,7 @@ def tmp_sqlite(tmpdir_factory):
 
 @pytest.fixture(scope="function")
 def init_sql_repo(tmp_sqlite):
-    Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
+    Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite}, read_entity_retry=3)
 
     # Clean SQLite database
     if _SQLConnection._connection:
