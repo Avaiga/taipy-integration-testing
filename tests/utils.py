@@ -49,7 +49,7 @@ def assert_true_after_time(assertion, time=120, msg=None, **msg_params):
             if assertion():
                 return
         except BaseException as e:
-            _TaipyLogger()._get_logger().error("Raise : ", e)
+            print("Raise : ", e)
             continue
     if msg:
         _TaipyLogger()._get_logger().error(msg(**msg_params))
@@ -57,7 +57,7 @@ def assert_true_after_time(assertion, time=120, msg=None, **msg_params):
 
 
 def message(submission: Submission, timeout=120):
-    ms = "--------------------------------------------------------------------------------\n"
+    ms = "\n--------------------------------------------------------------------------------\n"
     ms += f"Submission status is {submission.submission_status} after {timeout} seconds.\n"
     ms += "                              --------------                                    \n"
     ms += "                               Job statuses                                     \n"

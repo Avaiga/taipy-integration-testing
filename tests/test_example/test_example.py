@@ -55,7 +55,8 @@ class TestExample:
             if waiting_jobs_to_complete:
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    msg=lambda s: utils.message(s),
+                    time=300,
+                    msg=lambda s: utils.message(s, 300),
                     s=submission)
             else:
                 assert submission.submission_status == SubmissionStatus.COMPLETED
