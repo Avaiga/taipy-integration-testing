@@ -22,6 +22,7 @@ from taipy.core.submission.submission_status import SubmissionStatus
 from tests.utils import assert_true_after_time
 
 from .config import build_churn_config
+from .. import utils
 
 
 class TestChurnClassification:
@@ -36,12 +37,12 @@ class TestChurnClassification:
         self.__run()
 
     def test_standalone_fs_repo(self):
-        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
+        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=4)
         self.waiting_jobs_to_complete = True
         self.__run()
 
     def test_standalone_sql_repo(self, init_sql_repo):
-        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
+        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=4)
         self.waiting_jobs_to_complete = True
         self.__run()
 
@@ -57,33 +58,9 @@ class TestChurnClassification:
             submission = tp.submit(scenario)
             if self.waiting_jobs_to_complete:
                 # 12 jobs must be processed to complete the scenario. It may take some time.
-
-                def message(submission):
-                    ms = "--------------------------------------------------------------------------------\n"
-                    ms += f"Submission status is {submission.submission_status} after 600 seconds.\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Job statuses                                     \n"
-                    for job in submission.jobs:
-                        ms += f"{job.id}: {job.status}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Blocked jobs                                     \n"
-                    for job in submission._blocked_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Running jobs                                     \n"
-                    for job in submission._running_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Pending jobs                                     \n"
-                    for job in submission._pending_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "--------------------------------------------------------------------------------\n"
-                    return ms
-
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=600,
-                    msg=lambda s: message(s),
+                    msg=lambda s: utils.message(s),
                     s=submission,
                 )
             else:

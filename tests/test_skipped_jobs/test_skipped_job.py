@@ -17,6 +17,7 @@ from taipy import Config
 from taipy.core import Core
 from taipy.core.config import JobConfig
 
+from tests import utils
 from tests.test_skipped_jobs.config import build_skipped_jobs_config
 from tests.utils import assert_true_after_time
 
@@ -49,32 +50,10 @@ class TestSkipJobs:
             submission_one = scenario.submit()
             assert len(tp.get_jobs()) == 2
             if waiting_for_completion:
-                def message(submission):
-                    ms = "--------------------------------------------------------------------------------\n"
-                    ms += f"Submission status is {submission.submission_status} after 300 seconds.\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Job statuses                                     \n"
-                    for job in submission.jobs:
-                        ms += f"{job.id}: {job.status}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Blocked jobs                                     \n"
-                    for job in submission._blocked_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Running jobs                                     \n"
-                    for job in submission._running_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Pending jobs                                     \n"
-                    for job in submission._pending_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "--------------------------------------------------------------------------------\n"
-                    return ms
-
                 assert_true_after_time(
                     lambda: all(job.is_completed() for job in submission_one.jobs),
                     time=300,
-                    msg=lambda s: message(s),
+                    msg=lambda s: utils.message(s, 300),
                     s=submission_one
                 )
             else:
@@ -83,32 +62,10 @@ class TestSkipJobs:
             submission_two = scenario.submit()
             assert len(tp.get_jobs()) == 4
             if waiting_for_completion:
-                def message(submission):
-                    ms = "--------------------------------------------------------------------------------\n"
-                    ms += f"Submission status is {submission.submission_status} after 300 seconds.\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Job statuses                                     \n"
-                    for job in submission.jobs:
-                        ms += f"{job.id}: {job.status}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Blocked jobs                                     \n"
-                    for job in submission._blocked_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Running jobs                                     \n"
-                    for job in submission._running_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Pending jobs                                     \n"
-                    for job in submission._pending_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "--------------------------------------------------------------------------------\n"
-                    return ms
-
                 assert_true_after_time(
                     lambda: all(job.is_skipped() for job in submission_two.jobs),
                     time=300,
-                    msg=lambda s: message(s),
+                    msg=lambda s: utils.message(s, 300),
                     s=submission_two
                 )
             else:

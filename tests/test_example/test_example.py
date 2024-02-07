@@ -23,6 +23,7 @@ from taipy.core.submission.submission_status import SubmissionStatus
 from tests.test_example.algorithms import average
 from .config import build_example_config
 from tests.utils import assert_true_after_time
+from .. import utils
 
 
 class TestExample:
@@ -52,32 +53,9 @@ class TestExample:
             submission = tp.submit(scenario)
 
             if waiting_jobs_to_complete:
-                def message(submission):
-                    ms = "--------------------------------------------------------------------------------\n"
-                    ms += f"Submission status is {submission.submission_status} after 600 seconds.\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Job statuses                                     \n"
-                    for job in submission.jobs:
-                        ms += f"{job.id}: {job.status}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Blocked jobs                                     \n"
-                    for job in submission._blocked_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Running jobs                                     \n"
-                    for job in submission._running_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "                              --------------                                    \n"
-                    ms += "                               Pending jobs                                     \n"
-                    for job in submission._pending_jobs:
-                        ms += f"{job.id}\n"
-                    ms += "--------------------------------------------------------------------------------\n"
-                    return ms
-
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=600,
-                    msg=lambda s: message(s),
+                    msg=lambda s: utils.message(s),
                     s=submission)
             else:
                 assert submission.submission_status == SubmissionStatus.COMPLETED

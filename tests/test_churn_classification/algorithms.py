@@ -107,8 +107,6 @@ def train(train_dataset: pd.DataFrame):
     start = time.time()
     X, y = train_dataset.iloc[:, :-1], train_dataset.iloc[:, -1]
     model_fitted = RandomForestClassifier(n_estimators=50).fit(X, y)
-    # print("\n    ",model_fitted," is trained!")
-
     importance_dict = {"Features": X.columns, "Importance": model_fitted.feature_importances_}
     importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
     print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")

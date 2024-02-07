@@ -8,8 +8,9 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-
+from taipy import Submission
 from taipy._cli._base_cli import _CLI
+from taipy.logger._taipy_logger import _TaipyLogger
 
 
 def clean_subparser():
@@ -48,8 +49,31 @@ def assert_true_after_time(assertion, time=120, msg=None, **msg_params):
             if assertion():
                 return
         except BaseException as e:
-            print("Raise : ", e)
+            _TaipyLogger()._get_logger().error("Raise : ", e)
             continue
     if msg:
-        print(msg(**msg_params))
+        _TaipyLogger()._get_logger().error(msg(**msg_params))
     assert assertion()
+
+
+def message(submission: Submission, timeout=120):
+    ms = "--------------------------------------------------------------------------------\n"
+    ms += f"Submission status is {submission.submission_status} after {timeout} seconds.\n"
+    ms += "                              --------------                                    \n"
+    ms += "                               Job statuses                                     \n"
+    for job in submission.jobs:
+        ms += f"{job.id}: {job.status}\n"
+    ms += "                              --------------                                    \n"
+    ms += "                               Blocked jobs                                     \n"
+    for job in submission._blocked_jobs:
+        ms += f"{job.id}\n"
+    ms += "                              --------------                                    \n"
+    ms += "                               Running jobs                                     \n"
+    for job in submission._running_jobs:
+        ms += f"{job.id}\n"
+    ms += "                              --------------                                    \n"
+    ms += "                               Pending jobs                                     \n"
+    for job in submission._pending_jobs:
+        ms += f"{job.id}\n"
+    ms += "--------------------------------------------------------------------------------\n"
+    return ms

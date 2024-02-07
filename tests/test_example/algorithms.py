@@ -25,3 +25,7 @@ def average(a):
 
 def return_a_number():
     return 10
+
+
+def does_nothing(*args, **kwargs):
+    pass

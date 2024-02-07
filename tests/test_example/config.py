@@ -55,9 +55,9 @@ def build_example_config(dataset_csv_path, dataset_excel_path):
     d11 = Config.configure_csv_data_node("d11", csv_path_out)
     d12 = Config.configure_excel_data_node("d12", excel_path_out)
 
-    t1 = Config.configure_task("t1", print, input=d1)
+    t1 = Config.configure_task("t1", does_nothing, input=d1)
     t2 = Config.configure_task("t2", my_sum, input=[d2, d1], output=d5)
-    t3 = Config.configure_task("t3", print, input=d3)
+    t3 = Config.configure_task("t3", does_nothing, input=d3)
     t4 = Config.configure_task("t4", my_sum, input=[d4, d3], output=d6)
 
     t5 = Config.configure_task("t5", subtract, input=[d5, d6], output=d7)
