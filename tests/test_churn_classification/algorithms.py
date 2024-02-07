@@ -90,7 +90,7 @@ def train_baseline(train_dataset: pd.DataFrame):
     """
     start = time.time()
     X, y = train_dataset.iloc[:, :-1], train_dataset.iloc[:, -1]
-    model_fitted = LogisticRegression(max_iter=140).fit(X, y)
+    model_fitted = LogisticRegression(max_iter=300).fit(X, y)
     importance_dict = {"Features": X.columns, "Importance": model_fitted.coef_[0]}
     importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
     print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
