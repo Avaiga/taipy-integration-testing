@@ -36,10 +36,12 @@ class TestExample:
     def test_development_sql_repo(self, init_sql_repo):
         self.__test()
 
+    @pytest.mark.example_fs
     def test_standalone_fs_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         self.__test(True)
 
+    @pytest.mark.example_sql
     def test_standalone_sql_repo(self, init_sql_repo):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         self.__test(True)

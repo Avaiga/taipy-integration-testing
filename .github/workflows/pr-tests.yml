@@ -22,6 +22,22 @@ jobs:
         run: pip install "git+https://git@github.com/Avaiga/taipy.git@fix/increase-sql-repo-connection-timeout" statsmodels Flask-Testing pytest scikit-learn
         timeout-minutes: 30
 
+      - name: Pytest test churn_fs
+        run: pytest tests -m "churn_fs"
+        timeout-minutes: 10
+
+      - name: Pytest test churn_sql
+        run: pytest tests -m "churn_sql"
+        timeout-minutes: 10
+
+      - name: Pytest test example_fs
+        run: pytest tests -m "example_fs"
+        timeout-minutes: 10
+
+      - name: Pytest test example_sql
+        run: pytest tests -m "example_sql"
+        timeout-minutes: 10
+
       - name: Pytest test
-        run: pytest tests
-        timeout-minutes: 60
+        run: pytest tests -m "not churn_sql and not churn_fs and not example_sql and not example_fs"
+        timeout-minutes: 30

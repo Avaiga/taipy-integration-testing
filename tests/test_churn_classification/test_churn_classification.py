@@ -12,6 +12,7 @@ import os
 import pathlib
 from unittest.mock import patch
 
+import pytest
 import taipy.core.taipy as tp
 from taipy import Config
 from taipy.core import Core
@@ -35,11 +36,13 @@ class TestChurnClassification:
         self.waiting_jobs_to_complete = False
         self.__run()
 
+    @pytest.mark.churn_fs
     def test_standalone_fs_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=4)
         self.waiting_jobs_to_complete = True
         self.__run()
 
+    @pytest.mark.churn_sql
     def test_standalone_sql_repo(self, init_sql_repo):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=4)
         self.waiting_jobs_to_complete = True
