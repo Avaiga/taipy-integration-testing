@@ -52,8 +52,8 @@ class TestSkipJobs:
             if waiting_for_completion:
                 assert_true_after_time(
                     lambda: all(job.is_completed() for job in submission_one.jobs),
-                    time=300,
-                    msg=lambda s: utils.message(s, 300),
+                    time=240,
+                    msg=lambda s: utils.message(s, 240),
                     s=submission_one
                 )
             else:
@@ -64,8 +64,8 @@ class TestSkipJobs:
             if waiting_for_completion:
                 assert_true_after_time(
                     lambda: all(job.is_skipped() for job in submission_two.jobs),
-                    time=300,
-                    msg=lambda s: utils.message(s, 300),
+                    time=240,
+                    msg=lambda s: utils.message(s, 240),
                     s=submission_two
                 )
             else:
