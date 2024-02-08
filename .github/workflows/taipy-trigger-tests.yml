@@ -33,4 +33,4 @@ jobs:
 
       - name: Pytest test
         run: pytest tests
-        timeout-minutes: 60
+        timeout-minutes: 15

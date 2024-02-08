@@ -19,9 +19,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@fix/increase-sql-repo-connection-timeout" statsmodels Flask-Testing pytest scikit-learn
         timeout-minutes: 30
 
       - name: Pytest test
         run: pytest tests
-        timeout-minutes: 60
+        timeout-minutes: 15
