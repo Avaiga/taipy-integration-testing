@@ -186,7 +186,7 @@ def init_orchestrator():
             _OrchestratorFactory._remove_dispatcher()
         if _OrchestratorFactory._orchestrator is None:
             _OrchestratorFactory._build_orchestrator()
-        _OrchestratorFactory._build_dispatcher()
+        _OrchestratorFactory._build_dispatcher(force_restart=True)
         _OrchestratorFactory._orchestrator.jobs_to_run = Queue()
         _OrchestratorFactory._orchestrator.blocked_jobs = []
 
@@ -209,6 +209,8 @@ def clean_files():
         shutil.rmtree(".data", ignore_errors=True)
     if os.path.exists(".my_data"):
         shutil.rmtree(".my_data", ignore_errors=True)
+    if os.path.exists("user_data"):
+        shutil.rmtree("user_data", ignore_errors=True)
 
 
 @pytest.fixture(scope="function", autouse=True)
