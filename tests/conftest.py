@@ -218,6 +218,9 @@ def clean_repository(init_config, init_managers, init_orchestrator, init_notifie
     clean_files()
     init_config()
     close_all_sessions()
+    if _SQLConnection._connection:
+        _SQLConnection._connection.close()
+    _SQLConnection._connection = None
     init_orchestrator()
     init_managers()
     init_config()

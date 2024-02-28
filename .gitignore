@@ -142,3 +142,5 @@ res.xlsx
 # generated result folders
 benchmark_results/
 /tests/outputs/
+
+.taipy

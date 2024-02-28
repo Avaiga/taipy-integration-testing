@@ -21,8 +21,8 @@ from taipy.core.submission.submission_status import SubmissionStatus
 
 from tests.utils import assert_true_after_time
 
-from .config import build_churn_config
 from .. import utils
+from .config import build_churn_config
 
 
 class TestChurnClassification:
@@ -68,4 +68,4 @@ class TestChurnClassification:
                 )
             else:
                 assert submission.submission_status == SubmissionStatus.COMPLETED
-            core.stop()
+            core.stop(wait=True)
