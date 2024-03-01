@@ -13,6 +13,7 @@ import os
 import pathlib
 import shutil
 from queue import Queue
+from unittest.mock import patch
 
 import pytest
 from sqlalchemy import create_engine
@@ -152,6 +153,7 @@ def init_config(reset_configuration_singleton, inject_core_sections):
 
         Config.configure_core(read_entity_retry=0)
         Core._is_running = False
+        Core._version_is_initialized = False
 
     return _init_config
 
@@ -226,7 +228,8 @@ def clean_repository(init_config, init_managers, init_orchestrator, init_notifie
     init_config()
     init_notifier()
 
-    yield
+    with patch("sys.argv", ["prog"]):
+        yield
 
 
 @pytest.fixture(scope="function")
