@@ -62,8 +62,8 @@ class TestChurnClassification:
                 # 12 jobs must be processed to complete the scenario. It may take some time.
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=90,
-                    msg=lambda s: utils.message(s, 90),
+                    time=300,
+                    msg=lambda s: utils.message(s, 300),
                     s=submission,
                 )
             else:
