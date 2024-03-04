@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-taipy = {ref = "develop", git = "https://github.com/avaiga/taipy.git"}
+taipy = {ref = "test/integration-testing", git = "https://github.com/avaiga/taipy.git"}
 
 statsmodels = ">=0.13"
 scikit-learn = "*"
