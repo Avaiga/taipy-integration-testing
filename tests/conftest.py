@@ -195,7 +195,7 @@ def init_orchestrator():
     return _init_orchestrator
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def cleanup_files():
     clean_files()
     yield
@@ -213,6 +213,8 @@ def clean_files():
         shutil.rmtree(".my_data", ignore_errors=True)
     if os.path.exists("user_data"):
         shutil.rmtree("user_data", ignore_errors=True)
+    if os.path.exists(".taipy"):
+        shutil.rmtree(".taipy", ignore_errors=True)
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -231,6 +233,11 @@ def clean_repository(init_config, init_managers, init_orchestrator, init_notifie
     with patch("sys.argv", ["prog"]):
         yield
 
+    close_all_sessions()
+    init_orchestrator()
+    init_managers()
+    init_config()
+    init_notifier()
 
 @pytest.fixture(scope="function")
 def sql_engine():
