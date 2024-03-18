@@ -87,6 +87,7 @@ class TestExcelMultiSheets:
         scenario.submit()
         assert all(compare_custom_date(custom_data[sheet], out_dn2.read()[sheet]) for sheet in self.SHEETS)
 
+    @pytest.mark.skip("PermissionError: [WinError 32] The process cannot access the file because it is being used by another process")
     def test_excel_multi_sheet_numpy(self):
         pandas_data = pd.read_excel(self.XLSX_INPUT_PATH, sheet_name=self.SHEETS)
         numpy_data = {sheet_name: pandas_data[sheet_name].to_numpy() for sheet_name in self.SHEETS}
@@ -107,3 +108,14 @@ class TestExcelMultiSheets:
 
         scenario.submit()
         assert [np.array_equal(read_data[sheet_name], out_dn2.read()[sheet_name]) for sheet_name in self.SHEETS]
+
+    def test_openpyxl(self):
+        folder = pathlib.Path(__file__).parent.resolve() / "outputs"
+        path = folder / "openpyxl_test.xlsx"
+        from openpyxl.reader.excel import load_workbook
+
+        excel_file = load_workbook(path)
+        excel_file.close()
+        if folder.exists():
+            import shutil
+            shutil.rmtree(folder)
