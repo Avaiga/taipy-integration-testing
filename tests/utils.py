@@ -52,7 +52,7 @@ def assert_true_after_time(assertion, time=120, msg=None, **msg_params):
             print("Raise : ", e)
             continue
     if msg:
-        _TaipyLogger()._get_logger().error(msg(**msg_params))
+        _TaipyLogger()._get_logger().warn(msg(**msg_params))
     assert assertion()
 
 
