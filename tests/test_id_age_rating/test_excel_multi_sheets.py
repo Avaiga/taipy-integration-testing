@@ -110,7 +110,7 @@ class TestExcelMultiSheets:
         assert [np.array_equal(read_data[sheet_name], out_dn2.read()[sheet_name]) for sheet_name in self.SHEETS]
 
     def test_openpyxl(self):
-        folder = pathlib.Path(__file__).parent.resolve() / "outputs"
+        folder = pathlib.Path(__file__).parent.resolve() / "openpyxl"
         path = folder / "openpyxl_test.xlsx"
         from openpyxl.reader.excel import load_workbook
 
