@@ -10,7 +10,7 @@ import sys
 import pytest
 
 
-@pytest.skip("This test is not working")
+@pytest.mark.skip("This test is not working")
 def test_openpyxl():
     tmp_folder = pathlib.Path(__file__).parent.resolve() / "output_folder"
     os.makedirs(tmp_folder)
