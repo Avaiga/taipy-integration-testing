@@ -8,7 +8,7 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-
+import logging
 import os
 import pathlib
 import shutil
@@ -205,7 +205,14 @@ def cleanup_files():
 def clean_files():
     output_dir = pathlib.Path(__file__).parent.resolve() / "outputs"
     if output_dir.exists():
-        shutil.rmtree(output_dir)
+        try:
+            shutil.rmtree(output_dir)
+        except PermissionError:
+            logging.error("Retry to delete the outputs folder.")
+            try:
+                shutil.rmtree(output_dir)
+            except PermissionError:
+                logging.error("Cannot delete the outputs folder. Please close all files in the folder.")
     output_dir.mkdir(exist_ok=True)
     if os.path.exists(".data"):
         shutil.rmtree(".data", ignore_errors=True)
@@ -238,6 +245,7 @@ def clean_repository(init_config, init_managers, init_orchestrator, init_notifie
     init_managers()
     init_config()
     init_notifier()
+    clean_files()
 
 @pytest.fixture(scope="function")
 def sql_engine():
