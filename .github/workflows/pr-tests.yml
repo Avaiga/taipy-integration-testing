@@ -19,7 +19,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@feature/add-retry-mechanism-to-sql-repo" statsmodels Flask-Testing pytest scikit-learn
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@test/integration-testing" statsmodels Flask-Testing pytest scikit-learn
         timeout-minutes: 30
 
       - name: Pytest test churn_fs
