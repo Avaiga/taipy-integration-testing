@@ -9,14 +9,14 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 from taipy import Submission
-from taipy._cli._base_cli import _CLI
+from taipy._cli._base_cli._taipy_parser import _TaipyParser
 from taipy.logger._taipy_logger import _TaipyLogger
 
 
 def clean_subparser():
-    if getattr(_CLI._parser, "_subparsers", None):
+    if getattr(_TaipyParser._parser, "_subparsers", None):
         # Loop over all subparsers to find the one that has nested-subparsers and positional arguments
-        for choice in _CLI._parser._subparsers._group_actions[0].choices.values():
+        for choice in _TaipyParser._parser._subparsers._group_actions[0].choices.values():
 
             # Remove nested _subparsers
             choice._subparsers = None
