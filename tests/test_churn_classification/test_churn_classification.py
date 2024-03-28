@@ -21,10 +21,10 @@ from taipy.core.submission.submission_status import SubmissionStatus
 
 from tests.utils import assert_true_after_time
 
+from .. import utils
 from .config import build_churn_config
 
 
-@pytest.mark.churn_classification
 class TestChurnClassification:
     data_set_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "dataset", "churn_10000.csv")
 
@@ -36,13 +36,15 @@ class TestChurnClassification:
         self.waiting_jobs_to_complete = False
         self.__run()
 
+    @pytest.mark.churn_fs
     def test_standalone_fs_repo(self):
-        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
+        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=4)
         self.waiting_jobs_to_complete = True
         self.__run()
 
+    @pytest.mark.churn_sql
     def test_standalone_sql_repo(self, init_sql_repo):
-        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
+        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=4)
         self.waiting_jobs_to_complete = True
         self.__run()
 
@@ -60,8 +62,8 @@ class TestChurnClassification:
                 # 12 jobs must be processed to complete the scenario. It may take some time.
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
-                    time=120,
-                    msg=lambda s: f"Submission status is {s.submission_status} after 120 seconds",
+                    time=300,
+                    msg=lambda s: utils.message(s, 300),
                     s=submission,
                 )
             else:

@@ -23,9 +23,9 @@ from taipy.core.submission.submission_status import SubmissionStatus
 from tests.test_example.algorithms import average
 from .config import build_example_config
 from tests.utils import assert_true_after_time
+from .. import utils
 
 
-@pytest.mark.example_application
 class TestExample:
     csv_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "dataset", "example_10.csv")
     excel_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "dataset", "example_10.xlsx")
@@ -36,10 +36,12 @@ class TestExample:
     def test_development_sql_repo(self, init_sql_repo):
         self.__test()
 
+    @pytest.mark.example_fs
     def test_standalone_fs_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         self.__test(True)
 
+    @pytest.mark.example_sql
     def test_standalone_sql_repo(self, init_sql_repo):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         self.__test(True)
@@ -56,7 +58,7 @@ class TestExample:
                 assert_true_after_time(
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
                     time=120,
-                    msg=lambda s: f"Submission status is {s.submission_status} after 30 seconds",
+                    msg=lambda s: utils.message(s, 120),
                     s=submission)
             else:
                 assert submission.submission_status == SubmissionStatus.COMPLETED

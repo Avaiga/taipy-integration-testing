@@ -1,71 +1,11 @@
-name: Python integration repo PR tests
+name: Tests
 
 on:
   pull_request:
     branches: [ develop ]
 
 jobs:
-  churn_classification:
-    timeout-minutes: 20
-    strategy:
-      matrix:
-        python-version: ['3.8', '3.11']
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn mongomock
-
-      - name: Pytest churn_classification
-        run: pytest -m "churn_classification" tests
-
-  example_application:
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ['3.8', '3.11']
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn mongomock
-
-      - name: Pytest example_application
-        run: pytest -m "example_application" tests
-
-  skipped:
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ['3.8', '3.11']
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn mongomock
-
-      - name: Pytest skipped
-        run: pytest -m "skipped" tests
-
   tests:
-    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -79,7 +19,25 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install "git+https://git@github.com/Avaiga/taipy.git@develop" statsmodels Flask-Testing pytest scikit-learn mongomock
+        run: pip install "git+https://git@github.com/Avaiga/taipy.git@test/integration-testing" statsmodels Flask-Testing pytest scikit-learn
+        timeout-minutes: 30
+
+      - name: Pytest test churn_fs
+        run: pytest tests -m "churn_fs"
+        timeout-minutes: 10
+
+      - name: Pytest test churn_sql
+        run: pytest tests -m "churn_sql"
+        timeout-minutes: 10
+
+      - name: Pytest test example_fs
+        run: pytest tests -m "example_fs"
+        timeout-minutes: 10
+
+      - name: Pytest test example_sql
+        run: pytest tests -m "example_sql"
+        timeout-minutes: 10
 
       - name: Pytest test
-        run: pytest -m "not churn_classification and not example_application and not skipped" tests
+        run: pytest tests -m "not churn_sql and not churn_fs and not example_sql and not example_fs"
+        timeout-minutes: 30

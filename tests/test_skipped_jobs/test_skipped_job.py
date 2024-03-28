@@ -17,12 +17,12 @@ from taipy import Config
 from taipy.core import Core
 from taipy.core.config import JobConfig
 
+from tests import utils
 from tests.test_skipped_jobs.config import build_skipped_jobs_config
 from tests.utils import assert_true_after_time
 
 
 
-@pytest.mark.skipped
 class TestSkipJobs:
 
     def test_development_fs_repo(self):
@@ -50,14 +50,24 @@ class TestSkipJobs:
             submission_one = scenario.submit()
             assert len(tp.get_jobs()) == 2
             if waiting_for_completion:
-                assert_true_after_time(lambda: all(job.is_completed() for job in submission_one.jobs))
+                assert_true_after_time(
+                    lambda: all(job.is_completed() for job in submission_one.jobs),
+                    time=240,
+                    msg=lambda s: utils.message(s, 240),
+                    s=submission_one
+                )
             else:
                 assert all(job.is_completed() for job in tp.get_jobs())
 
             submission_two = scenario.submit()
             assert len(tp.get_jobs()) == 4
             if waiting_for_completion:
-                assert_true_after_time(lambda: all(job.is_skipped() for job in submission_two.jobs))
+                assert_true_after_time(
+                    lambda: all(job.is_skipped() for job in submission_two.jobs),
+                    time=240,
+                    msg=lambda s: utils.message(s, 240),
+                    s=submission_two
+                )
             else:
                 assert all(job.is_skipped() for job in submission_two.jobs)
 

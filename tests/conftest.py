@@ -8,11 +8,12 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-
+import logging
 import os
 import pathlib
 import shutil
 from queue import Queue
+from unittest.mock import patch
 
 import pytest
 from sqlalchemy import create_engine
@@ -152,6 +153,7 @@ def init_config(reset_configuration_singleton, inject_core_sections):
 
         Config.configure_core(read_entity_retry=0)
         Core._is_running = False
+        Core._version_is_initialized = False
 
     return _init_config
 
@@ -182,16 +184,18 @@ def init_managers():
 @pytest.fixture
 def init_orchestrator():
     def _init_orchestrator():
+        if _OrchestratorFactory._dispatcher is not None:
+            _OrchestratorFactory._remove_dispatcher()
         if _OrchestratorFactory._orchestrator is None:
             _OrchestratorFactory._build_orchestrator()
-        _OrchestratorFactory._build_dispatcher()
+        _OrchestratorFactory._build_dispatcher(force_restart=True)
         _OrchestratorFactory._orchestrator.jobs_to_run = Queue()
         _OrchestratorFactory._orchestrator.blocked_jobs = []
 
     return _init_orchestrator
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def cleanup_files():
     clean_files()
     yield
@@ -201,12 +205,23 @@ def cleanup_files():
 def clean_files():
     output_dir = pathlib.Path(__file__).parent.resolve() / "outputs"
     if output_dir.exists():
-        shutil.rmtree(output_dir)
+        try:
+            shutil.rmtree(output_dir)
+        except PermissionError:
+            logging.error("Retry to delete the outputs folder.")
+            try:
+                shutil.rmtree(output_dir)
+            except PermissionError:
+                logging.error("Cannot delete the outputs folder. Please close all files in the folder.")
     output_dir.mkdir(exist_ok=True)
     if os.path.exists(".data"):
         shutil.rmtree(".data", ignore_errors=True)
     if os.path.exists(".my_data"):
         shutil.rmtree(".my_data", ignore_errors=True)
+    if os.path.exists("user_data"):
+        shutil.rmtree("user_data", ignore_errors=True)
+    if os.path.exists(".taipy"):
+        shutil.rmtree(".taipy", ignore_errors=True)
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -214,13 +229,23 @@ def clean_repository(init_config, init_managers, init_orchestrator, init_notifie
     clean_files()
     init_config()
     close_all_sessions()
+    if _SQLConnection._connection:
+        _SQLConnection._connection.close()
+    _SQLConnection._connection = None
     init_orchestrator()
     init_managers()
     init_config()
     init_notifier()
 
-    yield
+    with patch("sys.argv", ["prog"]):
+        yield
 
+    close_all_sessions()
+    init_orchestrator()
+    init_managers()
+    init_config()
+    init_notifier()
+    clean_files()
 
 @pytest.fixture(scope="function")
 def sql_engine():
@@ -235,7 +260,7 @@ def tmp_sqlite(tmpdir_factory):
 
 @pytest.fixture(scope="function")
 def init_sql_repo(tmp_sqlite):
-    Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite})
+    Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite}, read_entity_retry=3)
 
     # Clean SQLite database
     if _SQLConnection._connection:

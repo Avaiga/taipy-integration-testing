@@ -38,17 +38,18 @@ The scenario configuration holds the following dag where square nodes are data n
          _______ |_____                           ________|_____________
         |  predictions |                         | predictions baseline |
         |______________|                         |______________________|
-          /       |   \___________                   |       \       \
-         /        \               |                  |        \       \
-        /          \              |                  |         \       \_______
-       /            \             |                  |          \              |
-   ___|___          _|_____      _|_____           __|____      _\_____      __|____
-  /       \        /       \    /       \         /       \    /       \    /       \
- / Compute \      / Compute \  / Compute \       / Compute \  / Compute \  / Compute \
- \    ROC  /      \ Metrics /  \ Results /       \    ROC  /  \ Metrics /  \ Results /
-  \_______/        \_______/    \_______/         \_______/    \_______/    \_______/
-     /    \            |           |                /    \          |            |
- ___/_    _\___    ____|____    ___|_____       ___/_    _\____   __|______    __|_______
-| Roc |  | Auc |  | Metrics |  | Results |     | Roc |  | Auc |  | Metrics |  | Results |
-|_____|  |_____|  |_________|  |_________|     |_____|  |_____|  |_________|  |_________|
+          /       |   \___________                   |            \      \
+         /        \               |                  |             \      \
+        /          \              |                  |              \      \_________
+       /            \             |                  |               \              |
+   ___|___          _|_____      _|_____           __|____           _\_____      __|____
+  /       \        /       \    /       \         /       \         /       \    /       \
+ / Compute \      / Compute \  / Compute \       / Compute \       / Compute \  / Compute \
+ \    ROC  /      \ Metrics /  \ Results /       \    ROC  /       \ Metrics /  \ Results /
+  \_______/        \_______/    \_______/         \_______/         \_______/    \_______/
+     /    \            |           |                /     \               |            |
+ ___/_    _\___    ____|____    ___|_____       ___/____   \________    __|______    __|_______
+| Roc |  | Auc |  | Metrics |  | Results |     | Roc    |  | Auc    |  | Metrics |  | Results |
+|_____|  |_____|  |_________|  |_________|     |baseline|  |baseline|  | baseline|  | baseline|
+                                               |________|  |________|  |_________|  |_________|
 ```
