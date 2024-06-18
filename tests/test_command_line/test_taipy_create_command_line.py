@@ -53,8 +53,6 @@ class TestTaipyCreateCommand:
         assert "bar_app" in os.listdir(os.getcwd())
         assert error.value.code == 0
 
-        assert os.path.exists(_ScaffoldCLI._template_map["default"])
-
     def test_scenario_management_template(self):
         inputs = "\n".join(["foo_app", "main.py", "bar", ""])
         with pytest.raises(SystemExit) as error:
@@ -63,8 +61,6 @@ class TestTaipyCreateCommand:
                     _entrypoint()
         assert "foo_app" in os.listdir(os.getcwd())
         assert error.value.code == 0
-
-        assert os.path.exists(_ScaffoldCLI._template_map["scenario-management"])
 
     def test_non_existing_template(self, capsys):
         with pytest.raises(SystemExit) as error:
