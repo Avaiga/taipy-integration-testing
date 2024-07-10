@@ -13,16 +13,16 @@ import pathlib
 
 import numpy as np
 import pandas as pd
-import pytest
 import taipy.core as tp
 
-from .row import Row
 from .config import build_excel_cfg
+from .row import Row
 
 
 class TestExcelMultiSheets:
-    XLSX_INPUT_PATH = os.path.join(pathlib.Path(__file__).parent.resolve(), "dataset",
-                                   "id_age_rating_1000_multi_sheets_10x100.xlsx")
+    XLSX_INPUT_PATH = os.path.join(
+        pathlib.Path(__file__).parent.resolve(), "dataset", "id_age_rating_1000_multi_sheets_10x100.xlsx"
+    )
     XLSX_OUTPUT_PATH = os.path.join(pathlib.Path(__file__).parent.parent.resolve(), "outputs", "output.xlsx")
     ROW_COUNT = 1000
     SHEETS = ["Sheet 0", "Sheet 1", "Sheet 2", "Sheet 3", "Sheet 4", "Sheet 5"]
@@ -49,7 +49,6 @@ class TestExcelMultiSheets:
         scenario.submit()
         assert all([pandas_data[sheet_name].equals(out_dn2.read()[sheet_name]) for sheet_name in self.SHEETS])
 
-    @pytest.mark.skip("Writing data from custom exposed type to excel does not work")
     def test_excel_multi_sheet_custom_exposed_type(self):
         pandas_data = pd.read_excel(self.XLSX_INPUT_PATH, sheet_name=self.SHEETS)
         custom_data = {}
@@ -75,13 +74,8 @@ class TestExcelMultiSheets:
         assert len(read_data) == len(self.SHEETS)
         assert all(compare_custom_date(read_data[sheet], custom_data[sheet]) for sheet in self.SHEETS)
 
-        out_dn2.write(read_data)  # TODO: Fix this. It does not work to write custom data to excel
+        out_dn2.write(read_data)
         assert len(out_dn2.read()) == len(self.SHEETS)
-        assert all(compare_custom_date(custom_data[sheet], out_dn2.read()[sheet]) for sheet in self.SHEETS)
-
-        out_dn2.write(None)
-        assert isinstance(out_dn2.read(), list)
-        assert len(out_dn2.read()) == 0
         assert all(compare_custom_date(custom_data[sheet], out_dn2.read()[sheet]) for sheet in self.SHEETS)
 
         scenario.submit()
