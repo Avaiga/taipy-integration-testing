@@ -137,6 +137,8 @@ test.db
 
 # taipy
 .data
+.taipy/
+user_data/
 res.xlsx
 
 # generated result folders
