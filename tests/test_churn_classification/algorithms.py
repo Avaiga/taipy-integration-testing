@@ -1,5 +1,4 @@
 import datetime as dt
-import sys
 
 import numpy as np
 import pandas as pd
@@ -18,7 +17,6 @@ def preprocess(initial_dataset: pd.DataFrame, date: dt.datetime = None):
     Returns:
         pd.DataFrame: the preprocessed dataset for classification
     """
-    start = time.time()
     # We filter the dataframe on the date
     if date != "None":
         initial_dataset["Date"] = pd.to_datetime(initial_dataset["Date"])
@@ -60,7 +58,6 @@ def preprocess(initial_dataset: pd.DataFrame, date: dt.datetime = None):
         "Exited",
     ]
     processed_dataset = processed_dataset[[col for col in columns_to_select if col in processed_dataset.columns]]
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return processed_dataset
 
 
@@ -71,13 +68,11 @@ def split(preprocessed_dataset: pd.DataFrame):
     Returns:
         pd.DataFrame: the training dataset
     """
-    start = time.time()
     X_train, X_test, y_train, y_test = train_test_split(
         preprocessed_dataset.iloc[:, :-1], preprocessed_dataset.iloc[:, -1], test_size=0.2, random_state=42
     )
     train_data = pd.concat([X_train, y_train], axis=1)
     test_data = pd.concat([X_test, y_test], axis=1)
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return train_data, test_data
 
 
@@ -88,12 +83,10 @@ def train_baseline(train_dataset: pd.DataFrame):
     Returns:
         model (LogisticRegression): the fitted model
     """
-    start = time.time()
     X, y = train_dataset.iloc[:, :-1], train_dataset.iloc[:, -1]
     model_fitted = LogisticRegression(max_iter=200).fit(X, y)
     importance_dict = {"Features": X.columns, "Importance": model_fitted.coef_[0]}
     importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return model_fitted, importance
 
 
@@ -104,12 +97,10 @@ def train(train_dataset: pd.DataFrame):
     Returns:
         model (RandomForest): the fitted model
     """
-    start = time.time()
     X, y = train_dataset.iloc[:, :-1], train_dataset.iloc[:, -1]
     model_fitted = RandomForestClassifier(n_estimators=50).fit(X, y)
     importance_dict = {"Features": X.columns, "Importance": model_fitted.feature_importances_}
     importance = pd.DataFrame(importance_dict).sort_values(by="Importance", ascending=True)
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return model_fitted, importance
 
 
@@ -121,10 +112,8 @@ def forecast(test_dataset: pd.DataFrame, trained_model: RandomForestClassifier):
     Returns:
         forecast (pd.DataFrame): the forecasted dataset
     """
-    start = time.time()
     X, y = test_dataset.iloc[:, :-1], test_dataset.iloc[:, -1]
     predictions = trained_model.predict_proba(X)[:, 1]
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return predictions
 
 
@@ -136,15 +125,12 @@ def predict_baseline(test_dataset: pd.DataFrame, trained_model: LogisticRegressi
     Returns:
         forecast (pd.DataFrame): the forecasted dataset
     """
-    start = time.time()
     X, y = test_dataset.iloc[:, :-1], test_dataset.iloc[:, -1]
     predictions = trained_model.predict_proba(X)[:, 1]
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return predictions
 
 
 def compute_roc(probabilities, test_dataset, partitions=100):
-    start = time.time()
     y_test = test_dataset.iloc[:, -1]
 
     roc = np.array([])
@@ -156,7 +142,6 @@ def compute_roc(probabilities, test_dataset, partitions=100):
     roc_np = roc.reshape(-1, 2)
     roc_data = pd.DataFrame({"False positive rate": roc_np[:, 0], "True positive rate": roc_np[:, 1]})
     score_auc = roc_auc_score(y_test, probabilities)
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return roc_data, score_auc
 
 
@@ -180,7 +165,6 @@ def true_false_positive(threshold_vector: np.array, y_test: np.array):
 
 
 def compute_metrics(predictions: np.array, test_dataset: np.array):
-    start = time.time()
     threshold = 0.5
     threshold_vector = np.greater_equal(predictions, threshold).astype(int)
 
@@ -206,12 +190,10 @@ def compute_metrics(predictions: np.array, test_dataset: np.array):
         "number_of_good_predictions": number_of_good_predictions,
         "number_of_false_predictions": number_of_false_predictions,
     }
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return metrics
 
 
 def compute_results(forecast_values, test_dataset):
-    start = time.time()
     forecast_series_proba = pd.Series(
         np.around(forecast_values, decimals=2), index=test_dataset.index, name="Probability"
     )
@@ -219,5 +201,4 @@ def compute_results(forecast_values, test_dataset):
     true_series = pd.Series(test_dataset.iloc[:, -1], name="Historical", index=test_dataset.index)
     index_series = pd.Series(range(len(true_series)), index=test_dataset.index, name="Id")
     results = pd.concat([index_series, forecast_series_proba, forecast_series, true_series], axis=1)
-    # print(f"{sys._getframe().f_code.co_name} - {time.time() - start}")
     return results
