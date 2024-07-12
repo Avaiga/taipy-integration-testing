@@ -35,7 +35,7 @@ def clean_templates():
 
 class TestTaipyCreateCommand:
     def test_default_template(self):
-        inputs = "\n".join(["foo_app", "main.py", "bar", "", "", ""])
+        inputs = "\n".join(["foo_app", "main.py", "bar", "", "", "", ""])
         with pytest.raises(SystemExit) as error:
             with patch("sys.stdin", StringIO(f"{inputs}\n")):
                 with patch("sys.argv", ["prog", "create"]):
@@ -45,7 +45,7 @@ class TestTaipyCreateCommand:
 
         clean_subparser()
 
-        inputs = "\n".join(["bar_app", "main.py", "bar", "", "", ""])
+        inputs = "\n".join(["bar_app", "main.py", "bar", "", "", "", ""])
         with pytest.raises(SystemExit) as error:
             with patch("sys.stdin", StringIO(f"{inputs}\n")):
                 with patch("sys.argv", ["prog", "create", "--template", "default"]):
@@ -54,7 +54,7 @@ class TestTaipyCreateCommand:
         assert error.value.code == 0
 
     def test_scenario_management_template(self):
-        inputs = "\n".join(["foo_app", "main.py", "bar", ""])
+        inputs = "\n".join(["foo_app", "main.py", "bar", "", ""])
         with pytest.raises(SystemExit) as error:
             with patch("sys.stdin", StringIO(f"{inputs}\n")):
                 with patch("sys.argv", ["prog", "create", "--template", "scenario-management"]):
