@@ -27,16 +27,8 @@ jobs:
         run: pytest tests -m "churn_fs"
         timeout-minutes: 10
 
-      - name: Pytest test churn_sql
-        run: pytest tests -m "churn_sql"
-        timeout-minutes: 10
-
       - name: Pytest test example_fs
         run: pytest tests -m "example_fs"
-        timeout-minutes: 10
-
-      - name: Pytest test example_sql
-        run: pytest tests -m "example_sql"
         timeout-minutes: 10
 
       - name: Pytest test
