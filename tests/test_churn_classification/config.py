@@ -47,14 +47,23 @@ def build_churn_config(dataset_path):
     # The predictions using test dataset for the baseline algorithm. Output of the predict_baseline task.
     predictions_test_baseline = Config.configure_data_node(id="forecast_baseline_dataset")
 
-    # The roc data. Output of the compute roc task and the compute roc for baseline task.
+    # The roc data. Output of the compute roc task.
     roc_data = Config.configure_data_node(id="roc_data")
-    # The score auc. Output of the compute roc task and the compute roc for baseline task.
+    # The score auc. Output of the compute roc task.
     score_auc = Config.configure_data_node(id="score_auc")
-    # The metrics. Output of the compute metrics task and the compute metrics for baseline task.
+    # The metrics. Output of the compute metrics task.
     metrics = Config.configure_data_node(id="metrics")
-    # The results. Output of the compute results task and the compute results for baseline task.
+    # The results. Output of the compute results task.
     results = Config.configure_data_node(id="results")
+
+    # The roc data. Output of the compute roc baseline task.
+    roc_data_baseline = Config.configure_data_node(id="roc_data_baseline")
+    # The score auc. Output of the compute roc baseline task.
+    score_auc_baseline = Config.configure_data_node(id="score_auc_baseline")
+    # The metrics. Output of the compute metrics baseline task.
+    metrics_baseline = Config.configure_data_node(id="metrics_baseline")
+    # The results. Output of the compute results baseline task.
+    results_baseline = Config.configure_data_node(id="results_baseline")
 
     ##################################################################################################################
     # Creation of the tasks
@@ -120,7 +129,7 @@ def build_churn_config(dataset_path):
         id="compute_roc_baseline",
         input=[predictions_test_baseline, test_dataset],
         function=compute_roc,
-        output=[roc_data, score_auc],
+        output=[roc_data_baseline, score_auc_baseline],
     )
 
     # predictions_test, test_dataset --> compute_metrics --> metrics
@@ -136,7 +145,7 @@ def build_churn_config(dataset_path):
         id="compute_metrics_baseline",
         input=[predictions_test_baseline, test_dataset],
         function=compute_metrics,
-        output=metrics,
+        output=metrics_baseline,
     )
 
     # predictions_test, test_dataset --> compute_results --> results
@@ -152,7 +161,7 @@ def build_churn_config(dataset_path):
         id="compute_results_baseline",
         input=[predictions_test_baseline, test_dataset],
         function=compute_results,
-        output=results,
+        output=results_baseline,
     )
 
     ##################################################################################################################
