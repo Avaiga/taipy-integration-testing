@@ -18,7 +18,7 @@ from tests.utils import clean_subparser
 
 
 @pytest.fixture(autouse=True, scope="function")
-def clean_templates():
+def clean_parsers():
     clean_subparser()
     yield
 

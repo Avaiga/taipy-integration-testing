@@ -15,7 +15,6 @@ from io import StringIO
 from unittest.mock import patch
 
 import pytest
-from taipy._cli._scaffold_cli import _ScaffoldCLI
 from taipy._entrypoint import _entrypoint
 
 from tests.utils import clean_subparser
@@ -48,7 +47,7 @@ class TestTaipyCreateCommand:
         inputs = "\n".join(["bar_app", "main.py", "bar", "", "", "", ""])
         with pytest.raises(SystemExit) as error:
             with patch("sys.stdin", StringIO(f"{inputs}\n")):
-                with patch("sys.argv", ["prog", "create", "--template", "default"]):
+                with patch("sys.argv", ["prog", "create", "--application", "default"]):
                     _entrypoint()
         assert "bar_app" in os.listdir(os.getcwd())
         assert error.value.code == 0
@@ -57,17 +56,17 @@ class TestTaipyCreateCommand:
         inputs = "\n".join(["foo_app", "main.py", "bar", "", ""])
         with pytest.raises(SystemExit) as error:
             with patch("sys.stdin", StringIO(f"{inputs}\n")):
-                with patch("sys.argv", ["prog", "create", "--template", "scenario-management"]):
+                with patch("sys.argv", ["prog", "create", "--application", "scenario-management"]):
                     _entrypoint()
         assert "foo_app" in os.listdir(os.getcwd())
         assert error.value.code == 0
 
     def test_non_existing_template(self, capsys):
         with pytest.raises(SystemExit) as error:
-            with patch("sys.argv", ["prog", "create", "--template", "non-existing-template"]):
+            with patch("sys.argv", ["prog", "create", "--application", "non-existing-template"]):
                 _entrypoint()
 
         assert error.value.code == 2
 
         _, err_msg = capsys.readouterr()
-        assert "argument --template: invalid choice: 'non-existing-template' (choose from" in err_msg
+        assert "argument --application: invalid choice: 'non-existing-template' (choose from" in err_msg
