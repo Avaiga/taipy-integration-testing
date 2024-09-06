@@ -8,14 +8,15 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-
-from taipy._cli._base_cli import _CLI
+from taipy import Submission
+from taipy._cli._base_cli._taipy_parser import _TaipyParser
+from taipy.logger._taipy_logger import _TaipyLogger
 
 
 def clean_subparser():
-    if getattr(_CLI._parser, "_subparsers", None):
+    if getattr(_TaipyParser._parser, "_subparsers", None):
         # Loop over all subparsers to find the one that has nested-subparsers and positional arguments
-        for choice in _CLI._parser._subparsers._group_actions[0].choices.values():
+        for choice in _TaipyParser._parser._subparsers._group_actions[0].choices.values():
 
             # Remove nested _subparsers
             choice._subparsers = None
@@ -51,5 +52,16 @@ def assert_true_after_time(assertion, time=120, msg=None, **msg_params):
             print("Raise : ", e)
             continue
     if msg:
-        print(msg(**msg_params))
+        _TaipyLogger()._get_logger().warn(msg(**msg_params))
     assert assertion()
+
+
+def message(submission: Submission, timeout=120):
+    ms = "\n--------------------------------------------------------------------------------\n"
+    ms += f"Submission status is {submission.submission_status} after {timeout} seconds.\n"
+    ms += "                              --------------                                    \n"
+    ms += "                               Job statuses                                     \n"
+    for job in submission.jobs:
+        ms += f"{job.id}: {job.status}\n"
+    ms += "--------------------------------------------------------------------------------\n"
+    return ms

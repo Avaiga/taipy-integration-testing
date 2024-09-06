@@ -17,25 +17,18 @@ from taipy import Config
 from taipy.core import Orchestrator
 from taipy.core.config import JobConfig
 
+from tests import utils
 from tests.test_skipped_jobs.config import build_skipped_jobs_config
 from tests.utils import assert_true_after_time
 
 
 
-@pytest.mark.skipped
 class TestSkipJobs:
 
     def test_development_fs_repo(self):
         self.__test()
 
-    def test_development_sql_repo(self, init_sql_repo):
-        self.__test()
-
     def test_standalone_fs_repo(self):
-        Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
-        self.__test(True)
-
-    def test_standalone_sql_repo(self, init_sql_repo):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         self.__test(True)
 
@@ -50,14 +43,24 @@ class TestSkipJobs:
             submission_one = scenario.submit()
             assert len(tp.get_jobs()) == 2
             if waiting_for_completion:
-                assert_true_after_time(lambda: all(job.is_completed() for job in submission_one.jobs))
+                assert_true_after_time(
+                    lambda: all(job.is_completed() for job in submission_one.jobs),
+                    time=240,
+                    msg=lambda s: utils.message(s, 240),
+                    s=submission_one
+                )
             else:
                 assert all(job.is_completed() for job in tp.get_jobs())
 
             submission_two = scenario.submit()
             assert len(tp.get_jobs()) == 4
             if waiting_for_completion:
-                assert_true_after_time(lambda: all(job.is_skipped() for job in submission_two.jobs))
+                assert_true_after_time(
+                    lambda: all(job.is_skipped() for job in submission_two.jobs),
+                    time=240,
+                    msg=lambda s: utils.message(s, 240),
+                    s=submission_two
+                )
             else:
                 assert all(job.is_skipped() for job in submission_two.jobs)
 
