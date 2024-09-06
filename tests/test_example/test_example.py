@@ -16,7 +16,7 @@ import pandas as pd
 import pytest
 import taipy.core.taipy as tp
 from taipy import Config
-from taipy.core import Core
+from taipy.core import Orchestrator
 from taipy.core.config import JobConfig
 from taipy.core.submission.submission_status import SubmissionStatus
 
@@ -47,8 +47,8 @@ class TestExample:
     def __test(self, waiting_jobs_to_complete=False):
         with patch("sys.argv", ["prog"]):
             scenario_config = build_example_config(self.csv_path, self.excel_path)
-            core = Core()
-            core.run(force_restart=True)
+            orchestrator = Orchestrator()
+            orchestrator.run(force_restart=True)
             scenario = tp.create_scenario(scenario_config)
             submission = tp.submit(scenario)
 
@@ -72,4 +72,4 @@ class TestExample:
 
             for path in [scenario.d5.path, scenario.d6.path, scenario.d11.path, scenario.d12.path]:
                 os.remove(path)
-            core.stop()
+            orchestrator.stop()

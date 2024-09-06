@@ -13,7 +13,7 @@ import pathlib
 from unittest.mock import patch
 
 import taipy as tp
-from taipy import Config, Core
+from taipy import Config, Orchestrator
 from taipy.core.config import JobConfig
 from taipy.core.submission.submission_status import SubmissionStatus
 
@@ -42,8 +42,8 @@ class TestDailyTemperature:
     def __run(self, waiting_jobs_to_complete=False):
         with patch("sys.argv", ["prog"]):
             arima_scenario_config = build_arima_config(self.CSV_INPUT_PATH, self.XLSX_OUTPUT_PATH)
-            core = Core()
-            core.run()
+            orchestrator = Orchestrator()
+            orchestrator.run()
             scenario = tp.create_scenario(arima_scenario_config)
             submission = tp.submit(scenario)
 
@@ -56,4 +56,4 @@ class TestDailyTemperature:
             assert len(tp.get_jobs()) == 2
             assert len(tp.get_data_nodes()) == 4
 
-            core.stop()
+            orchestrator.stop()

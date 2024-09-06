@@ -15,7 +15,7 @@ from unittest.mock import patch
 import pytest
 import taipy.core.taipy as tp
 from taipy import Config
-from taipy.core import Core
+from taipy.core import Orchestrator
 from taipy.core.config import JobConfig
 from taipy.core.submission.submission_status import SubmissionStatus
 
@@ -49,8 +49,8 @@ class TestChurnClassification:
     def __run(self):
         with patch("sys.argv", ["prog"]):
             scenario_cfg = build_churn_config(self.data_set_path)
-            core = Core()
-            core.run(force_restart=True)
+            orchestrator = Orchestrator()
+            orchestrator.run(force_restart=True)
             scenario = tp.create_scenario(scenario_cfg)
             for inpt in scenario.get_inputs():
                 # Checking this allows not to submit scenario if it is blocked by some input not being ready
@@ -66,4 +66,4 @@ class TestChurnClassification:
                 )
             else:
                 assert submission.submission_status == SubmissionStatus.COMPLETED
-            core.stop()
+            orchestrator.stop()

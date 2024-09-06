@@ -11,7 +11,7 @@
 
 import argparse
 
-from taipy import Config, Core, Gui
+from taipy import Config, Orchestrator, Gui
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -21,8 +21,8 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--non-conflict-arg", type=str, default="")
 
-    core = Core()
-    core.run()
+    orchestrator = Orchestrator()
+    orchestrator.run()
 
     gui = Gui()
     gui._config._handle_argparse()

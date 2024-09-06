@@ -24,7 +24,7 @@ from taipy.config._serializer._toml_serializer import _TomlSerializer
 from taipy.config.checker._checker import _Checker
 from taipy.config.checker.issue_collector import IssueCollector
 from taipy.config.config import Config
-from taipy.core._core import Core
+from taipy.core import Orchestrator
 from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
 from taipy.core._repository.db._sql_connection import _SQLConnection
 from taipy.core._version._version_manager_factory import _VersionManagerFactory
@@ -146,12 +146,12 @@ def init_config(reset_configuration_singleton, inject_core_sections):
         _Checker.add_checker(_CoreSectionChecker)
         _Checker.add_checker(_DataNodeConfigChecker)
         _Checker.add_checker(_JobConfigChecker)
-        # We don't need to add _MigrationConfigChecker because it is run only when the Core service is run.
+        # We don't need to add _MigrationConfigChecker because it is run only when the Orchestrator service is run.
         _Checker.add_checker(_TaskConfigChecker)
         _Checker.add_checker(_ScenarioConfigChecker)
 
         Config.configure_core(read_entity_retry=0)
-        Core._is_running = False
+        Orchestrator._is_running = False
 
     return _init_config
 

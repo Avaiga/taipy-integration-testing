@@ -14,7 +14,7 @@ from unittest.mock import patch
 import pytest
 import taipy.core.taipy as tp
 from taipy import Config
-from taipy.core import Core
+from taipy.core import Orchestrator
 from taipy.core.config import JobConfig
 
 from tests.test_skipped_jobs.config import build_skipped_jobs_config
@@ -43,8 +43,8 @@ class TestSkipJobs:
     def __test(waiting_for_completion=False):
         with patch("sys.argv", ["prog"]):
             scenario_config = build_skipped_jobs_config()
-            core = Core()
-            core.run()
+            orchestrator = Orchestrator()
+            orchestrator.run()
             scenario = tp.create_scenario(scenario_config)
 
             submission_one = scenario.submit()
@@ -61,4 +61,4 @@ class TestSkipJobs:
             else:
                 assert all(job.is_skipped() for job in submission_two.jobs)
 
-            core.stop()
+            orchestrator.stop()
