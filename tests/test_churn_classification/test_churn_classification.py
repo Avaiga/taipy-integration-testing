@@ -32,10 +32,6 @@ class TestChurnClassification:
         self.waiting_jobs_to_complete = False
         self.__run()
 
-    def test_development_sql_repo(self, init_sql_repo):
-        self.waiting_jobs_to_complete = False
-        self.__run()
-
     @pytest.mark.churn_fs
     def test_standalone_fs_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=4)

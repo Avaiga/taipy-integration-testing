@@ -17,7 +17,6 @@ from unittest.mock import patch
 
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import close_all_sessions
 from taipy.config import _inject_section
 from taipy.config._config import _Config
 from taipy.config._config_comparator._config_comparator import _ConfigComparator
@@ -27,13 +26,11 @@ from taipy.config.checker.issue_collector import IssueCollector
 from taipy.config.config import Config
 from taipy.core import Orchestrator
 from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
-from taipy.core._repository.db._sql_connection import _SQLConnection
 from taipy.core._version._version_manager_factory import _VersionManagerFactory
 from taipy.core.config import (
     CoreSection,
     DataNodeConfig,
     JobConfig,
-    MigrationConfig,
     ScenarioConfig,
     TaskConfig,
     _ConfigIdChecker,
@@ -125,13 +122,6 @@ def inject_core_sections():
                 ("configure_scenario", ScenarioConfig._configure),
                 ("set_default_scenario_configuration", ScenarioConfig._set_default_configuration),
             ],
-        )
-        _inject_section(
-            MigrationConfig,
-            "migration_functions",
-            MigrationConfig.default_config(),
-            [("add_migration_function", MigrationConfig._add_migration_function)],
-            True,
         )
 
     return _inject_core_sections
@@ -228,10 +218,6 @@ def clean_files():
 def clean_repository(init_config, init_managers, init_orchestrator, init_notifier):
     clean_files()
     init_config()
-    close_all_sessions()
-    if _SQLConnection._connection:
-        _SQLConnection._connection.close()
-    _SQLConnection._connection = None
     init_orchestrator()
     init_managers()
     init_config()
@@ -240,12 +226,12 @@ def clean_repository(init_config, init_managers, init_orchestrator, init_notifie
     with patch("sys.argv", ["prog"]):
         yield
 
-    close_all_sessions()
     init_orchestrator()
     init_managers()
     init_config()
     init_notifier()
     clean_files()
+
 
 @pytest.fixture(scope="function")
 def sql_engine():
@@ -256,16 +242,3 @@ def sql_engine():
 def tmp_sqlite(tmpdir_factory):
     fn = tmpdir_factory.mktemp("db")
     return os.path.join(fn.strpath, "test.db")
-
-
-@pytest.fixture(scope="function")
-def init_sql_repo(tmp_sqlite):
-    Config.configure_core(repository_type="sql", repository_properties={"db_location": tmp_sqlite}, read_entity_retry=3)
-
-    # Clean SQLite database
-    if _SQLConnection._connection:
-        _SQLConnection._connection.close()
-        _SQLConnection._connection = None
-    _SQLConnection.init_db()
-
-    return tmp_sqlite
