@@ -13,18 +13,24 @@ import pathlib
 
 import numpy as np
 import pandas as pd
+import pytest
 import taipy.core as tp
 
-from .row import Row
 from .config import build_excel_cfg
+from .row import Row
 
 
 class TestExcelMultiSheets:
-    XLSX_INPUT_PATH = os.path.join(pathlib.Path(__file__).parent.resolve(), "dataset",
-                                   "id_age_rating_1000_single_sheet.xlsx")
+    XLSX_INPUT_PATH = os.path.join(
+        pathlib.Path(__file__).parent.resolve(), "dataset", "id_age_rating_1000_single_sheet.xlsx"
+    )
     XLSX_OUTPUT_PATH = os.path.join(pathlib.Path(__file__).parent.parent.resolve(), "outputs", "output.xlsx")
     ROW_COUNT = 1000
     SHEET = "Sheet1"
+
+    @pytest.fixture(autouse=True, scope="class")
+    def remove_output(self):
+        os.remove(self.XLSX_OUTPUT_PATH) if os.path.exists(self.XLSX_OUTPUT_PATH) else None
 
     def test_excel_pandas(self):
         pandas_data = pd.read_excel(self.XLSX_INPUT_PATH)
@@ -49,8 +55,9 @@ class TestExcelMultiSheets:
         assert pandas_data.equals(out_dn2.read())
 
     def test_excel_custom_exposed_type(self):
-        custom_data = [Row(int(v.id), int(v.age), float(v.rating)) for i, v in pd.read_excel(
-            self.XLSX_INPUT_PATH).iterrows()]
+        custom_data = [
+            Row(int(v.id), int(v.age), float(v.rating)) for i, v in pd.read_excel(self.XLSX_INPUT_PATH).iterrows()
+        ]
 
         def compare_custom_date(read_data, custom_data):
             return [
