@@ -8,6 +8,7 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
+
 import os
 import pathlib
 from unittest.mock import patch
@@ -21,9 +22,10 @@ from taipy.core.config import JobConfig
 from taipy.core.submission.submission_status import SubmissionStatus
 
 from tests.test_example.algorithms import average
-from .config import build_example_config
 from tests.utils import assert_true_after_time
+
 from .. import utils
+from .config import build_example_config
 
 
 class TestExample:
@@ -33,12 +35,10 @@ class TestExample:
     def test_development_fs_repo(self):
         self.__test()
 
-
     @pytest.mark.example_fs
     def test_standalone_fs_repo(self):
         Config.configure_job_executions(mode=JobConfig._STANDALONE_MODE, max_nb_of_workers=2)
         self.__test(True)
-
 
     def __test(self, waiting_jobs_to_complete=False):
         with patch("sys.argv", ["prog"]):
@@ -53,7 +53,8 @@ class TestExample:
                     lambda: submission.submission_status == SubmissionStatus.COMPLETED,
                     time=120,
                     msg=lambda s: utils.message(s, 120),
-                    s=submission)
+                    s=submission,
+                )
             else:
                 assert submission.submission_status == SubmissionStatus.COMPLETED
 
@@ -66,6 +67,4 @@ class TestExample:
             assert average(csv_sum_res["number"] - excel_sum_res["number"]) == csv_out.to_numpy()[0]
             assert average((csv_sum_res["number"] - excel_sum_res["number"]) * 10) == excel_out.to_numpy()[0]
 
-            for path in [scenario.d5.path, scenario.d6.path, scenario.d11.path, scenario.d12.path]:
-                os.remove(path)
             orchestrator.stop()

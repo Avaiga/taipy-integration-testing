@@ -8,6 +8,7 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
+
 import os
 import pathlib
 
@@ -50,8 +51,6 @@ class TestCSV:
         scenario.submit()
         assert self.pandas_data.equals(output_dn_2.read())
 
-        os.remove(self.CSV_OUTPUT_PATH)
-
     def test_csv_custom_exposed_type(self):
         scenario_cfg = build_csv_config(self.CSV_INPUT_PATH, self.CSV_OUTPUT_PATH, Row)
 
@@ -80,8 +79,6 @@ class TestCSV:
         scenario.submit()
         assert all(compare_custom_date(output_dn_2.read(), self.custom_data))
 
-        os.remove(self.CSV_OUTPUT_PATH)
-
     def test_csv_numpy_exposed_type(self):
         scenario_cfg = build_csv_config(self.CSV_INPUT_PATH, self.CSV_OUTPUT_PATH, "numpy")
         scenario = tp.create_scenario(scenario_cfg)
@@ -102,5 +99,3 @@ class TestCSV:
 
         scenario.submit()
         assert np.array_equal(output_dn_2.read(), self.numpy_data)
-        os.remove(self.CSV_OUTPUT_PATH)
-
