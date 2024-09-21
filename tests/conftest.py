@@ -8,11 +8,13 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
+
 import logging
 import os
 import pathlib
 import shutil
 from queue import Queue
+from time import sleep
 from unittest.mock import patch
 
 import pytest
@@ -185,20 +187,14 @@ def init_orchestrator():
     return _init_orchestrator
 
 
-@pytest.fixture(scope="session", autouse=True)
-def cleanup_files():
-    clean_files()
-    yield
-    clean_files()
-
-
 def clean_files():
     output_dir = pathlib.Path(__file__).parent.resolve() / "outputs"
     if output_dir.exists():
         try:
             shutil.rmtree(output_dir)
         except PermissionError:
-            logging.error("Retry to delete the outputs folder.")
+            logging.error("Retry to delete the 'outputs' folder in 2 seconds.")
+            sleep(2)
             try:
                 shutil.rmtree(output_dir)
             except PermissionError:

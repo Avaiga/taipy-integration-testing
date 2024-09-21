@@ -8,12 +8,12 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
+
 import os
 import pathlib
 
 import numpy as np
 import pandas as pd
-import pytest
 import taipy.core as tp
 
 from .config import build_excel_cfg
@@ -24,13 +24,11 @@ class TestExcelMultiSheets:
     XLSX_INPUT_PATH = os.path.join(
         pathlib.Path(__file__).parent.resolve(), "dataset", "id_age_rating_1000_multi_sheets_10x100.xlsx"
     )
-    XLSX_OUTPUT_PATH = os.path.join(pathlib.Path(__file__).parent.parent.resolve(), "outputs", "output.xlsx")
+    XLSX_OUTPUT_PATH = os.path.join(
+        pathlib.Path(__file__).parent.parent.resolve(), "outputs", "output_multi_sheets.xlsx"
+    )
     ROW_COUNT = 1000
     SHEETS = ["Sheet 0", "Sheet 1", "Sheet 2", "Sheet 3", "Sheet 4", "Sheet 5"]
-
-    @pytest.fixture(autouse=True, scope="class")
-    def remove_output(self):
-        os.remove(self.XLSX_OUTPUT_PATH) if os.path.exists(self.XLSX_OUTPUT_PATH) else None
 
     def test_excel_multi_sheet_pandas(self):
         pandas_data = pd.read_excel(self.XLSX_INPUT_PATH, sheet_name=self.SHEETS)
