@@ -56,7 +56,7 @@ class TestTaipyCreateCommand:
         inputs = "\n".join(["foo_app", "main.py", "bar", "", ""])
         with pytest.raises(SystemExit) as error:
             with patch("sys.stdin", StringIO(f"{inputs}\n")):
-                with patch("sys.argv", ["prog", "create", "--application", "scenario-management"]):
+                with patch("sys.argv", ["prog", "create", "--application", "sdm"]):
                     _entrypoint()
         assert "foo_app" in os.listdir(os.getcwd())
         assert error.value.code == 0
