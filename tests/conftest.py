@@ -19,13 +19,13 @@ from unittest.mock import patch
 
 import pytest
 from sqlalchemy import create_engine
-from taipy.config import _inject_section
-from taipy.config._config import _Config
-from taipy.config._config_comparator._config_comparator import _ConfigComparator
-from taipy.config._serializer._toml_serializer import _TomlSerializer
-from taipy.config.checker._checker import _Checker
-from taipy.config.checker.issue_collector import IssueCollector
-from taipy.config.config import Config
+from taipy.common.config import _inject_section
+from taipy.common.config._config import _Config
+from taipy.common.config._config_comparator._config_comparator import _ConfigComparator
+from taipy.common.config._serializer._toml_serializer import _TomlSerializer
+from taipy.common.config.checker._checker import _Checker
+from taipy.common.config.checker.issue_collector import IssueCollector
+from taipy.common.config.config import Config
 from taipy.core import Orchestrator
 from taipy.core._orchestrator._orchestrator_factory import _OrchestratorFactory
 from taipy.core._version._version_manager_factory import _VersionManagerFactory

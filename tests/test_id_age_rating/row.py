@@ -1,6 +1,5 @@
 import dataclasses
 import json
-from random import random
 
 
 @dataclasses.dataclass

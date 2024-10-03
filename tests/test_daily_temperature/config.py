@@ -11,8 +11,7 @@
 
 from datetime import datetime
 
-from taipy.config import Frequency, Scope
-from taipy.config.config import Config
+from taipy import Config, Frequency, Scope
 
 from .algorithms import predict, train
 

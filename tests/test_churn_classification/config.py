@@ -12,7 +12,7 @@
 import os
 import pathlib
 
-from taipy.config import Config, Frequency
+from taipy import Config, Frequency
 
 from .algorithms import *
 

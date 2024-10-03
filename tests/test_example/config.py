@@ -11,7 +11,7 @@
 import os
 import pathlib
 
-from taipy.config import Config
+from taipy import Config
 from .algorithms import sum as my_sum
 from .algorithms import *
 
